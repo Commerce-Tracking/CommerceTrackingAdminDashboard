@@ -1,0 +1,198 @@
+{
+  "home": "Accueil",
+  "settings": "Paramètres",
+  "language": "Langue",
+  "welcome": "Bienvenue sur l'application",
+  "profile_info": "Information du profil",
+  "pers_info": "Informations Personnelles",
+  "pers_name": "nom",
+  "pers_first_name": "prenom",
+  "pers_mail": "Adresse Email",
+  "pers_phone": "Téléphone",
+  "pers_connex": "Etat de connexion",
+  "user_connected": "Utilisateur connecté",
+  "user_not_connected": "Utilisateur non connecté",
+
+  "address": "Adresse",
+  "country": "Pays",
+  "region_city": "Région/Ville",
+  "postal_code": "Code Postal",
+  "tax_id": "N° FISCAL",
+
+  "obstacles": "Entraves",
+  "obstacle_list": "Liste des entraves",
+  "description": "Description",
+  "status": "Statut",
+  "date": "Date",
+  "date_creation": "Date de création",
+  "details": "Détails",
+  "see_details": "voir",
+  "obstacle_details": "Détails de l'entrave",
+  "complaint_date": "Date de la plainte",
+  "complaint_time": "Heure de la plainte",
+  "time_lost": "Temps perdu",
+  "amount": "Montant",
+  "user": "Utilisateur",
+  "country_obstacles": "Pays",
+  "locality": "Localité",
+  "complaint_type": "Type de plainte",
+  "service": "Service",
+  "loading_number": "Numéro de chargement",
+  "product": "Produit",
+
+  "obstacles_list": "Liste des types d'entraves",
+  "obstacles_name": "Nom du type d'entrave",
+
+  "dashboard": "Tableau de bord",
+
+  "obstacle_types": "Types des entraves",
+  "user_list": "Liste des utilisateurs",
+  "create_user": "Créer un utilisateur",
+  "role_management": "Gestion des rôles",
+  "generate_reports": "Générer les rapports",
+  "view_reports": "Visualiser les rapports",
+  "statistics": "Voir les statistiques",
+  "entity_list": "Liste des entités",
+  "add_entity": "Ajouter une entité",
+  "country_list": "Liste des pays",
+  "add_country": "Ajouter un pays",
+  "locality_list": "Liste des localités",
+  "add_locality": "Ajouter une localité",
+  "transport_list": "Liste des transports",
+  "content_center": "Centre de contenu",
+  "preferences": "Préférences",
+  "export_data": "Exporter les données",
+  "customer_support": "Support client",
+
+  "complaints_management": "Gestion des plaintes",
+  "user_management": "Gestions des utilisateurs",
+  "reporting": "Reporting",
+  "entities_and_localities": "Entités & Localités",
+  "transports": "Transports",
+  "others": "Autres",
+
+  "users": "Utilisateurs",
+
+  "phone": "Téléphone",
+  "position": "Poste",
+
+
+  "user_details": "Détails de l'utilisateur",
+  "full_name": "Nom complet",
+
+  "add_user": "Ajouter un utilisateur",
+  "form_instruction": "Veuillez remplir ce formulaire",
+  "first_name": "Prénom",
+  "first_name_placeholder": "Prénom de l'utilisateur",
+  "last_name": "Nom",
+  "last_name_placeholder": "Nom de l'utilisateur",
+  "email": "Email",
+  "email_placeholder": "Email de l'utilisateur",
+  "role": "Rôle",
+  "select_role": "Sélectionner un rôle",
+
+  "select_locality": "Sélectionner une localité",
+  "phone_number": "Numéro de téléphone",
+
+  "roles": "Rôles",
+  "role_list": "Listes des rôles",
+  "id": "ID",
+  "data": " Aucune donnée disponible",
+  "load": "Chargement...",
+  "role_details": "Détails du role",
+  "close": "Fermer",
+
+  "add_reporting": "Ajouter un reporting",
+  "reporting_form_title": "Formulaire d’ajout de reporting",
+  "title": "Titre",
+  "enter_title": "Entrez le titre du reporting",
+
+  "enter_description": "Entrez la description",
+  "type": "Type",
+  "select_type": "Sélectionnez un type",
+  "attachment_url": "URL de l’attachement (optionnel)",
+  "enter_attachment_url": "Entrez l’URL de l’attachement",
+  "attachment_format": "Format de l’attachement",
+  "add": "Ajouter",
+
+  "reporting_list": "Liste des reportings",
+  "reporting_details": "Reporting details",
+  "Attachements": "Attachements",
+
+
+
+
+  
+
+
+  "loading_country": "Pays de chargement",
+  "unloading_country": "Pays de déchargement",
+  "actions": "Actions",
+  "transport_details": "Détails du transport",
+
+  "quantity": "Quantité",
+  "average_weight": "Poids moyen (kg)",
+  "average_unit_price": "Prix unitaire moyen",
+  "total_value": "Valeur totale",
+  "loading_point": "Point de chargement",
+  
+  "unloading_point": "Point de déchargement",
+
+  "shipper": "Chargeur",
+  "shipper_phone": "Téléphone chargeur",
+  "license_plate": "Plaque d’immatriculation",
+  "license_number": "Numéro de permis",
+  "license_valid": "Permis valide",
+  "license_expiration": "Expiration permis",
+
+  "registration_card": "Carte grise",
+  "registration_valid": "Carte grise valide",
+  "registration_expiration": "Expiration carte grise",
+
+  "insurance": "Assurance",
+  "insurance_valid": "Assurance valide",
+  "insurance_expiration": "Expiration assurance",
+
+  "export_declaration": "Déclaration d’exportation",
+  "declaration_valid": "Déclaration valide",
+  "declaration_expiration": "Expiration déclaration",
+
+  "people_on_board": "Personnes à bord",
+  "document_type": "Type de document",
+  "document_reference": "Référence document",
+  
+
+  "additional_passengers": "Passagers supplémentaires",
+  "attachments": "Pièces jointes",
+
+
+  "search_name": "Rechercher un nom",
+
+   "edit_entity": "Modifier l'entité",
+  "entity_name": "Nom de l'entité",
+   "cancel": "Annuler",
+  "save": "Enregistrer",
+
+  "entity_form_title": "Formulaire d'ajout d'entité",
+
+  "enter_entity_name": "Entrez le nom de l'entité",
+  "edit_country": "Modifier le pays",
+  "country_name" : "Nom du pays",
+
+
+  "country_form_title": "Formulaire d'ajout de pays",
+
+  "enter_country_name": "Entrez le nom du pays",
+
+  "search_locality": "Rechercher une localité",
+   "search_country": "Rechercher un pays",
+
+   "edit_locality" : "Modifier la localité",
+   "lacality_name":"Nom de la localité",
+   "enter_locality_name": "Entrez le nom de la localité",
+   "select_country":"Sélectionnez un pays"
+
+
+ 
+
+}

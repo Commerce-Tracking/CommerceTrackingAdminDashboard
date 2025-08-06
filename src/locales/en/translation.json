@@ -1,0 +1,197 @@
+{
+  "home": "Home",
+  "settings": "Settings",
+  "language": "Language",
+  "welcome": "Welcome to the app",
+  "profile_info": "Profile Information",
+  "pers_info": "Personal Information",
+  "pers_name": "name",
+  "pers_first_name": "first name",
+  "pers_mail": "Email address",
+  "pers_phone": "Phone number",
+  "pers_connex": "Connection status",
+  "user_connected": "User connected",
+  "user_not_connected": "User not connected",
+
+  "address": "Address",
+  "country": "Country",
+  "region_city": "Region/City",
+  "postal_code": "Postal Code",
+  "tax_id": "TAX ID",
+
+  "obstacles": "Obstacles",
+  "obstacle_list": "List of Obstacles",
+  "description": "Description",
+  "status": "Status",
+  "date": "Date",
+  "date_creation": "Creation  date ",
+  "details": "Details",
+  "see_details": "see",
+  "obstacle_details": "Details of obstruction",
+
+  "complaint_date": "Complaint Date",
+  "complaint_time": "Complaint Time",
+  "time_lost": "Time Lost",
+  "amount": "Amount",
+  "user": "User",
+  "country_obstacles": "Country",
+  "locality": "Locality",
+  "complaint_type": "Complaint Type",
+  "service": "Service",
+  "loading_number": "Loading Number",
+  "product": "Product",
+  "obstacles_list": "List of types of obstacles",
+  "obstacles_name": "Name of the type of obstruction",
+
+  "dashboard": "Dashboard",
+
+  "obstacle_types": "Obstacle Types",
+  "user_list": "User List",
+  "create_user": "Create User",
+  "role_management": "Role Management",
+  "generate_reports": "Generate Reports",
+  "view_reports": "View Reports",
+  "statistics": "View Statistics",
+  "entity_list": "Entity List",
+  "add_entity": "Add Entity",
+  "country_list": "Country List",
+  "add_country": "Add Country",
+  "locality_list": "Locality List",
+  "add_locality": "Add Locality",
+  "transport_list": "Transport List",
+  "content_center": "Content Center",
+  "preferences": "Preferences",
+  "export_data": "Export Data",
+  "customer_support": "Customer Support",
+
+  "complaints_management": "Complaint management",
+  "user_management": "User management",
+  "reporting": "Reporting",
+  "entities_and_localities": "Entities & Localities",
+  "transports": " Transport",
+  "others": "Others",
+
+  "users": "Users",
+  "phone": "Phone",
+  "position": "Position",
+  "actions": "Actions",
+
+  "user_details": "User Details",
+  "full_name": "Full Name",
+
+  "add_user": "Add a User",
+  "form_instruction": "Please fill out this form",
+  "first_name": "First Name",
+  "first_name_placeholder": "User's first name",
+  "last_name": "Last Name",
+  "last_name_placeholder": "User's last name",
+  "email": "Email",
+  "email_placeholder": "User's email",
+  "role": "Role",
+  "select_role": "Select a role",
+
+  "select_locality": "Select a locality",
+  "phone_number": "Phone Number",
+
+  "roles": "Roles",
+  "role_list": "Role List",
+  "id": "ID",
+  "data": " No data available",
+  "load": "Loading...",
+  "role_details": "Role details",
+  "close": "close",
+
+  "add_reporting": "Add a Reporting",
+  "reporting_form_title": "Reporting Submission Form",
+  "title": "Title",
+  "enter_title": "Enter reporting title",
+
+  "enter_description": "Enter description",
+  "type": "Type",
+  "select_type": "Select a type",
+  "attachment_url": "Attachment URL (optional)",
+  "enter_attachment_url": "Enter attachment URL",
+  "attachment_format": "Attachment Format",
+  "add": "Add",
+
+  "reporting_list": "List of reports",
+  "Attachements": "Attachements",
+  "reporting_details": "Reporting details",
+
+
+
+
+
+
+  
+
+
+  "loading_country": "Loading Country",
+  "unloading_country": "Unloading Country",
+  "transport_details": "Details of transport",
+ 
+
+  "quantity": "Quantity",
+  "average_weight": "Average Weight (kg)",
+  "average_unit_price": "Average Unit Price",
+  "total_value": "Total Value",
+  "loading_point": "Loading Point",
+  "unloading_point": "Unloading Point",
+
+  "shipper": "Shipper",
+  "shipper_phone": "Shipper's Phone",
+  "license_plate": "License Plate",
+  "license_number": "License Number",
+  "license_valid": "License Valid",
+  "license_expiration": "License Expiration",
+
+  "registration_card": "Registration Card",
+  "registration_valid": "Registration Valid",
+  "registration_expiration": "Registration Expiration",
+
+  "insurance": "Insurance",
+  "insurance_valid": "Insurance Valid",
+  "insurance_expiration": "Insurance Expiration",
+
+  "export_declaration": "Export Declaration",
+  "declaration_valid": "Declaration Valid",
+  "declaration_expiration": "Declaration Expiration",
+
+  "people_on_board": "People on Board",
+  "document_type": "Document Type",
+  "document_reference": "Document Reference",
+
+  
+
+  "additional_passengers": "Additional Passengers",
+  "attachments": "Attachments",
+
+    "search_name": "Search by name",
+    "edit_entity": "Edit Entity",
+  "entity_name": "Entity Name",
+   "cancel": "Cancel",
+  "save": "Save",
+ "entity_form_title": "Entity creation form",
+
+"enter_entity_name": "Enter the entity name", 
+"edit_country": "Edit Country",
+
+
+ 
+  "country_form_title": "Country creation form",
+  "country_name": "Country name",
+  "enter_country_name": "Enter the country name",
+
+
+  "search_locality": "Search for a locality",
+   "search_country": "Search for a country",
+   "lacality_name":"Name of locality",
+   "enter_locality_name": "Enter the locality name",
+   "select_country":"select country"
+
+
+
+
+
+
+}
