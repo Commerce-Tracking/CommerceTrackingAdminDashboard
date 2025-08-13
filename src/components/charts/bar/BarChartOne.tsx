@@ -3,9 +3,9 @@ import { ApexOptions } from "apexcharts";
 
 export default function BarChartOne() {
   const options: ApexOptions = {
-    colors: ["#465fff"],
+    colors: ["#1A6C30"], // Vert principal de la nouvelle charte
     chart: {
-      fontFamily: "Outfit, sans-serif",
+      fontFamily: "DM Sans, sans-serif",
       type: "bar",
       height: 180,
       toolbar: {

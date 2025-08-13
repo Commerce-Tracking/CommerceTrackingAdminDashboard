@@ -19,11 +19,17 @@ export default function Home() {
   }, []);
 
   return (
-    <>
+    <div className="page-container">
       <PageMeta
         title="OFR | Admin"
         description="Opération Fluidité Routière Agro-bétail"
       />
+      
+      <div className="page-header">
+        <h1 className="page-title">Tableau de Bord</h1>
+        <p className="page-subtitle">Vue d'ensemble de vos activités et statistiques</p>
+      </div>
+      
       <div className="grid grid-cols-12 gap-4 md:gap-6">
         {/* Bilan des plaintes */}
         <div className="col-span-12 xl:col-span-5">
@@ -52,6 +58,6 @@ export default function Home() {
         </div>
 
       </div>
-    </>
+    </div>
   );
 }

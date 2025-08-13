@@ -21,7 +21,11 @@ const ReportsListPage = () => {
         description="Consulter la liste des reportings pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t('reporting_list')} />
-      <div className="p-4">
+      <div className="page-container">
+        <div className="page-header">
+          <h1 className="page-title">Liste des Rapports</h1>
+          <p className="page-subtitle">Gestion et consultation des rapports</p>
+        </div>
         {/* <ErrorBoundary> */}
           <ReportsTables />
         {/* </ErrorBoundary> */}

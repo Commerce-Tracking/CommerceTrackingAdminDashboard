@@ -26,7 +26,11 @@ const CountriesPage = () => {
         description="Consulter la liste des pays pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t('country_list')} />
-      <div className="p-4">
+      <div className="page-container">
+        <div className="page-header">
+          <h1 className="page-title">Gestion des Pays</h1>
+          <p className="page-subtitle">Liste et gestion des pays du système</p>
+        </div>
         <CountriesTable />
       </div>
     </>

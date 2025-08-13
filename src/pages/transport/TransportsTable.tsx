@@ -208,8 +208,17 @@ const TransportsTable = () => {
  
 
   return (
-    <div className="p-4">
-      <ComponentCard title={t('transport_list')}>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">Gestion des Transports</h1>
+        <p className="page-subtitle">Liste et suivi des transports de marchandises</p>
+      </div>
+      
+      <div className="content-card">
+        <div className="content-card-header">
+          <h2 className="content-card-title">{t('transport_list')}</h2>
+        </div>
+        <div className="content-card-body">
         <DataTable
           value={transports}
           loading={isLoading}
@@ -266,7 +275,8 @@ const TransportsTable = () => {
             style={{ width: "10%" }}
           />
         </DataTable>
-      </ComponentCard>
+        </div>
+      </div>
       <Dialog
         visible={isModalVisible}
         header={t('transport_details')}

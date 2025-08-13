@@ -253,8 +253,17 @@ const ReportsTables = () => {
   };
 
   return (
-    <div className="p-4">
-      <ComponentCard title={t("reporting_list")}>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">Liste des Rapports</h1>
+        <p className="page-subtitle">Gestion et consultation des rapports</p>
+      </div>
+      
+      <div className="content-card">
+        <div className="content-card-header">
+          <h2 className="content-card-title">{t("reporting_list")}</h2>
+        </div>
+        <div className="content-card-body">
         <DataTable
           value={reportings || []}
           loading={loading}
@@ -314,7 +323,8 @@ const ReportsTables = () => {
             style={{ width: "20%" }}
           />
         </DataTable>
-      </ComponentCard>
+        </div>
+      </div>
       <Dialog
         header={t('reporting_details')}
         visible={!!selectedReporting}

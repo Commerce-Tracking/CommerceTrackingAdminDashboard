@@ -187,8 +187,17 @@ const LocalitiesTable = () => {
   };
 
   return (
-    <div className="p-4">
-      <ComponentCard title={t('locality_list')}>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">Gestion des Localités</h1>
+        <p className="page-subtitle">Liste et gestion des localités par pays</p>
+      </div>
+      
+      <div className="content-card">
+        <div className="content-card-header">
+          <h2 className="content-card-title">{t('locality_list')}</h2>
+        </div>
+        <div className="content-card-body">
         <DataTable
           value={localities}
           loading={loading}
@@ -226,7 +235,8 @@ const LocalitiesTable = () => {
             style={{ width: '20%' }}
           />
         </DataTable>
-      </ComponentCard>
+        </div>
+      </div>
 
       <Dialog
         visible={!!editLocality}

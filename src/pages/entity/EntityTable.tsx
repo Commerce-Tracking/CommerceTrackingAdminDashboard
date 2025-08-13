@@ -173,7 +173,7 @@ const EntityTable = () => {
       <div className="flex gap-2">
         <button
           onClick={() => handleEdit(rowData)}
-          className="text-blue-500 hover:text-blue-700"
+          className="text-info-500 hover:text-info-600 transition-colors duration-200"
           title="Modifier"
         >
           <i className="pi pi-pencil" />
@@ -183,8 +183,17 @@ const EntityTable = () => {
   };
 
   return (
-    <div className="p-4">
-      <ComponentCard title={t('entity_list')}>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">Gestion des Entités</h1>
+        <p className="page-subtitle">Liste et gestion des entités de service</p>
+      </div>
+      
+      <div className="content-card">
+        <div className="content-card-header">
+          <h2 className="content-card-title">{t('entity_list')}</h2>
+        </div>
+        <div className="content-card-body">
         <DataTable
           value={countries}
           loading={loading}
@@ -216,7 +225,8 @@ const EntityTable = () => {
             style={{ width: '20%' }}
           />
         </DataTable>
-      </ComponentCard>
+        </div>
+      </div>
 
       <Dialog
         visible={!!editEntity}
@@ -226,19 +236,19 @@ const EntityTable = () => {
         onHide={() => setEditEntity(null)}
       >
         <form onSubmit={handleUpdate} className="p-4 space-y-4">
-          <div className="p-field">
-            <label htmlFor="editName" className="block mb-2 font-bold">
-        {t('entity_name')}
+          <div className="form-group">
+            <label htmlFor="editName" className="form-label">
+              {t('entity_name')}
             </label>
             <InputText
               id="editName"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
               placeholder="Entrez le nom de l'entité"
-              className="w-full"
+              className="form-input"
               disabled={editLoading}
             />
-            {editError && <p className="text-red-600 mt-2">{editError}</p>}
+            {editError && <p className="error-message mt-2">{editError}</p>}
           </div>
           <div className="flex justify-end gap-2">
             <Button

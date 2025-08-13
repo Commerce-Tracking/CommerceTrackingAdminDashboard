@@ -123,11 +123,17 @@ const AddLocality = () => {
   };
 
   return (
-    <div className="p-4">
-      <ComponentCard title={t('add_locality')}>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">Ajouter une Localité</h1>
+        <p className="page-subtitle">Créer une nouvelle localité dans le système</p>
+      </div>
+      
+      <div className="form-container">
+        <h2 className="form-title">{t('add_locality')}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="p-field">
-            <label htmlFor="name" className="block mb-2 font-bold">
+          <div className="form-group">
+            <label htmlFor="name" className="form-label">
             {t('lacality_name')}
             </label>
             <InputText
@@ -136,7 +142,7 @@ const AddLocality = () => {
               value={form.name}
               onChange={handleChange}
               placeholder={t('enter_locality_name')}
-              className="w-full"
+              className="form-input"
               disabled={loading}
             />
           </div>
@@ -174,8 +180,8 @@ const AddLocality = () => {
             />
           </div>
         </form>
-      </ComponentCard>
-      <Toast ref={toast} position="bottom-right" />
+        <Toast ref={toast} position="bottom-right" />
+      </div>
     </div>
   );
 };

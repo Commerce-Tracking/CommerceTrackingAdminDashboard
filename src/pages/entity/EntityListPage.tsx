@@ -21,7 +21,11 @@ const  EntityListPage = () => {
         description="Consulter la liste des entités pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t('entity_list')} />
-      <div className="p-4">
+      <div className="page-container">
+        <div className="page-header">
+          <h1 className="page-title">Gestion des Entités</h1>
+          <p className="page-subtitle">Liste et gestion des entités de service</p>
+        </div>
         <EntityTable />
       </div>
     </>

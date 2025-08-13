@@ -8,9 +8,9 @@ export default function LineChartOne() {
       position: "top",
       horizontalAlign: "left",
     },
-    colors: ["#465FFF", "#9CB9FF"], // Define line colors
+    colors: ["#1A6C30", "#00277F"], // Define line colors - Vert principal et Bleu
     chart: {
-      fontFamily: "Outfit, sans-serif",
+      fontFamily: "DM Sans, sans-serif",
       height: 310,
       type: "line", // Set the chart type to 'line'
       toolbar: {
@@ -88,7 +88,7 @@ export default function LineChartOne() {
       labels: {
         style: {
           fontSize: "12px", // Adjust font size for y-axis labels
-          colors: ["#6B7280"], // Color of the labels
+          colors: ["#6f7c86"], // Color of the labels - Gris de la nouvelle palette
         },
       },
       title: {

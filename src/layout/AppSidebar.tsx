@@ -214,7 +214,7 @@ const AppSidebar: React.FC = () => {
   const renderMenuSection = (label: string, items: NavItem[], menuType: typeof openSubmenu["type"]) => (
     <div>
       <h2
-        className={`mb-4 text-xs uppercase flex leading-[20px] text-black w-[290px] dark:text-white ${
+        className={`sidebar-section-title mb-4 w-[290px] ${
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         }`}
       >
@@ -238,10 +238,10 @@ const AppSidebar: React.FC = () => {
           {nav.subItems ? (
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group ${
+              className={`sidebar-menu-item group ${
                 openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
+                  ? "sidebar-menu-item-active"
+                  : "sidebar-menu-item-inactive"
               } cursor-pointer ${
                 !isExpanded && !isHovered
                   ? "lg:justify-center"
@@ -257,8 +257,8 @@ const AppSidebar: React.FC = () => {
                   className={`ml-auto w-5 h-5 transition-transform duration-200 ${
                     openSubmenu?.type === menuType &&
                     openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
+                      ? "rotate-180 text-brand-500 dark:text-brand-400"
+                      : "text-gray-500 dark:text-gray-400"
                   }`}
                 />
               )}
@@ -267,11 +267,11 @@ const AppSidebar: React.FC = () => {
             nav.path && (
               <Link
                 to={nav.path}
-                className={`menu-item group ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
+                className={`sidebar-menu-item group ${
+                  isActive(nav.path) ? "sidebar-menu-item-active" : "sidebar-menu-item-inactive"
                 }`}
               >
-                <span className="menu-item-icon-size">{nav.icon}</span>
+                <span className="sidebar-icon-size">{nav.icon}</span>
                 {(isExpanded || isHovered || isMobileOpen) && (
                   <span className="menu-item-text">{nav.name}</span>
                 )}
@@ -285,7 +285,7 @@ const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 ${
+      className={`sidebar-container fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 text-gray-800 dark:text-gray-200 h-screen transition-all duration-300 ease-in-out z-50 ${
         isExpanded || isMobileOpen
           ? "w-[290px]"
           : isHovered
@@ -297,7 +297,7 @@ const AppSidebar: React.FC = () => {
     >
       <div
         className={`pt-6 pb-3 flex ${
-          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+          !isExpanded && !isHovered ? "lg:justify-center lg:items-center" : "justify-start"
         }`}
       >
         <Link to="/">
@@ -305,32 +305,33 @@ const AppSidebar: React.FC = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/images/logo/logo.png"
+                src="/images/logo/Plan de travail 1.png"
                 alt="Logo"
-                width={200}
+                width={120}
                 height={30}
               />
               <img
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.png"
+                src="/images/logo/Plan de travail 1.svg"
                 alt="Logo"
-                width={200}
+                width={150}
                 height={30}
               />
             </>
           ) : (
             <img
-              src="/images/logo/logo-icon.png"
+              src="/images/logo/Plan de travail 1.png"
               alt="Logo"
-              width={60}
-              height={60}
+              width={50}
+              height={50}
+              className="mx-auto"
             />
           )}
         </Link>
       </div>
 
-      <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
-        <nav className="mb-6">
+      <div className="sidebar-nav flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+        <nav className="sidebar-menu-group">
           <div className="flex flex-col gap-4">
             {renderMenuSection("dashboard", dashboardItems, "dashboard")}
             {renderMenuSection("complaints_management", navItems, "complaints")}

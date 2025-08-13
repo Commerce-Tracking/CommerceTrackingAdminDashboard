@@ -99,11 +99,11 @@ export default function DefaultInputs() {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <circle cx="6.25" cy="10" r="5.625" fill="#E80B26" />
-                <circle cx="13.75" cy="10" r="5.625" fill="#F59D31" />
+                <circle cx="6.25" cy="10" r="5.625" fill="#1A6C30" />
+                <circle cx="13.75" cy="10" r="5.625" fill="#FFC200" />
                 <path
                   d="M10 14.1924C11.1508 13.1625 11.875 11.6657 11.875 9.99979C11.875 8.33383 11.1508 6.8371 10 5.80713C8.84918 6.8371 8.125 8.33383 8.125 9.99979C8.125 11.6657 8.84918 13.1625 10 14.1924Z"
-                  fill="#FC6020"
+                  fill="#00277F"
                 />
               </svg>
             </span>

@@ -44,9 +44,9 @@ export default function MonthlyTarget() {
   const series = [Number(resolvedPercentage)];
 
   const options: ApexOptions = {
-    colors: ["#26a08d"],
+    colors: ["#1A6C30"], // Vert principal de la nouvelle charte
     chart: {
-      fontFamily: "Outfit, sans-serif",
+      fontFamily: "DM Sans, sans-serif",
       type: "radialBar",
       height: 330,
       sparkline: {
@@ -61,7 +61,7 @@ export default function MonthlyTarget() {
           size: "80%",
         },
         track: {
-          background: "#E4E7EC",
+          background: "#e1e5ea", // Gris clair de la nouvelle palette
           strokeWidth: "100%",
           margin: 5,
         },
@@ -73,7 +73,7 @@ export default function MonthlyTarget() {
             fontSize: "36px",
             fontWeight: "600",
             offsetY: -40,
-            color: "#1D2939",
+            color: "#1b2e3b", // Gris sombre de la nouvelle palette
             formatter: function (val) {
               return val + "%";
             },
@@ -83,7 +83,7 @@ export default function MonthlyTarget() {
     },
     fill: {
       type: "solid",
-      colors: ["#26a08d"],
+      colors: ["#1A6C30"], // Vert principal de la nouvelle charte
     },
     stroke: {
       lineCap: "round",

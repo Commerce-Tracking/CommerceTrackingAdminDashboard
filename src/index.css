@@ -1,5 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap")
-layer(base);
+/* Polices DM Sans chargées localement via index.html */
 
 @import "tailwindcss";
 @import "primeicons/primeicons.css";
@@ -8,7 +7,7 @@ layer(base);
 
 @theme {
   --font-*: initial;
-  --font-outfit: Outfit, sans-serif;
+  --font-dm-sans: "DM Sans", sans-serif;
 
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;
@@ -40,59 +39,91 @@ layer(base);
   --color-current: currentColor;
   --color-transparent: transparent;
   --color-white: #ffffff;
-  --color-black: #070707; /* Noir profond de la charte */
+  --color-black: #000000;
 
-  /* 🎯 BLEU — Couleur principale */
-  --color-brand-25: #e0f4ff; /* Blanc clair avec 65% de bleu */
-  --color-brand-50: #c0e8ff; /* Blanc moyen avec 65% de bleu */
-  --color-brand-100: #a9dcff; /* Blanc légèrement plus foncé avec 65% de bleu */
-  --color-brand-200: #7fcfff; /* Bleu clair */
-  --color-brand-300: #4dbfff; /* Bleu moyenne intensité */
-  --color-brand-400: #26aaff; /* Bleu plus intense */
-  --color-brand-500: #0096ff; /* Bleu principal */
-  --color-brand-600: #007acc; /* Bleu foncé */
-  --color-brand-700: #0066b3; /* Bleu très foncé */
-  --color-brand-800: #005299; /* Bleu profond */
-  --color-brand-900: #003d80; /* Bleu sombre */
-  --color-brand-950: #002b5c; /* Bleu nuit */
+  /* 🎯 VERT — Couleur principale #1A6C30 */
+  --color-brand-25: #f0f7f2; /* Vert très clair */
+  --color-brand-50: #e1f0e6; /* Vert clair */
+  --color-brand-100: #c3e1cd; /* Vert pâle */
+  --color-brand-200: #a7d2b5; /* Vert doux */
+  --color-brand-300: #8bc39d; /* Vert moyen */
+  --color-brand-400: #6fb485; /* Vert plus intense */
+  --color-brand-500: #1A6C30; /* Vert principal */
+  --color-brand-600: #155a28; /* Vert foncé */
+  --color-brand-700: #104820; /* Vert très foncé */
+  --color-brand-800: #0c3618; /* Vert profond */
+  --color-brand-900: #082410; /* Vert sombre */
+  --color-brand-950: #041208; /* Vert nuit */
 
-  /* 🟩 VERT — Couleur secondaire (35 %) */
-  --color-success-25: #f0fbf4; /* Vert très clair */
-  --color-success-50: #def6e5; /* Vert léger */
-  --color-success-100: #c5efcf; /* Vert pâle */
-  --color-success-200: #a3e6be;
-  --color-success-300: #6ee7b7;
-  --color-success-400: #34d399;
-  --color-success-500: #10b981; /* Vert vif */
-  --color-success-600: #059669; /* Vert foncé */
-  --color-success-700: #065f46; /* Vert forêt */
-  --color-success-800: #064e3b; /* Vert profond */
-  --color-success-900: #063d2a; /* Vert très sombre */
-  --color-success-950: #042b21; /* Vert nuit */
+  /* 🟡 JAUNE — Couleur secondaire #FFC200 */
+  --color-warning-25: #fffbf0; /* Jaune très clair */
+  --color-warning-50: #fff7e1; /* Jaune clair */
+  --color-warning-100: #ffefc3; /* Jaune pâle */
+  --color-warning-200: #ffe7a7; /* Jaune doux */
+  --color-warning-300: #ffdf8b; /* Jaune moyen */
+  --color-warning-400: #ffd76f; /* Jaune plus intense */
+  --color-warning-500: #FFC200; /* Jaune principal */
+  --color-warning-600: #e6ae00; /* Jaune foncé */
+  --color-warning-700: #cc9a00; /* Jaune très foncé */
+  --color-warning-800: #b38600; /* Jaune profond */
+  --color-warning-900: #997200; /* Jaune sombre */
+  --color-warning-950: #805e00; /* Jaune nuit */
 
-  /* 🔵 BLEU — Palette alternative si nécessaire */
-  --color-blue-light-500: #0096ff; /* Bleu vif principal */
-  --color-blue-light-600: #007acc; /* Bleu foncé */
-  --color-blue-light-700: #0066b3; /* Bleu très foncé */
-  --color-blue-light-800: #005299; /* Bleu profond */
-  --color-blue-light-900: #003d80; /* Bleu sombre */
-  --color-blue-light-950: #002b5c; /* Bleu nuit */
+  /* 🔵 BLEU — Couleur tertiaire #00277F */
+  --color-info-25: #f0f2f7; /* Bleu très clair */
+  --color-info-50: #e1e5f0; /* Bleu clair */
+  --color-info-100: #c3cae1; /* Bleu pâle */
+  --color-info-200: #a7b0d2; /* Bleu doux */
+  --color-info-300: #8b96c3; /* Bleu moyen */
+  --color-info-400: #6f7cb4; /* Bleu plus intense */
+  --color-info-500: #00277F; /* Bleu principal */
+  --color-info-600: #00206b; /* Bleu foncé */
+  --color-info-700: #001957; /* Bleu très foncé */
+  --color-info-800: #001243; /* Bleu profond */
+  --color-info-900: #000c2f; /* Bleu sombre */
+  --color-info-950: #00061b; /* Bleu nuit */
 
-  /* ⚫ GRIS FONCÉS — mix BLEU (#0023a0, 65%) et VERT (#009640, 35%) */
-  --color-gray-100: #e5ecfa;  /* bleu très clair */
-  --color-gray-200: #c8daf6;  /* bleu clair */
-  --color-gray-300: #aad5c2;  /* vert clair mélangé */
-  --color-gray-400: #86b1ec;  /* bleu adouci */
-  --color-gray-500: #000000;  /* vert doux intermédiaire */
-  --color-gray-600: #3b75d1;  /* bleu moyen */
-  --color-gray-700: #000000;  /* vert intermédiaire foncé */
-  --color-gray-800: #1b3f91;  /* bleu profond */
-  --color-gray-900: #123d2a;  /* vert profond */
-  --color-gray-950: #081c4f;  /* presque noir bleu */
-  --color-gray-dark: #0023a0; /* couleur bleue dominante du logo */
+  /* 🟩 VERT — Couleur de succès (variation du vert principal) */
+  --color-success-25: #f0f7f2; /* Vert très clair */
+  --color-success-50: #e1f0e6; /* Vert clair */
+  --color-success-100: #c3e1cd; /* Vert pâle */
+  --color-success-200: #a7d2b5; /* Vert doux */
+  --color-success-300: #8bc39d; /* Vert moyen */
+  --color-success-400: #6fb485; /* Vert plus intense */
+  --color-success-500: #1A6C30; /* Vert vif */
+  --color-success-600: #155a28; /* Vert foncé */
+  --color-success-700: #104820; /* Vert forêt */
+  --color-success-800: #0c3618; /* Vert profond */
+  --color-success-900: #082410; /* Vert très sombre */
+  --color-success-950: #041208; /* Vert nuit */
 
+  /* 🔵 BLEU — Palette alternative (variation du bleu principal) */
+  --color-blue-light-25: #f0f2f7; /* Bleu très clair */
+  --color-blue-light-50: #e1e5f0; /* Bleu clair */
+  --color-blue-light-100: #c3cae1; /* Bleu pâle */
+  --color-blue-light-200: #a7b0d2; /* Bleu doux */
+  --color-blue-light-300: #8b96c3; /* Bleu moyen */
+  --color-blue-light-400: #6f7cb4; /* Bleu plus intense */
+  --color-blue-light-500: #00277F; /* Bleu vif principal */
+  --color-blue-light-600: #00206b; /* Bleu foncé */
+  --color-blue-light-700: #001957; /* Bleu très foncé */
+  --color-blue-light-800: #001243; /* Bleu profond */
+  --color-blue-light-900: #000c2f; /* Bleu sombre */
+  --color-blue-light-950: #00061b; /* Bleu nuit */
 
-  /* ❌ Couleurs erreur (inchangées sauf si tu veux les adapter) */
+  /* ⚫ GRIS — Mélange des couleurs principales */
+  --color-gray-100: #f0f2f5;  /* gris très clair */
+  --color-gray-200: #e1e5ea;  /* gris clair */
+  --color-gray-300: #c3c9d1;  /* gris moyen clair */
+  --color-gray-400: #a7b0b8;  /* gris moyen */
+  --color-gray-500: #8b969f;  /* gris intermédiaire */
+  --color-gray-600: #6f7c86;  /* gris moyen foncé */
+  --color-gray-700: #53626d;  /* gris foncé */
+  --color-gray-800: #374854;  /* gris très foncé */
+  --color-gray-900: #1b2e3b;  /* gris sombre */
+  --color-gray-950: #0d171f;  /* presque noir */
+
+  /* ❌ Couleurs erreur (conservées pour la cohérence) */
   --color-error-25: #fffbfa;
   --color-error-50: #fef3f2;
   --color-error-100: #fee4e2;
@@ -118,8 +149,8 @@ layer(base);
   --shadow-theme-xs: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
   --shadow-theme-xl: 0px 20px 24px -4px rgba(16, 24, 40, 0.08),
   0px 8px 8px -4px rgba(16, 24, 40, 0.03);
-  --shadow-datepicker: -5px 0 0 #262d3c, 5px 0 0 #262d3c;
-  --shadow-focus-ring: 0px 0px 0px 4px rgba(70, 95, 255, 0.12);
+  --shadow-datepicker: -5px 0 0 #374854, 5px 0 0 #374854; /* Gris très foncé de la nouvelle palette */
+  --shadow-focus-ring: 0px 0px 0px 4px rgba(26, 108, 48, 0.12);
   --shadow-slider-navigation: 0px 1px 2px 0px rgba(16, 24, 40, 0.1),
   0px 1px 3px 0px rgba(16, 24, 40, 0.1);
   --shadow-tooltip: 0px 4px 6px -2px rgba(16, 24, 40, 0.05),
@@ -158,7 +189,7 @@ layer(base);
     cursor: pointer;
   }
   body {
-    @apply relative font-normal font-outfit z-1 bg-gray-50;
+    @apply relative font-normal font-dm-sans z-1 bg-gray-50;
   }
 }
 
@@ -167,24 +198,24 @@ layer(base);
 }
 
 @utility menu-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.15] dark:text-brand-400 font-medium;
 }
 
 @utility menu-item-inactive {
-  @apply text-gray-700 hover:bg-gray-100 group-hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
+  @apply text-gray-700 hover:bg-gray-100 group-hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300 font-normal;
 }
 
 @utility menu-item-icon {
-  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400;
+  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 transition-colors duration-200;
 }
 
 @utility menu-item-icon-active {
-  @apply text-brand-500 dark:text-brand-400;
+  @apply text-brand-500 dark:text-brand-400 transition-colors duration-200;
 }
 
 @utility menu-item-icon-size {
   & svg {
-    @apply size-6!;
+    @apply size-6! transition-all duration-200;
   }
 }
 
@@ -209,7 +240,7 @@ layer(base);
 }
 
 @utility menu-dropdown-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.15] dark:text-brand-400 font-medium;
 }
 
 @utility menu-dropdown-item-inactive {
@@ -249,7 +280,172 @@ layer(base);
   }
 }
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #344054;
+  background-color: #53626d; /* Gris foncé de la nouvelle palette */
+}
+
+/* Styles spécifiques pour la sidebar */
+.sidebar-section-title {
+  @apply text-xs uppercase font-medium text-gray-700 dark:text-gray-300 leading-[20px] font-dm-sans;
+}
+
+.sidebar-menu-item {
+  @apply relative flex items-center w-full gap-3 px-3 py-2.5 font-medium rounded-lg text-theme-sm transition-all duration-200;
+}
+
+.sidebar-menu-item:hover {
+  @apply transform scale-[1.02];
+}
+
+.sidebar-menu-item-active {
+  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.15] dark:text-brand-400 border-l-2 border-brand-500;
+}
+
+.sidebar-menu-item-inactive {
+  @apply text-gray-700 hover:bg-gray-100 group-hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
+}
+
+.sidebar-icon {
+  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 transition-colors duration-200;
+}
+
+.sidebar-icon-active {
+  @apply text-brand-500 dark:text-brand-400;
+}
+
+.sidebar-icon-size {
+  & svg {
+    @apply size-6 transition-all duration-200;
+  }
+}
+
+/* Amélioration de l'apparence de la sidebar */
+.sidebar-container {
+  @apply bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700;
+}
+
+.sidebar-logo-container {
+  @apply flex items-center justify-center py-6 border-b border-gray-100 dark:border-gray-800;
+}
+
+.sidebar-nav {
+  @apply flex flex-col gap-2 py-4;
+}
+
+.sidebar-menu-group {
+  @apply mb-6;
+}
+
+.sidebar-menu-group-title {
+  @apply text-xs uppercase font-medium text-gray-700 dark:text-gray-300 mb-4 px-3 font-dm-sans tracking-wide;
+}
+
+/* Styles pour les interfaces des sous-menus */
+.page-container {
+  @apply min-h-screen bg-gray-50 dark:bg-gray-900 p-6 font-dm-sans;
+}
+
+.page-header {
+  @apply mb-8;
+}
+
+.page-title {
+  @apply text-3xl font-bold text-gray-900 dark:text-white mb-2 font-dm-sans;
+}
+
+.page-subtitle {
+  @apply text-lg text-gray-600 dark:text-gray-400 font-medium;
+}
+
+.content-card {
+  @apply bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm;
+}
+
+.content-card-header {
+  @apply px-6 py-4 border-b border-gray-200 dark:border-gray-700;
+}
+
+.content-card-title {
+  @apply text-xl font-semibold text-gray-900 dark:text-white font-dm-sans;
+}
+
+.content-card-body {
+  @apply p-6;
+}
+
+/* Styles pour les tableaux */
+.data-table-container {
+  @apply bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden;
+}
+
+.data-table-header {
+  @apply bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-700;
+}
+
+.data-table-title {
+  @apply text-lg font-semibold text-gray-900 dark:text-white font-dm-sans;
+}
+
+/* Styles pour les boutons */
+.btn-primary {
+  @apply bg-brand-500 hover:bg-brand-600 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 font-dm-sans;
+}
+
+.btn-secondary {
+  @apply bg-info-500 hover:bg-info-600 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 font-dm-sans;
+}
+
+.btn-warning {
+  @apply bg-warning-500 hover:bg-warning-600 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 font-dm-sans;
+}
+
+.btn-outline {
+  @apply bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 font-dm-sans;
+}
+
+/* Styles pour les formulaires */
+.form-container {
+  @apply bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6;
+}
+
+.form-title {
+  @apply text-xl font-semibold text-gray-900 dark:text-white mb-6 font-dm-sans;
+}
+
+.form-group {
+  @apply mb-4;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-dm-sans;
+}
+
+.form-input {
+  @apply w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-colors duration-200 font-dm-sans;
+}
+
+.form-select {
+  @apply w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-colors duration-200 font-dm-sans;
+}
+
+/* Styles pour les messages et notifications */
+.toast-container {
+  @apply fixed top-4 right-4 z-50;
+}
+
+.success-message {
+  @apply bg-brand-50 border border-brand-200 text-brand-700 px-4 py-3 rounded-lg;
+}
+
+.error-message {
+  @apply bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-lg;
+}
+
+.warning-message {
+  @apply bg-warning-50 border border-warning-200 text-warning-700 px-4 py-3 rounded-lg;
+}
+
+.info-message {
+  @apply bg-info-50 border border-info-200 text-info-700 px-4 py-3 rounded-lg;
 }
 
 @layer utilities {
@@ -366,7 +562,7 @@ layer(base);
   @apply w-full;
 }
 .flatpickr-calendar {
-  @apply mt-2 bg-white! rounded-xl! p-5! border! border-gray-200! text-gray-500! dark:bg-gray-dark! dark:text-gray-400! dark:shadow-theme-xl! 2xsm:w-auto!;
+  @apply mt-2 bg-white! rounded-xl! p-5! border! border-gray-200! text-gray-500! dark:bg-gray-900! dark:text-gray-400! dark:shadow-theme-xl! 2xsm:w-auto!;
 }
 
 .flatpickr-months .flatpickr-prev-month:hover svg,
@@ -448,7 +644,7 @@ span.flatpickr-weekday,
   @apply bg-none!;
 }
 .flatpickr-day.inRange {
-  box-shadow: -5px 0 0 #f9fafb, 5px 0 0 #f9fafb !important;
+  box-shadow: -5px 0 0 #f0f2f5, 5px 0 0 #f0f2f5 !important; /* Gris très clair de la nouvelle palette */
   @apply dark:shadow-datepicker!;
 }
 .flatpickr-day.inRange,
@@ -489,13 +685,13 @@ span.flatpickr-weekday,
 .flatpickr-day.selected.nextMonthDay,
 .flatpickr-day.startRange.nextMonthDay,
 .flatpickr-day.endRange.nextMonthDay {
-  background: #465fff;
+  background: #00277F; /* Bleu principal de la nouvelle charte */
   @apply border-brand-500! bg-brand-500! hover:border-brand-500! hover:bg-brand-500!;
 }
 .flatpickr-day.selected.startRange + .endRange:not(:nth-child(7n + 1)),
 .flatpickr-day.startRange.startRange + .endRange:not(:nth-child(7n + 1)),
 .flatpickr-day.endRange.startRange + .endRange:not(:nth-child(7n + 1)) {
-  box-shadow: -10px 0 0 #465fff;
+  box-shadow: -10px 0 0 #00277F; /* Bleu principal de la nouvelle charte */
 }
 
 .flatpickr-months .flatpickr-prev-month svg,
