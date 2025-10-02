@@ -197,7 +197,7 @@ export default function ReportsTableOne(
                     label="Fermer"
                     icon="pi pi-times"
                     onClick={() => setVisible(false)}
-                    className="px-3 py-1 text-sm text-white bg-gray-500 hover:bg-gray-600 rounded"
+                    className="px-3 py-1 text-sm text-white bg-blue-900 rounded"
                 />
               </div>
             }

@@ -111,7 +111,7 @@ export default function MonthlyTarget() {
         <div className="flex justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-              Bilan des plaintes
+              Bilan des collectes
             </h3>
           </div>
           <div className="relative inline-block">
@@ -139,13 +139,13 @@ export default function MonthlyTarget() {
           </span>
         </div>
         <p className="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
-          Vous avez traité {stats.totalResolved} plaintes, continuez votre bon travail!
+          Vous avez traité {stats.totalResolved} collectes, continuez votre bon travail!
         </p>
       </div>
       <div className="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5">
         <div>
           <p className="mb-1 text-center text-gray-800 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Plaintes totales
+            Collectes totales
           </p>
           <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
             {stats.totalComplaints}
@@ -154,7 +154,7 @@ export default function MonthlyTarget() {
         <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
         <div>
           <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Plaintes résolues
+            Collectes résolues
           </p>
           <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
             {stats.totalResolved}
@@ -177,7 +177,7 @@ export default function MonthlyTarget() {
         <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
         <div>
           <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Plaintes non résolues
+            Collectes non résolues
           </p>
           <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
             {stats.totalUnresolved}

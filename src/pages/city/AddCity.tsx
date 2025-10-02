@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import axiosInstance from "../../api/axios";
@@ -10,31 +10,27 @@ import Label from "../../components/form/Label";
 import Button from "../../components/ui/button/Button";
 import { useTranslation } from "react-i18next";
 
-interface Currency {
+interface Country {
   id: number;
   name: string;
-  code: string;
-  symbol: string;
+  iso: string;
   status: string;
 }
 
-const AddPays = () => {
+const AddCity = () => {
   const [formData, setFormData] = useState({
     name: "",
-    iso: "",
-    prefix: "",
-    currency_id: "",
-    status: "active",
+    country_id: "",
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [currencies, setCurrencies] = useState<Currency[]>([]);
-  const [currenciesLoading, setCurrenciesLoading] = useState<boolean>(true);
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [countriesLoading, setCountriesLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Récupérer la liste des devises
-  const fetchCurrencies = async () => {
+  // Récupérer la liste des pays
+  const fetchCountries = async () => {
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) {
@@ -45,7 +41,7 @@ const AddPays = () => {
       }
 
       const response = await axiosInstance.get(
-        "/admin/reference-data/currencies?page=1&limit=100",
+        "/admin/reference-data/countries?page=1&limit=100",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -54,20 +50,20 @@ const AddPays = () => {
       );
 
       if (response.data.success) {
-        setCurrencies(response.data.result.data || []);
+        setCountries(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des devises:", err);
+      console.error("Erreur lors du chargement des pays:", err);
       toast.error(t("error"), {
-        description: "Erreur lors du chargement des devises",
+        description: "Erreur lors du chargement des pays",
       });
     } finally {
-      setCurrenciesLoading(false);
+      setCountriesLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCurrencies();
+    fetchCountries();
   }, []);
 
   const handleInputChange = (
@@ -82,19 +78,11 @@ const AddPays = () => {
 
   const validateForm = () => {
     if (!formData.name.trim()) {
-      setError(t("country_name") + " " + t("is_required"));
+      setError(t("city_name") + " " + t("is_required"));
       return false;
     }
-    if (!formData.iso.trim()) {
-      setError(t("country_iso") + " " + t("is_required"));
-      return false;
-    }
-    if (!formData.prefix.trim()) {
-      setError(t("country_prefix") + " " + t("is_required"));
-      return false;
-    }
-    if (!formData.currency_id) {
-      setError(t("country_currency") + " " + t("is_required"));
+    if (!formData.country_id) {
+      setError(t("city_country") + " " + t("is_required"));
       return false;
     }
     return true;
@@ -117,7 +105,7 @@ const AddPays = () => {
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) {
-        setError("Vous devez être connecté pour ajouter un pays.");
+        setError("Vous devez être connecté pour ajouter une ville.");
         toast.error(t("auth_error"), {
           description:
             "Aucun token d'authentification trouvé. Redirection vers la connexion...",
@@ -127,10 +115,10 @@ const AddPays = () => {
       }
 
       const response = await axiosInstance.post(
-        "/admin/reference-data/countries",
+        "/admin/reference-data/cities",
         {
           ...formData,
-          currency_id: parseInt(formData.currency_id),
+          country_id: parseInt(formData.country_id),
         },
         {
           headers: {
@@ -141,20 +129,17 @@ const AddPays = () => {
 
       console.log("Réponse API :", response.data);
       toast.success(t("success"), {
-        description: response.data.message || t("country_created_successfully"),
+        description: response.data.message || t("city_created_successfully"),
       });
 
       // Reset form
       setFormData({
         name: "",
-        iso: "",
-        prefix: "",
-        currency_id: "",
-        status: "active",
+        country_id: "",
       });
     } catch (err: any) {
       console.error("Erreur API :", err);
-      let errorMessage = "Erreur lors de l'ajout du pays.";
+      let errorMessage = "Erreur lors de l'ajout de la ville.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage =
           "Token invalide ou non autorisé. Veuillez vous reconnecter.";
@@ -178,97 +163,47 @@ const AddPays = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter un pays"
-        description="Ajouter un nouveau pays pour Opération Fluidité Routière Agro-bétail"
+        title="OFR | Ajouter une ville"
+        description="Ajouter une nouvelle ville pour Opération Fluidité Routière Agro-bétail"
       />
-      <PageBreadcrumb pageTitle={t("add_country")} />
+      <PageBreadcrumb pageTitle={t("add_city")} />
       <div className="space-y-6 p-4">
-        <ComponentCard title={t("country_form_title")}>
+        <ComponentCard title={t("city_form_title")}>
           <form onSubmit={handleSubmit} className="p-4 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Nom du pays */}
+              {/* Nom de la ville */}
               <div>
                 <Label>
-                  {t("country_name")} <span className="text-error-500">*</span>
+                  {t("city_name")} <span className="text-error-500">*</span>
                 </Label>
                 <Input
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  placeholder={t("enter_country_name")}
+                  placeholder={t("enter_city_name")}
                   className="w-full"
                   disabled={loading}
                 />
               </div>
 
-              {/* Code ISO */}
+              {/* Pays */}
               <div>
                 <Label>
-                  {t("country_iso")} <span className="text-error-500">*</span>
-                </Label>
-                <Input
-                  name="iso"
-                  value={formData.iso}
-                  onChange={handleInputChange}
-                  placeholder={t("enter_country_iso")}
-                  className="w-full"
-                  disabled={loading}
-                />
-              </div>
-
-              {/* Préfixe téléphonique */}
-              <div>
-                <Label>
-                  {t("country_prefix")}{" "}
-                  <span className="text-error-500">*</span>
-                </Label>
-                <Input
-                  name="prefix"
-                  value={formData.prefix}
-                  onChange={handleInputChange}
-                  placeholder={t("enter_country_prefix")}
-                  className="w-full"
-                  disabled={loading}
-                />
-              </div>
-
-              {/* Devise */}
-              <div>
-                <Label>
-                  {t("country_currency")}{" "}
-                  <span className="text-error-500">*</span>
+                  {t("city_country")} <span className="text-error-500">*</span>
                 </Label>
                 <select
-                  name="currency_id"
-                  value={formData.currency_id}
+                  name="country_id"
+                  value={formData.country_id}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                  disabled={loading || currenciesLoading}
+                  disabled={loading || countriesLoading}
                 >
-                  <option value="">{t("select_currency")}</option>
-                  {currencies.map((currency) => (
-                    <option key={currency.id} value={currency.id}>
-                      {currency.name} ({currency.code})
+                  <option value="">{t("select_country")}</option>
+                  {countries.map((country) => (
+                    <option key={country.id} value={country.id}>
+                      {country.name} ({country.iso})
                     </option>
                   ))}
-                </select>
-              </div>
-
-              {/* Statut */}
-              <div>
-                <Label>
-                  {t("country_status")}{" "}
-                  <span className="text-error-500">*</span>
-                </Label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                  disabled={loading}
-                >
-                  <option value="active">{t("active")}</option>
-                  <option value="inactive">{t("inactive")}</option>
                 </select>
               </div>
             </div>
@@ -309,4 +244,4 @@ const AddPays = () => {
   );
 };
 
-export default AddPays;
+export default AddCity;

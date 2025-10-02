@@ -22,10 +22,10 @@ const  EntityListPage = () => {
       />
       <PageBreadcrumb pageTitle={t('entity_list')} />
       <div className="page-container">
-        <div className="page-header">
+        {/* <div className="page-header">
           <h1 className="page-title">Gestion des Entités</h1>
           <p className="page-subtitle">Liste et gestion des entités de service</p>
-        </div>
+        </div> */}
         <EntityTable />
       </div>
     </>

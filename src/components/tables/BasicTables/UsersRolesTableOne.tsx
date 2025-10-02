@@ -132,7 +132,7 @@ export default function UsersRolesTableOne() {
                   <TableCell className="px-4 py-3 text-start">
                     <button
                       onClick={() => handleViewDetails(role)}
-                      className="px-3 py-1 text-sm text-white bg-blue-900 rounded"
+                      className="px-3 py-1 text-sm text-white bg-green-600 rounded"
                     >
                       Voir détails
                     </button>

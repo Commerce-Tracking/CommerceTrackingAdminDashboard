@@ -118,7 +118,8 @@ export default function ComplaintsTableOne({
         return (
             <Button
                 label={t('see_details')}
-                className="p-button-sm p-button-primary"
+                unstyled
+                className="px-3 py-1 text-sm text-white bg-green-600 rounded"
                 onClick={() => {
                     setSelectedComplaint(rowData);
                     setVisible(true);
@@ -247,7 +248,7 @@ export default function ComplaintsTableOne({
                 onHide={() => setVisible(false)}
                 footer={
                     <div>
-                        <Button label="Fermer" icon="pi pi-times" onClick={() => setVisible(false)} className="px-3 py-1 text-sm text-white bg-gray-500 rounded hover:bg-gray-600" />
+                        <Button label="Fermer" icon="pi pi-times" onClick={() => setVisible(false)} unstyled className="px-3 py-1 text-sm text-white bg-blue-900 rounded " />
                     </div>
                 }
             >

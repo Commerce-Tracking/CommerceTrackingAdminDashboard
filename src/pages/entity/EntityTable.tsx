@@ -184,10 +184,10 @@ const EntityTable = () => {
 
   return (
     <div className="page-container">
-      <div className="page-header">
+      {/* <div className="page-header">
         <h1 className="page-title">Gestion des Entités</h1>
         <p className="page-subtitle">Liste et gestion des entités de service</p>
-      </div>
+      </div> */}
       
       <div className="content-card">
         <div className="content-card-header">
@@ -254,7 +254,8 @@ const EntityTable = () => {
             <Button
               label={t('cancel')}
               icon="pi pi-times"
-              className="p-button-secondary"
+                unstyled
+              className="px-3 py-1 text-sm text-white bg-blue-900 rounded"
               onClick={() => setEditEntity(null)}
               disabled={editLoading}
             />
@@ -262,7 +263,8 @@ const EntityTable = () => {
               label={t('save')}
               icon="pi pi-check"
               type="submit"
-              className="p-button-primary"
+              unstyled
+              className="px-3 py-1 text-sm text-white bg-green-600 rounded"
               disabled={editLoading || !editName.trim()}
               loading={editLoading}
             />

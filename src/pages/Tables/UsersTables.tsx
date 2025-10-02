@@ -4,10 +4,6 @@ import PageMeta from "../../components/common/PageMeta";
 import UsersTableOne from "../../components/tables/BasicTables/UsersTableOne.tsx";
 import {useTranslation} from "react-i18next";
 
-
-
- 
-
 export default function UsersTables() {
   const { t, i18n } = useTranslation();
           
@@ -20,9 +16,9 @@ export default function UsersTables() {
         title="OFR | Admin"
         description="Opération Fluidité Routière Agro-bétail"
       />
-      <PageBreadcrumb pageTitle={t('users')} />
+      <PageBreadcrumb pageTitle={t('collector')} />
       <div className="space-y-6">
-        <ComponentCard title={t('user_list')}>
+        <ComponentCard title={t('collector_list')}>
           <UsersTableOne />
         </ComponentCard>
       </div>

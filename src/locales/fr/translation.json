@@ -26,7 +26,7 @@
   "date": "Date",
   "date_creation": "Date de création",
   "details": "Détails",
-  "see_details": "voir",
+  "see_details": "Voir plus",
   "obstacle_details": "Détails de l'entrave",
   "complaint_date": "Date de la plainte",
   "complaint_time": "Heure de la plainte",
@@ -46,8 +46,8 @@
   "dashboard": "Tableau de bord",
 
   "obstacle_types": "Types des entraves",
-  "user_list": "Liste des utilisateurs",
-  "create_user": "Créer un utilisateur",
+  "collector_list": "Liste des collecteurs",
+  "create_collector": "Créer un collecteur",
   "role_management": "Gestion des rôles",
   "generate_reports": "Générer les rapports",
   "view_reports": "Visualiser les rapports",
@@ -56,31 +56,30 @@
   "add_entity": "Ajouter une entité",
   "country_list": "Liste des pays",
   "add_country": "Ajouter un pays",
-  "locality_list": "Liste des localités",
-  "add_locality": "Ajouter une localité",
+  "corridors_list": "Liste des corridors",
+  "add_corridors": "Ajouter un corridors",
   "transport_list": "Liste des transports",
   "content_center": "Centre de contenu",
   "preferences": "Préférences",
   "export_data": "Exporter les données",
   "customer_support": "Support client",
 
-  "complaints_management": "Gestion des plaintes",
+  "complaints_management": "Gestion des validations",
   "user_management": "Gestions des utilisateurs",
   "reporting": "Reporting",
   "entities_and_localities": "Entités & Localités",
   "transports": "Transports",
   "others": "Autres",
 
-  "users": "Utilisateurs",
+  "collector": "collecteurs",
 
   "phone": "Téléphone",
   "position": "Poste",
 
-
   "user_details": "Détails de l'utilisateur",
   "full_name": "Nom complet",
 
-  "add_user": "Ajouter un utilisateur",
+  "add_collector": "Ajouter un collecteur",
   "form_instruction": "Veuillez remplir ce formulaire",
   "first_name": "Prénom",
   "first_name_placeholder": "Prénom de l'utilisateur",
@@ -119,12 +118,6 @@
   "reporting_details": "Reporting details",
   "Attachements": "Attachements",
 
-
-
-
-  
-
-
   "loading_country": "Pays de chargement",
   "unloading_country": "Pays de déchargement",
   "actions": "Actions",
@@ -135,7 +128,7 @@
   "average_unit_price": "Prix unitaire moyen",
   "total_value": "Valeur totale",
   "loading_point": "Point de chargement",
-  
+
   "unloading_point": "Point de déchargement",
 
   "shipper": "Chargeur",
@@ -160,39 +153,116 @@
   "people_on_board": "Personnes à bord",
   "document_type": "Type de document",
   "document_reference": "Référence document",
-  
 
   "additional_passengers": "Passagers supplémentaires",
   "attachments": "Pièces jointes",
 
-
   "search_name": "Rechercher un nom",
 
-   "edit_entity": "Modifier l'entité",
+  "edit_entity": "Modifier l'entité",
   "entity_name": "Nom de l'entité",
-   "cancel": "Annuler",
+  "cancel": "Annuler",
   "save": "Enregistrer",
 
   "entity_form_title": "Formulaire d'ajout d'entité",
 
   "enter_entity_name": "Entrez le nom de l'entité",
   "edit_country": "Modifier le pays",
-  "country_name" : "Nom du pays",
-
+  "country_name": "Nom du pays",
 
   "country_form_title": "Formulaire d'ajout de pays",
+  "country_iso": "Code ISO du pays",
+  "enter_country_iso": "Entrez le code ISO (ex: CD, FR, US)",
+  "country_prefix": "Préfixe téléphonique",
+  "enter_country_prefix": "Entrez le préfixe téléphonique (ex: +228, +33)",
+  "country_flag": "Drapeau du pays",
+  "enter_country_flag": "Entrez l'emoji du drapeau (ex: 🇨🇩, 🇫🇷)",
+  "country_currency": "Devise du pays",
+  "select_currency": "Sélectionnez une devise",
+  "country_status": "Statut du pays",
+  "country_created_successfully": "Pays créé avec succès",
+  "no_countries_found": "Aucun pays trouvé",
+  "search_country": "Rechercher un pays",
+  "city_list": "Liste des villes",
+  "add_city": "Ajouter une ville",
+  "city_form_title": "Formulaire d'ajout de ville",
+  "city_name": "Nom de la ville",
+  "enter_city_name": "Entrez le nom de la ville",
+  "city_country": "Pays de la ville",
+  "select_country": "Sélectionnez un pays",
+  "city_created_successfully": "Ville créée avec succès",
+  "no_cities_found": "Aucune ville trouvée",
+  "search_city": "Rechercher une ville",
+  "edit_city": "Modifier la ville",
+  "corridor_form_title": "Formulaire d'ajout de corridor",
+  "corridor_name": "Nom du corridor",
+  "enter_corridor_name": "Entrez le nom du corridor",
+  "corridor_description": "Description du corridor",
+  "enter_corridor_description": "Entrez la description du corridor",
+  "corridor_country_start": "Pays de départ",
+  "corridor_country_end": "Pays d'arrivée",
+  "corridor_city_start": "Ville de départ",
+  "corridor_city_end": "Ville d'arrivée",
+  "corridor_distance": "Distance (km)",
+  "enter_corridor_distance": "Entrez la distance en km",
+  "corridor_checkpoints": "Nombre de checkpoints",
+  "enter_corridor_checkpoints": "Entrez le nombre de checkpoints",
+  "select_city": "Sélectionnez une ville",
+  "corridor_created_successfully": "Corridor créé avec succès",
+  "corridors_list": "Liste des corridors",
+  "search_corridor": "Rechercher un corridor",
+  "no_corridors_found": "Aucun corridor trouvé",
+  "edit_corridor": "Modifier le corridor",
+  "corridor_route": "Itinéraire",
 
   "enter_country_name": "Entrez le nom du pays",
 
   "search_locality": "Rechercher une localité",
-   "search_country": "Rechercher un pays",
 
-   "edit_locality" : "Modifier la localité",
-   "lacality_name":"Nom de la localité",
-   "enter_locality_name": "Entrez le nom de la localité",
-   "select_country":"Sélectionnez un pays"
+  "edit_locality": "Modifier la localité",
+  "lacality_name": "Nom de la localité",
+  "enter_locality_name": "Entrez le nom de la localité",
 
-
- 
-
+  "currency_list": "Liste des devises",
+  "add_currency": "Ajouter une devise",
+  "currency_form_title": "Formulaire d'ajout de devise",
+  "currency_name": "Nom de la devise",
+  "enter_currency_name": "Entrez le nom de la devise",
+  "currency_code": "Code de la devise",
+  "enter_currency_code": "Entrez le code de la devise (ex: USD, EUR)",
+  "select_currency_code": "Sélectionnez un code de devise",
+  "currency_symbol": "Symbole de la devise",
+  "enter_currency_symbol": "Entrez le symbole de la devise (ex: $, €)",
+  "currency_flag": "Drapeau de la devise",
+  "enter_currency_flag": "Entrez l'emoji du drapeau (ex: 🇺🇸, 🇪🇺)",
+  "currency_status": "Statut de la devise",
+  "select_currency_status": "Sélectionnez le statut",
+  "active": "Actif",
+  "inactive": "Inactif",
+  "search_currency": "Rechercher une devise",
+  "is_required": "est requis",
+  "success": "Succès",
+  "error": "Erreur",
+  "auth_error": "Erreur d'authentification",
+  "currency_created_successfully": "Devise créée avec succès",
+  "no_search_results": "Aucun résultat trouvé",
+  "no_currencies_found": "Aucune devise trouvée",
+  "edit": "Modifier",
+  "delete": "Supprimer",
+  "all_statuses": "Tous les statuts",
+  "search": "Rechercher",
+  "clear_filters": "Effacer les filtres",
+  "showing": "Affichage",
+  "to": "à",
+  "of": "sur",
+  "results": "résultats",
+  "previous": "Précédent",
+  "next": "Suivant",
+  "select_currency_symbol": "Sélectionnez un symbole de devise",
+  "edit_currency": "Modifier la devise",
+  "update": "Mettre à jour",
+  "updating": "Mise à jour...",
+  "confirm_delete": "Confirmer la suppression",
+  "delete_confirmation_message": "Êtes-vous sûr de vouloir supprimer la devise",
+  "deleting": "Suppression..."
 }

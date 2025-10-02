@@ -56,7 +56,7 @@ export default function RecentOrders() {
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Plaintes en temps réel
+            Validation en temps réel
           </h3>
         </div>
         <div className="flex items-center gap-3">

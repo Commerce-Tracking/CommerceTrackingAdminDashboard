@@ -26,7 +26,7 @@
   "date": "Date",
   "date_creation": "Creation  date ",
   "details": "Details",
-  "see_details": "see",
+  "see_details": "See more",
   "obstacle_details": "Details of obstruction",
 
   "complaint_date": "Complaint Date",
@@ -46,8 +46,8 @@
   "dashboard": "Dashboard",
 
   "obstacle_types": "Obstacle Types",
-  "user_list": "User List",
-  "create_user": "Create User",
+  "collector_list": "Collector List",
+  "create_collector": "Create Collector",
   "role_management": "Role Management",
   "generate_reports": "Generate Reports",
   "view_reports": "View Reports",
@@ -56,22 +56,22 @@
   "add_entity": "Add Entity",
   "country_list": "Country List",
   "add_country": "Add Country",
-  "locality_list": "Locality List",
-  "add_locality": "Add Locality",
+  "corridors_list": "Corridors List",
+  "add_corridors": "Add Corridors",
   "transport_list": "Transport List",
   "content_center": "Content Center",
   "preferences": "Preferences",
   "export_data": "Export Data",
   "customer_support": "Customer Support",
 
-  "complaints_management": "Complaint management",
+  "complaints_management": "Validation management",
   "user_management": "User management",
   "reporting": "Reporting",
   "entities_and_localities": "Entities & Localities",
   "transports": " Transport",
   "others": "Others",
 
-  "users": "Users",
+  "collector": "Collector",
   "phone": "Phone",
   "position": "Position",
   "actions": "Actions",
@@ -79,7 +79,7 @@
   "user_details": "User Details",
   "full_name": "Full Name",
 
-  "add_user": "Add a User",
+  "add_collector": "Add a Collector",
   "form_instruction": "Please fill out this form",
   "first_name": "First Name",
   "first_name_placeholder": "User's first name",
@@ -118,18 +118,9 @@
   "Attachements": "Attachements",
   "reporting_details": "Reporting details",
 
-
-
-
-
-
-  
-
-
   "loading_country": "Loading Country",
   "unloading_country": "Unloading Country",
   "transport_details": "Details of transport",
- 
 
   "quantity": "Quantity",
   "average_weight": "Average Weight (kg)",
@@ -161,37 +152,113 @@
   "document_type": "Document Type",
   "document_reference": "Document Reference",
 
-  
-
   "additional_passengers": "Additional Passengers",
   "attachments": "Attachments",
 
-    "search_name": "Search by name",
-    "edit_entity": "Edit Entity",
+  "search_name": "Search by name",
+  "edit_entity": "Edit Entity",
   "entity_name": "Entity Name",
-   "cancel": "Cancel",
+  "cancel": "Cancel",
   "save": "Save",
- "entity_form_title": "Entity creation form",
+  "entity_form_title": "Entity creation form",
 
-"enter_entity_name": "Enter the entity name", 
-"edit_country": "Edit Country",
+  "enter_entity_name": "Enter the entity name",
+  "edit_country": "Edit Country",
 
-
- 
   "country_form_title": "Country creation form",
+  "country_iso": "Country ISO Code",
+  "enter_country_iso": "Enter ISO code (ex: CD, FR, US)",
+  "country_prefix": "Phone Prefix",
+  "enter_country_prefix": "Enter phone prefix (ex: +228, +33)",
+  "country_flag": "Country Flag",
+  "enter_country_flag": "Enter flag emoji (ex: 🇨🇩, 🇫🇷)",
+  "country_currency": "Country Currency",
+  "select_currency": "Select a currency",
+  "country_status": "Country Status",
+  "country_created_successfully": "Country created successfully",
+  "no_countries_found": "No countries found",
+  "search_country": "Search for a country",
+  "city_list": "Cities List",
+  "add_city": "Add City",
+  "city_form_title": "Add City Form",
+  "city_name": "City Name",
+  "enter_city_name": "Enter city name",
+  "city_country": "City Country",
+  "select_country": "Select a country",
+  "city_created_successfully": "City created successfully",
+  "no_cities_found": "No cities found",
+  "search_city": "Search for a city",
+  "edit_city": "Edit City",
+  "corridor_form_title": "Add Corridor Form",
+  "corridor_name": "Corridor Name",
+  "enter_corridor_name": "Enter corridor name",
+  "corridor_description": "Corridor Description",
+  "enter_corridor_description": "Enter corridor description",
+  "corridor_country_start": "Start Country",
+  "corridor_country_end": "End Country",
+  "corridor_city_start": "Start City",
+  "corridor_city_end": "End City",
+  "corridor_distance": "Distance (km)",
+  "enter_corridor_distance": "Enter distance in km",
+  "corridor_checkpoints": "Number of Checkpoints",
+  "enter_corridor_checkpoints": "Enter number of checkpoints",
+  "select_city": "Select a city",
+  "corridor_created_successfully": "Corridor created successfully",
+  "corridors_list": "Corridors List",
+  "search_corridor": "Search for a corridor",
+  "no_corridors_found": "No corridors found",
+  "edit_corridor": "Edit Corridor",
+  "corridor_route": "Route",
   "country_name": "Country name",
   "enter_country_name": "Enter the country name",
 
-
   "search_locality": "Search for a locality",
-   "search_country": "Search for a country",
-   "lacality_name":"Name of locality",
-   "enter_locality_name": "Enter the locality name",
-   "select_country":"select country"
+  "search_country": "Search for a country",
+  "lacality_name": "Name of locality",
+  "enter_locality_name": "Enter the locality name",
+  "select_country": "select country",
 
-
-
-
-
-
+  "currency_list": "Currency List",
+  "add_currency": "Add Currency",
+  "currency_form_title": "Currency Creation Form",
+  "currency_name": "Currency Name",
+  "enter_currency_name": "Enter the currency name",
+  "currency_code": "Currency Code",
+  "enter_currency_code": "Enter the currency code (ex: USD, EUR)",
+  "select_currency_code": "Select a currency code",
+  "currency_symbol": "Currency Symbol",
+  "enter_currency_symbol": "Enter the currency symbol (ex: $, €)",
+  "currency_flag": "Currency Flag",
+  "enter_currency_flag": "Enter the flag emoji (ex: 🇺🇸, 🇪🇺)",
+  "currency_status": "Currency Status",
+  "select_currency_status": "Select status",
+  "active": "Active",
+  "inactive": "Inactive",
+  "edit_currency": "Edit Currency",
+  "search_currency": "Search for a currency",
+  "is_required": "is required",
+  "success": "Success",
+  "error": "Error",
+  "auth_error": "Authentication Error",
+  "currency_created_successfully": "Currency created successfully",
+  "no_search_results": "No results found",
+  "no_currencies_found": "No currencies found",
+  "edit": "Edit",
+  "delete": "Delete",
+  "all_statuses": "All Statuses",
+  "search": "Search",
+  "clear_filters": "Clear Filters",
+  "showing": "Showing",
+  "to": "to",
+  "of": "of",
+  "results": "results",
+  "previous": "Previous",
+  "next": "Next",
+  "select_currency_symbol": "Select a currency symbol",
+  "edit_currency": "Edit Currency",
+  "update": "Update",
+  "updating": "Updating...",
+  "confirm_delete": "Confirm Deletion",
+  "delete_confirmation_message": "Are you sure you want to delete the currency",
+  "deleting": "Deleting..."
 }

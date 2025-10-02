@@ -251,7 +251,8 @@ const CountriesTable = () => {
             <Button
               label={t('cancel')}
               icon="pi pi-times"
-              className="p-button-secondary"
+                unstyled
+              className="px-3 py-1 text-sm text-white bg-blue-900 rounded"
               onClick={() => setEditCountry(null)}
               disabled={editLoading}
             />
@@ -259,7 +260,8 @@ const CountriesTable = () => {
               label={t('save')}
               icon="pi pi-check"
               type="submit"
-              className="p-button-primary"
+              unstyled
+              className="px-3 py-1 text-sm text-white bg-green-600 rounded"
               disabled={editLoading || !editName.trim()}
               loading={editLoading}
             />

@@ -251,11 +251,11 @@ export default function UserInputs() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 px-4 bg-blue-900 text-white rounded-lg ${
+            className={`w-full py-2 px-4 bg-green-600 text-white rounded-lg ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            {loading ? "Création en cours..." : t('create_user')}
+            {loading ? "Création en cours..." : t('create_collector')}
           </button>
         </form>
       </ComponentCard>

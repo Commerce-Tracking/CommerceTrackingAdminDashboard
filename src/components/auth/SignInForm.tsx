@@ -1,12 +1,12 @@
 import { useState } from "react";
-import {Link, useNavigate} from "react-router";
+import { Link, useNavigate } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import useAuth from "../../providers/auth/useAuth.ts";
-import {useCustomModal} from "../../context/ModalContext.tsx";
+import { useCustomModal } from "../../context/ModalContext.tsx";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,37 +26,29 @@ export default function SignInForm() {
     try {
       const req = await login(username, password);
 
-      if (req == false) {
+      if (!req || req.success === false) {
         openModal({
-          title: "Attention!",
-          description: "Erreur interne.",
+          title: "Connexion échouée!",
+          description: req?.message || "Erreur interne.",
           content: (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Connexion échoué!
-              </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Veuillez vérifier vos identifiants et réessayer.
+            </p>
           ),
         });
       } else {
-        if (req.status === false) {
-          openModal({
-            title: "Connexion échouée!",
-            description: req.message,
-            content: (''),
-          });
-        } else {
-          console.log("Succes 2");
-          await navigate("/");
-        }
+        console.log("Connexion réussie !");
+        // Redirection immédiate sans modal de succès
+        navigate("/");
       }
-
     } catch (err) {
       openModal({
-        title: "Alerte!",
-        description: "Update your details to keep your profile up-to-date.",
+        title: "Erreur!",
+        description: "Une erreur inattendue s'est produite.",
         content: (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Login failed
-            </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Veuillez réessayer plus tard.
+          </p>
         ),
       });
     }
@@ -84,17 +76,18 @@ export default function SignInForm() {
             </p>
           </div>
           <div>
-
             <form onSubmit={handleSubmit}>
               <div className="space-y-6">
                 <div>
                   <Label>
-                    Numéro de téléphone <span className="text-error-500">*</span>{" "}
+                    Email de l'utilisateur{" "}
+                    <span className="text-error-500">*</span>{" "}
                   </Label>
                   <Input
-                      placeholder="XX XX XX XX" type={"text"}
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                    placeholder="exemple@email.com"
+                    type={"email"}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </div>
                 <div>
@@ -103,10 +96,10 @@ export default function SignInForm() {
                   </Label>
                   <div className="relative">
                     <Input
-                        value={password}
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Entrez votre mot de passe"
-                        onChange={(e) => setPassword(e.target.value)}
+                      value={password}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Entrez votre mot de passe"
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}

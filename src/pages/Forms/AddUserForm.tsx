@@ -18,7 +18,7 @@ export default function AddUserFormElements() {
         title="OFR | Admin"
         description="Opération Fluidité Routière Agro-bétail"
       />
-      <PageBreadcrumb pageTitle={t('add_user')} />
+      <PageBreadcrumb pageTitle={t('add_collector')} />
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-1">
         <div className="space-y-12">
           <UserInputs />

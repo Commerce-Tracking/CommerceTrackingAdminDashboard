@@ -26,7 +26,7 @@ export default function AuthLayout({
                 />
               </Link>
               <p className="text-center text-white dark:text-white/60">
-                OFR | Opération Fluidité Routière Agro-bétail
+                OFR |t=  Opération Fluidité Routière Agro-bétail
               </p>
             </div>
           </div>

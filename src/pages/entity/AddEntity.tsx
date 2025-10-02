@@ -110,7 +110,7 @@ const AddEntity = () => {
                 title="OFR | Ajouter une entité"
                 description="Ajouter une nouvelle entité  pour Opération Fluidité Routière Agro-bétail"
             />
-            <PageBreadcrumb pageTitle={t('add_entity')} />
+            <PageBreadcrumb pageTitle={t('entity_form_title')} />
             <div className="space-y-6 p-4">
                 <ComponentCard title={t('entity_form_title')}>
                     <form onSubmit={handleSubmit} className="p-4">
@@ -130,7 +130,7 @@ const AddEntity = () => {
                         </div>
                         <button
                             type="submit"
-                            className="px-3 py-1 text-sm text-white bg-blue-900 rounded   flex items-center justify-center"
+                            className="px-3 py-1 text-sm text-white bg-green-600 rounded   flex items-center justify-center"
                             disabled={loading || !name.trim()}
                         >
                             {loading && (

@@ -60,7 +60,7 @@ const UsersTableOne = () => {
         setTotalRecords(response.data.total || transformedData.length);
       } catch (err: any) {
         const errorMessage =
-          err.response?.data?.message || 'Erreur lors de la récupération des utilisateurs.';
+          err.response?.data?.message || 'Erreur lors de la récupération des collecteurs.';
         setError(errorMessage);
         toast.current?.show({
           severity: 'error',
@@ -102,7 +102,7 @@ const UsersTableOne = () => {
     return (
       <button
         onClick={() => handleViewDetails(rowData)}
-        className="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600"
+        className="px-3 py-1 text-sm text-white bg-green-600 rounded"
       >
         Voir détails
       </button>
@@ -119,7 +119,7 @@ const UsersTableOne = () => {
 
   return (
     <div className="p-4">
-      <ComponentCard title={t('user_list')}>
+      <ComponentCard title={t('collector_list')}>
         <DataTable
           value={tableData}
           loading={isLoading}
@@ -193,7 +193,8 @@ const UsersTableOne = () => {
               <Button
                 label="Fermer"
                 icon="pi pi-times"
-                className="p-button-secondary"
+                unstyled
+                className="px-3 py-1 text-sm text-white bg-blue-900 rounded "
                 onClick={handleCloseModal}
               />
             </div>

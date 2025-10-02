@@ -1,9 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-import { Earth, IdCardLanyard, LocationEditIcon, SettingsIcon, Truck } from 'lucide-react';
 import {
-  ChevronDownIcon, DocsIcon, FileIcon, FolderIcon,
-  GridIcon, GroupIcon,
+  Earth,
+  IdCardLanyard,
+  LocationEditIcon,
+  SettingsIcon,
+  Truck,
+  DollarSign,
+  Building2,
+} from "lucide-react";
+import {
+  ChevronDownIcon,
+  DocsIcon,
+  FileIcon,
+  FolderIcon,
+  GridIcon,
+  GroupIcon,
   HorizontaLDots,
   ListIcon,
   PencilIcon,
@@ -46,18 +58,18 @@ const AppSidebar: React.FC = () => {
       icon: <DocsIcon />,
       name: t("obstacle_types"),
       path: "/complaints-types",
-    }
+    },
   ];
 
   const usersItems: NavItem[] = [
     {
-      name: t("user_list"),
+      name: t("collector_list"),
       icon: <GroupIcon />,
       path: "/users",
     },
     {
       icon: <PencilIcon />,
-      name: t("create_user"),
+      name: t("create_collector"),
       path: "/create-user",
     },
     {
@@ -65,24 +77,6 @@ const AppSidebar: React.FC = () => {
       name: t("role_management"),
       path: "/role-managment",
     },
-  ];
-
-  const reportingItems: NavItem[] = [
-    {
-      icon: <FileIcon />,
-      name: t("generate_reports"),
-      path: "/reportings",
-    },
-    {
-      icon: <TableIcon />,
-      name: t("view_reports"),
-      path: "/reportings/list",
-    },
-    {
-      icon: <PieChartIcon />,
-      name: t("statistics"),
-      path: "/statistics",
-    }
   ];
 
   const localities: NavItem[] = [
@@ -93,13 +87,13 @@ const AppSidebar: React.FC = () => {
     },
     {
       icon: <IdCardLanyard />,
-      name: t("add_entity"),
+      name: t("entity_form_title"),
       path: "/entity",
     },
     {
       icon: <Earth />,
       name: t("country_list"),
-      path: "/countries",
+      path: "/countries-list",
     },
     {
       icon: <Earth />,
@@ -107,24 +101,62 @@ const AppSidebar: React.FC = () => {
       path: "/pays",
     },
     {
+      icon: <Building2 />,
+      name: t("city_list"),
+      path: "/cities-list",
+    },
+    {
+      icon: <Building2 />,
+      name: t("add_city"),
+      path: "/cities/add",
+    },
+    {
       icon: <GrLocation />,
-      name: t("locality_list"),
-      path: "/localities/list",
+      name: t("corridors_list"),
+      path: "/corridors/list",
     },
     {
       icon: <LocationEditIcon />,
-      name: t("add_locality"),
-      path: "/localities",
-    }
-  ];
-
-  const transports: NavItem[] = [
+      name: t("add_corridors"),
+      path: "/corridors/add",
+    },
     {
-      icon: <Truck />,
-      name: t("transport_list"),
-      path: "/transports",
+      icon: <DollarSign />,
+      name: t("currency_list"),
+      path: "/currencies/list",
+    },
+    {
+      icon: <DollarSign />,
+      name: t("add_currency"),
+      path: "/currencies/add",
     },
   ];
+
+  // const transports: NavItem[] = [
+  //   {
+  //     icon: <Truck />,
+  //     name: t("transport_list"),
+  //     path: "/transports",
+  //   },
+  // ];
+
+  //   const reportingItems: NavItem[] = [
+  //   {
+  //     icon: <FileIcon />,
+  //     name: t("generate_reports"),
+  //     path: "/reportings",
+  //   },
+  //   {
+  //     icon: <TableIcon />,
+  //     name: t("view_reports"),
+  //     path: "/reportings/list",
+  //   },
+  //   {
+  //     icon: <PieChartIcon />,
+  //     name: t("statistics"),
+  //     path: "/statistics",
+  //   }
+  // ];
 
   const othersItems: NavItem[] = [
     {
@@ -146,15 +178,24 @@ const AppSidebar: React.FC = () => {
       icon: <BiSupport />,
       name: t("customer_support"),
       path: "/types",
-    }
+    },
   ];
 
   const [openSubmenu, setOpenSubmenu] = useState<{
-    type: "dashboard" | "complaints" | "users" | "reporting" | "transports" | "localities" | "others";
+    type:
+      | "dashboard"
+      | "complaints"
+      | "users"
+      | "reporting"
+      | ""
+      | "localities"
+      | "others";
     index: number;
   } | null>(null);
 
-  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
+  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
+    {}
+  );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const isActive = useCallback(
@@ -164,22 +205,24 @@ const AppSidebar: React.FC = () => {
 
   useEffect(() => {
     let submenuMatched = false;
-    ["complaints", "users", "reporting", "transports", "localities", "others"].forEach((menuType) => {
-      const items = menuType === "complaints" ? navItems : othersItems;
-      items.forEach((nav, index) => {
-        if (nav.subItems) {
-          nav.subItems.forEach((subItem) => {
-            if (isActive(subItem.path)) {
-              setOpenSubmenu({
-                type: menuType as typeof openSubmenu["type"],
-                index,
-              });
-              submenuMatched = true;
-            }
-          });
-        }
-      });
-    });
+    ["complaints", "users", "reporting", "", "localities", "others"].forEach(
+      (menuType) => {
+        const items = menuType === "complaints" ? navItems : othersItems;
+        items.forEach((nav, index) => {
+          if (nav.subItems) {
+            nav.subItems.forEach((subItem) => {
+              if (isActive(subItem.path)) {
+                setOpenSubmenu({
+                  type: menuType as (typeof openSubmenu)["type"],
+                  index,
+                });
+                submenuMatched = true;
+              }
+            });
+          }
+        });
+      }
+    );
 
     if (!submenuMatched) {
       setOpenSubmenu(null);
@@ -200,7 +243,7 @@ const AppSidebar: React.FC = () => {
 
   const handleSubmenuToggle = (
     index: number,
-    menuType: typeof openSubmenu["type"]
+    menuType: (typeof openSubmenu)["type"]
   ) => {
     setOpenSubmenu((prevOpenSubmenu) =>
       prevOpenSubmenu &&
@@ -211,7 +254,11 @@ const AppSidebar: React.FC = () => {
     );
   };
 
-  const renderMenuSection = (label: string, items: NavItem[], menuType: typeof openSubmenu["type"]) => (
+  const renderMenuSection = (
+    label: string,
+    items: NavItem[],
+    menuType: (typeof openSubmenu)["type"]
+  ) => (
     <div>
       <h2
         className={`sidebar-section-title mb-4 w-[290px] ${
@@ -230,7 +277,7 @@ const AppSidebar: React.FC = () => {
 
   const renderMenuItems = (
     items: NavItem[],
-    menuType: typeof openSubmenu["type"]
+    menuType: (typeof openSubmenu)["type"]
   ) => (
     <ul className="flex flex-col gap-4">
       {items.map((nav, index) => (
@@ -268,7 +315,9 @@ const AppSidebar: React.FC = () => {
               <Link
                 to={nav.path}
                 className={`sidebar-menu-item group ${
-                  isActive(nav.path) ? "sidebar-menu-item-active" : "sidebar-menu-item-inactive"
+                  isActive(nav.path)
+                    ? "sidebar-menu-item-active"
+                    : "sidebar-menu-item-inactive"
                 }`}
               >
                 <span className="sidebar-icon-size">{nav.icon}</span>
@@ -291,13 +340,17 @@ const AppSidebar: React.FC = () => {
           : isHovered
           ? "w-[290px]"
           : "w-[90px]"
-      } ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+      } ${
+        isMobileOpen ? "translate-x-0" : "-translate-x-full"
+      } lg:translate-x-0`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
         className={`pt-6 pb-3 flex ${
-          !isExpanded && !isHovered ? "lg:justify-center lg:items-center" : "justify-start"
+          !isExpanded && !isHovered
+            ? "lg:justify-center lg:items-center"
+            : "justify-start"
         }`}
       >
         <Link to="/">
@@ -336,9 +389,14 @@ const AppSidebar: React.FC = () => {
             {renderMenuSection("dashboard", dashboardItems, "dashboard")}
             {renderMenuSection("complaints_management", navItems, "complaints")}
             {renderMenuSection("user_management", usersItems, "users")}
-            {renderMenuSection("reporting", reportingItems, "reporting")}
-            {renderMenuSection("transports", transports, "transports")}
-            {renderMenuSection("entities_and_localities", localities, "localities")}
+            {/* {renderMenuSection("transports", transports, "transports")} */}
+            {renderMenuSection(
+              "entities_and_localities",
+              localities,
+              "localities"
+            )}
+            {/* {renderMenuSection("reporting", reportingItems, "reporting")} */}
+
             {renderMenuSection("others", othersItems, "others")}
           </div>
         </nav>

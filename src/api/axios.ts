@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "https://sandbox.api.freetrade-ofr.com";
+const baseURL = "https://gateway-api.dev.freetrade-ofr.com";
 
 const axiosInstance = axios.create({ baseURL });
 

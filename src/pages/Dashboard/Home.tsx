@@ -27,7 +27,7 @@ export default function Home() {
       
       <div className="page-header">
         <h1 className="page-title">Tableau de Bord</h1>
-        <p className="page-subtitle">Vue d'ensemble de vos activités et statistiques</p>
+        <p className="page-subtitle">Vue d'ensemble des activités et statistiques</p>
       </div>
       
       <div className="grid grid-cols-12 gap-4 md:gap-6">
