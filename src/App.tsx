@@ -38,11 +38,16 @@ import CitiesListPage from "./pages/city/CitiesListPage.tsx";
 import UsersRolesTables from "./pages/Tables/UsersRolesTables.tsx";
 import ReportsListPage from "./pages/Tables/ReportsListPage.tsx";
 
-import TransportsTable from "./pages/transport/TransportsTable.tsx";
-import AddEntity from "./pages/entity/AddEntity.tsx";
-import EntityListPage from "./pages/entity/EntityListPage.tsx";
 import AddCurrency from "./pages/currency/AddCurrency.tsx";
 import CurrencyListPage from "./pages/currency/CurrencyListPage.tsx";
+import AddProductType from "./pages/product-types/AddProductType.tsx";
+import ProductTypesListPage from "./pages/product-types/ProductTypesListPage.tsx";
+import AddProduct from "./pages/products/AddProduct.tsx";
+import ProductsListPage from "./pages/products/ProductsListPage.tsx";
+import AddService from "./pages/services/AddService.tsx";
+import ServicesListPage from "./pages/services/ServicesListPage.tsx";
+import AddTransportMethod from "./pages/transport-methods/AddTransportMethod.tsx";
+import TransportMethodsListPage from "./pages/transport-methods/TransportMethodsListPage.tsx";
 
 export default function App() {
   return (
@@ -72,15 +77,34 @@ export default function App() {
                     element={<CorridorsListPage />}
                   />
 
-                  <Route path="/transports" element={<TransportsTable />} />
-
-                  <Route path="/entity" element={<AddEntity />} />
-                  <Route path="/entity/list" element={<EntityListPage />} />
-
                   <Route path="/currencies/add" element={<AddCurrency />} />
                   <Route
                     path="/currencies/list"
                     element={<CurrencyListPage />}
+                  />
+
+                  <Route
+                    path="/product-types/add"
+                    element={<AddProductType />}
+                  />
+                  <Route
+                    path="/product-types/list"
+                    element={<ProductTypesListPage />}
+                  />
+
+                  <Route path="/products/add" element={<AddProduct />} />
+                  <Route path="/products/list" element={<ProductsListPage />} />
+
+                  <Route path="/services/add" element={<AddService />} />
+                  <Route path="/services/list" element={<ServicesListPage />} />
+
+                  <Route
+                    path="/transport-methods/add"
+                    element={<AddTransportMethod />}
+                  />
+                  <Route
+                    path="/transport-methods/list"
+                    element={<TransportMethodsListPage />}
                   />
 
                   {/* Complaints Page */}

@@ -8,6 +8,10 @@ import {
   Truck,
   DollarSign,
   Building2,
+  Route,
+  Plus,
+  Package,
+  Tag,
 } from "lucide-react";
 import {
   ChevronDownIcon,
@@ -25,7 +29,6 @@ import {
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import { BiExport, BiSupport } from "react-icons/bi";
-import { GrLocation } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 
 type NavItem = {
@@ -81,16 +84,6 @@ const AppSidebar: React.FC = () => {
 
   const localities: NavItem[] = [
     {
-      icon: <IdCardLanyard />,
-      name: t("entity_list"),
-      path: "/entity/list",
-    },
-    {
-      icon: <IdCardLanyard />,
-      name: t("entity_form_title"),
-      path: "/entity",
-    },
-    {
       icon: <Earth />,
       name: t("country_list"),
       path: "/countries-list",
@@ -111,12 +104,12 @@ const AppSidebar: React.FC = () => {
       path: "/cities/add",
     },
     {
-      icon: <GrLocation />,
+      icon: <Route />,
       name: t("corridors_list"),
       path: "/corridors/list",
     },
     {
-      icon: <LocationEditIcon />,
+      icon: <Plus />,
       name: t("add_corridors"),
       path: "/corridors/add",
     },
@@ -132,13 +125,51 @@ const AppSidebar: React.FC = () => {
     },
   ];
 
-  // const transports: NavItem[] = [
-  //   {
-  //     icon: <Truck />,
-  //     name: t("transport_list"),
-  //     path: "/transports",
-  //   },
-  // ];
+  const productsItems: NavItem[] = [
+    {
+      icon: <Tag />,
+      name: t("product_types_list"),
+      path: "/product-types/list",
+    },
+    {
+      icon: <Plus />,
+      name: t("add_product_type"),
+      path: "/product-types/add",
+    },
+    {
+      icon: <Package />,
+      name: t("products_list"),
+      path: "/products/list",
+    },
+    {
+      icon: <Plus />,
+      name: t("add_product"),
+      path: "/products/add",
+    },
+  ];
+
+  const servicesItems: NavItem[] = [
+    {
+      icon: <SettingsIcon />,
+      name: t("services_list"),
+      path: "/services/list",
+    },
+    {
+      icon: <Plus />,
+      name: t("add_service"),
+      path: "/services/add",
+    },
+    {
+      icon: <Truck />,
+      name: t("transport_methods_list"),
+      path: "/transport-methods/list",
+    },
+    {
+      icon: <Plus />,
+      name: t("add_transport_method"),
+      path: "/transport-methods/add",
+    },
+  ];
 
   //   const reportingItems: NavItem[] = [
   //   {
@@ -389,11 +420,20 @@ const AppSidebar: React.FC = () => {
             {renderMenuSection("dashboard", dashboardItems, "dashboard")}
             {renderMenuSection("complaints_management", navItems, "complaints")}
             {renderMenuSection("user_management", usersItems, "users")}
-            {/* {renderMenuSection("transports", transports, "transports")} */}
             {renderMenuSection(
               "entities_and_localities",
               localities,
               "localities"
+            )}
+            {renderMenuSection(
+              "products_management",
+              productsItems,
+              "products"
+            )}
+            {renderMenuSection(
+              "services_and_transports",
+              servicesItems,
+              "services"
             )}
             {/* {renderMenuSection("reporting", reportingItems, "reporting")} */}
 
