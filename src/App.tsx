@@ -24,7 +24,8 @@ import UsersTables from "./pages/Tables/UsersTables.tsx";
 import AddUserFormElements from "./pages/Forms/AddUserForm.tsx";
 import AddReportFormElements from "./pages/Forms/AddReportForm.tsx";
 import PrivateRoute from "./components/auth/PrivateRoute.tsx";
-import { ModalProvider } from "./context/ModalContext.tsx";
+import { ValidationStatsProvider } from "./context/ValidationStatsContext";
+import { ModalProvider } from "./context/ModalContext";
 import { PrimeReactProvider } from "primereact/api";
 import ComplaintProvider from "./providers/complaints/ComplaintProvider.tsx";
 import ComplaintsTables from "./pages/Tables/ComplaintsTables.tsx";
@@ -48,6 +49,11 @@ import AddService from "./pages/services/AddService.tsx";
 import ServicesListPage from "./pages/services/ServicesListPage.tsx";
 import AddTransportMethod from "./pages/transport-methods/AddTransportMethod.tsx";
 import TransportMethodsListPage from "./pages/transport-methods/TransportMethodsListPage.tsx";
+import AddTransportMode from "./pages/transport-modes/AddTransportMode.tsx";
+import TransportModesListPage from "./pages/transport-modes/TransportModesListPage.tsx";
+import AddUnity from "./pages/unities/AddUnity.tsx";
+import UnitiesListPage from "./pages/unities/UnitiesListPage.tsx";
+import CSVExportPage from "./pages/Export/CSVExportPage.tsx";
 
 export default function App() {
   return (
@@ -55,123 +61,146 @@ export default function App() {
       <PrimeReactProvider>
         {/*<PrimeReactProvider value={{locale: 'en'}}>*/}
         <ComplaintProvider>
-          <ModalProvider>
-            <ScrollToTop />
-            <Routes>
-              {/* Dashboard Layout */}
+          <ValidationStatsProvider>
+            <ModalProvider>
+              <ScrollToTop />
+              <Routes>
+                {/* Dashboard Layout */}
 
-              <Route element={<PrivateRoute />}>
-                <Route element={<AppLayout />}>
-                  <Route index path="/" element={<Home />} />
+                <Route element={<PrivateRoute />}>
+                  <Route element={<AppLayout />}>
+                    <Route index path="/" element={<Home />} />
 
-                  <Route path="/pays" element={<AddPays />} />
-                  <Route
-                    path="/countries-list"
-                    element={<CountriesListPage />}
-                  />
-                  <Route path="/cities/add" element={<AddCity />} />
-                  <Route path="/cities-list" element={<CitiesListPage />} />
-                  <Route path="/corridors/add" element={<AddCorridor />} />
-                  <Route
-                    path="/corridors/list"
-                    element={<CorridorsListPage />}
-                  />
+                    <Route path="/pays" element={<AddPays />} />
+                    <Route
+                      path="/countries-list"
+                      element={<CountriesListPage />}
+                    />
+                    <Route path="/cities/add" element={<AddCity />} />
+                    <Route path="/cities-list" element={<CitiesListPage />} />
+                    <Route path="/corridors/add" element={<AddCorridor />} />
+                    <Route
+                      path="/corridors/list"
+                      element={<CorridorsListPage />}
+                    />
 
-                  <Route path="/currencies/add" element={<AddCurrency />} />
-                  <Route
-                    path="/currencies/list"
-                    element={<CurrencyListPage />}
-                  />
+                    <Route path="/currencies/add" element={<AddCurrency />} />
+                    <Route
+                      path="/currencies/list"
+                      element={<CurrencyListPage />}
+                    />
 
-                  <Route
-                    path="/product-types/add"
-                    element={<AddProductType />}
-                  />
-                  <Route
-                    path="/product-types/list"
-                    element={<ProductTypesListPage />}
-                  />
+                    <Route
+                      path="/product-types/add"
+                      element={<AddProductType />}
+                    />
+                    <Route
+                      path="/product-types/list"
+                      element={<ProductTypesListPage />}
+                    />
 
-                  <Route path="/products/add" element={<AddProduct />} />
-                  <Route path="/products/list" element={<ProductsListPage />} />
+                    <Route path="/products/add" element={<AddProduct />} />
+                    <Route
+                      path="/products/list"
+                      element={<ProductsListPage />}
+                    />
 
-                  <Route path="/services/add" element={<AddService />} />
-                  <Route path="/services/list" element={<ServicesListPage />} />
+                    <Route path="/services/add" element={<AddService />} />
+                    <Route
+                      path="/services/list"
+                      element={<ServicesListPage />}
+                    />
 
-                  <Route
-                    path="/transport-methods/add"
-                    element={<AddTransportMethod />}
-                  />
-                  <Route
-                    path="/transport-methods/list"
-                    element={<TransportMethodsListPage />}
-                  />
+                    <Route
+                      path="/transport-methods/add"
+                      element={<AddTransportMethod />}
+                    />
+                    <Route
+                      path="/transport-methods/list"
+                      element={<TransportMethodsListPage />}
+                    />
 
-                  {/* Complaints Page */}
-                  <Route path="/complaints" element={<ComplaintsTables />} />
-                  <Route
-                    path="/complaints-types"
-                    element={<ComplaintsTypesTables />}
-                  />
-                  {/*<Route path="/complaints-types" element={<ReportsTables />} />*/}
+                    <Route
+                      path="/transport-modes/add"
+                      element={<AddTransportMode />}
+                    />
+                    <Route
+                      path="/transport-modes/list"
+                      element={<TransportModesListPage />}
+                    />
 
-                  {/* Users Page */}
-                  <Route path="/users" element={<UsersTables />} />
-                  <Route
-                    path="/create-user"
-                    element={<AddUserFormElements />}
-                  />
-                  <Route
-                    path="/role-managment"
-                    element={<UsersRolesTables />}
-                  />
+                    <Route path="/unities/add" element={<AddUnity />} />
+                    <Route path="/unities/list" element={<UnitiesListPage />} />
 
-                  {/* Reporting Page */}
-                  <Route
-                    path="/reportings"
-                    element={<AddReportFormElements />}
-                  />
+                    {/* Export Page */}
+                    <Route path="/export-csv" element={<CSVExportPage />} />
 
-                  <Route
-                    path="/reportings/list"
-                    element={<ReportsListPage />}
-                  />
+                    {/* Complaints Page */}
+                    <Route path="/complaints" element={<ComplaintsTables />} />
+                    <Route
+                      path="/complaints-types"
+                      element={<ComplaintsTypesTables />}
+                    />
+                    {/*<Route path="/complaints-types" element={<ReportsTables />} />*/}
 
-                  <Route path="/statistics" element={<Home />} />
-                  <Route path="/view-data" element={<ReportsTables />} />
+                    {/* Users Page */}
+                    <Route path="/users" element={<UsersTables />} />
+                    <Route
+                      path="/create-user"
+                      element={<AddUserFormElements />}
+                    />
+                    <Route
+                      path="/role-managment"
+                      element={<UsersRolesTables />}
+                    />
 
-                  <Route path="/profile" element={<UserProfiles />} />
-                  <Route path="/calendar" element={<Calendar />} />
-                  <Route path="/blank" element={<Blank />} />
+                    {/* Reporting Page */}
+                    <Route
+                      path="/reportings"
+                      element={<AddReportFormElements />}
+                    />
 
-                  {/* Forms */}
-                  <Route path="/form-elements" element={<FormElements />} />
+                    <Route
+                      path="/reportings/list"
+                      element={<ReportsListPage />}
+                    />
 
-                  {/* Tables */}
-                  <Route path="/basic-tables" element={<BasicTables />} />
+                    <Route path="/statistics" element={<Home />} />
+                    <Route path="/view-data" element={<ReportsTables />} />
 
-                  {/* Ui Elements */}
-                  <Route path="/alerts" element={<Alerts />} />
-                  <Route path="/avatars" element={<Avatars />} />
-                  <Route path="/badge" element={<Badges />} />
-                  <Route path="/buttons" element={<Buttons />} />
-                  <Route path="/images" element={<Images />} />
-                  <Route path="/videos" element={<Videos />} />
+                    <Route path="/profile" element={<UserProfiles />} />
+                    <Route path="/calendar" element={<Calendar />} />
+                    <Route path="/blank" element={<Blank />} />
 
-                  {/* Charts */}
-                  <Route path="/line-chart" element={<LineChart />} />
-                  <Route path="/bar-chart" element={<BarChart />} />
+                    {/* Forms */}
+                    <Route path="/form-elements" element={<FormElements />} />
+
+                    {/* Tables */}
+                    <Route path="/basic-tables" element={<BasicTables />} />
+
+                    {/* Ui Elements */}
+                    <Route path="/alerts" element={<Alerts />} />
+                    <Route path="/avatars" element={<Avatars />} />
+                    <Route path="/badge" element={<Badges />} />
+                    <Route path="/buttons" element={<Buttons />} />
+                    <Route path="/images" element={<Images />} />
+                    <Route path="/videos" element={<Videos />} />
+
+                    {/* Charts */}
+                    <Route path="/line-chart" element={<LineChart />} />
+                    <Route path="/bar-chart" element={<BarChart />} />
+                  </Route>
                 </Route>
-              </Route>
 
-              {/* Auth Layout */}
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
+                {/* Auth Layout */}
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
 
-              {/* Fallback Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </ModalProvider>
+                {/* Fallback Route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </ModalProvider>
+          </ValidationStatsProvider>
         </ComplaintProvider>
       </PrimeReactProvider>
       <Toaster position="bottom-right" richColors />

@@ -15,13 +15,11 @@ import {
 } from "lucide-react";
 import {
   ChevronDownIcon,
-  DocsIcon,
   FileIcon,
   FolderIcon,
   GridIcon,
   GroupIcon,
   HorizontaLDots,
-  ListIcon,
   PencilIcon,
   PieChartIcon,
   TableIcon,
@@ -48,19 +46,6 @@ const AppSidebar: React.FC = () => {
       icon: <GridIcon />,
       name: t("dashboard"),
       path: "/",
-    },
-  ];
-
-  const navItems: NavItem[] = [
-    {
-      icon: <ListIcon />,
-      name: t("obstacle_list"),
-      path: "/complaints",
-    },
-    {
-      icon: <DocsIcon />,
-      name: t("obstacle_types"),
-      path: "/complaints-types",
     },
   ];
 
@@ -146,6 +131,16 @@ const AppSidebar: React.FC = () => {
       name: t("add_product"),
       path: "/products/add",
     },
+    {
+      icon: <Tag />,
+      name: t("unities_list"),
+      path: "/unities/list",
+    },
+    {
+      icon: <Plus />,
+      name: t("add_unity"),
+      path: "/unities/add",
+    },
   ];
 
   const servicesItems: NavItem[] = [
@@ -168,6 +163,16 @@ const AppSidebar: React.FC = () => {
       icon: <Plus />,
       name: t("add_transport_method"),
       path: "/transport-methods/add",
+    },
+    {
+      icon: <Truck />,
+      name: t("transport_modes_list"),
+      path: "/transport-modes/list",
+    },
+    {
+      icon: <Plus />,
+      name: t("add_transport_mode"),
+      path: "/transport-modes/add",
     },
   ];
 
@@ -203,7 +208,7 @@ const AppSidebar: React.FC = () => {
     {
       icon: <BiExport />,
       name: t("export_data"),
-      path: "/types",
+      path: "/export-csv",
     },
     {
       icon: <BiSupport />,
@@ -213,14 +218,7 @@ const AppSidebar: React.FC = () => {
   ];
 
   const [openSubmenu, setOpenSubmenu] = useState<{
-    type:
-      | "dashboard"
-      | "complaints"
-      | "users"
-      | "reporting"
-      | ""
-      | "localities"
-      | "others";
+    type: "dashboard" | "users" | "reporting" | "" | "localities" | "others";
     index: number;
   } | null>(null);
 
@@ -236,24 +234,22 @@ const AppSidebar: React.FC = () => {
 
   useEffect(() => {
     let submenuMatched = false;
-    ["complaints", "users", "reporting", "", "localities", "others"].forEach(
-      (menuType) => {
-        const items = menuType === "complaints" ? navItems : othersItems;
-        items.forEach((nav, index) => {
-          if (nav.subItems) {
-            nav.subItems.forEach((subItem) => {
-              if (isActive(subItem.path)) {
-                setOpenSubmenu({
-                  type: menuType as (typeof openSubmenu)["type"],
-                  index,
-                });
-                submenuMatched = true;
-              }
-            });
-          }
-        });
-      }
-    );
+    ["users", "reporting", "", "localities", "others"].forEach((menuType) => {
+      const items = othersItems;
+      items.forEach((nav, index) => {
+        if (nav.subItems) {
+          nav.subItems.forEach((subItem) => {
+            if (isActive(subItem.path)) {
+              setOpenSubmenu({
+                type: menuType as (typeof openSubmenu)["type"],
+                index,
+              });
+              submenuMatched = true;
+            }
+          });
+        }
+      });
+    });
 
     if (!submenuMatched) {
       setOpenSubmenu(null);
@@ -418,7 +414,6 @@ const AppSidebar: React.FC = () => {
         <nav className="sidebar-menu-group">
           <div className="flex flex-col gap-4">
             {renderMenuSection("dashboard", dashboardItems, "dashboard")}
-            {renderMenuSection("complaints_management", navItems, "complaints")}
             {renderMenuSection("user_management", usersItems, "users")}
             {renderMenuSection(
               "entities_and_localities",

@@ -1,47 +1,36 @@
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { CalenderIcon } from "../../icons";
-import axiosInstance from "../../api/axios";
+import { useTranslation } from "react-i18next";
+import { useValidationStats } from "../../context/ValidationStatsContext";
 
 export default function MonthlyTarget() {
-  const [stats, setStats] = useState({
-    totalComplaints: 0,
-    totalResolved: 0,
-    totalUnresolved: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
+  const { stats, loading, error, isSessionExpired } = useValidationStats();
+  const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const token = localStorage.getItem('accessToken');
-        const res = await axiosInstance.get("/admin/complaints/stats", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setStats({
-          totalComplaints: res.data.totalComplaints || 0,
-          totalResolved: res.data.totalResolved || 0,
-          totalUnresolved: res.data.totalUnresolved || 0
-        });
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching complaint stats:", error);
-        setIsLoading(false);
-      }
-    };
-    fetchStats();
-  }, []);
-
-  // Calculate percentage of resolved complaints for the radial bar
-  const resolvedPercentage = stats.totalComplaints
-    ? ((stats.totalResolved / stats.totalComplaints) * 100).toFixed(2)
+  // Calculate percentage of accepted collections for the radial bar
+  const acceptedPercentage = stats?.total_collections
+    ? (
+        (stats.total_accepted_by_supervisor / stats.total_collections) *
+        100
+      ).toFixed(2)
     : 0;
-  const series = [Number(resolvedPercentage)];
+  const series = [Number(acceptedPercentage)];
+
+  // Format date for display
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
+  };
 
   const options: ApexOptions = {
     colors: ["#1A6C30"], // Vert principal de la nouvelle charte
@@ -91,8 +80,6 @@ export default function MonthlyTarget() {
     labels: ["Progress"],
   };
 
-  const [isOpen, setIsOpen] = useState(false);
-
   function toggleDropdown() {
     setIsOpen(!isOpen);
   }
@@ -101,8 +88,53 @@ export default function MonthlyTarget() {
     setIsOpen(false);
   }
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03] p-6">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <span className="ml-2 text-gray-600">Chargement...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !isSessionExpired) {
+    return (
+      <div className="rounded-2xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 p-6">
+        <div className="flex items-center justify-center text-red-600 dark:text-red-400">
+          <svg
+            className="w-6 h-6 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+            />
+          </svg>
+          <span>{error}</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Si la session est expirée, ne rien afficher (redirection en cours)
+  if (isSessionExpired) {
+    return null;
+  }
+
+  if (!stats) {
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03] p-6">
+        <div className="flex items-center justify-center text-gray-500">
+          <span>Aucune donnée disponible</span>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -111,16 +143,21 @@ export default function MonthlyTarget() {
         <div className="flex justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-              Bilan des collectes
+              {t("collections_summary")}
             </h3>
           </div>
           <div className="relative inline-block">
             <button className="dropdown-toggle" onClick={toggleDropdown}>
               <p className="flex items-center justify-center mt-1 gap-1 text-gray-500 text-theme-sm dark:text-gray-400">
-                01/01/25 <CalenderIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
+                {formatDate(stats.generated_at)}{" "}
+                <CalenderIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
               </p>
             </button>
-            <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
+            <Dropdown
+              isOpen={isOpen}
+              onClose={closeDropdown}
+              className="w-40 p-2"
+            >
               <DropdownItem
                 onItemClick={closeDropdown}
                 className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -132,32 +169,37 @@ export default function MonthlyTarget() {
         </div>
         <div className="relative">
           <div className="max-h-[330px]" id="chartDarkStyle">
-            <Chart options={options} series={series} type="radialBar" height={330} />
+            <Chart
+              options={options}
+              series={series}
+              type="radialBar"
+              height={330}
+            />
           </div>
-          <span className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-[95%] rounded-full bg-success-50 px-3 py-1 text-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
-            +10%
-          </span>
         </div>
         <p className="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
-          Vous avez traité {stats.totalResolved} collectes, continuez votre bon travail!
+          {t("collections_validation_message").replace(
+            "{count}",
+            (stats?.total_accepted_by_supervisor || 0).toString()
+          )}
         </p>
       </div>
       <div className="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5">
         <div>
           <p className="mb-1 text-center text-gray-800 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Collectes totales
+            {t("total_collections")}
           </p>
           <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            {stats.totalComplaints}
+            {stats?.total_collections || 0}
           </p>
         </div>
         <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
         <div>
           <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Collectes résolues
+            {t("validated_collections")}
           </p>
           <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            {stats.totalResolved}
+            {stats?.total_accepted_by_supervisor || 0}
             <svg
               width="16"
               height="16"
@@ -177,10 +219,10 @@ export default function MonthlyTarget() {
         <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
         <div>
           <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Collectes non résolues
+            {t("rejected_collections")}
           </p>
           <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            {stats.totalUnresolved}
+            {stats?.total_rejected || 0}
             <svg
               width="16"
               height="16"

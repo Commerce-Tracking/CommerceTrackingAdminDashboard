@@ -5,16 +5,110 @@ import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import useAuth from "../../providers/auth/useAuth.ts";
 import LanguageSwitcher from "../common/LanguageSwitcher.tsx";
+import { useState, useEffect } from "react";
+import axiosInstance from "../../api/axios";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+
+interface UserProfile {
+  id: number;
+  public_id: string;
+  username: string;
+  email: string;
+  phone: string;
+  role_id: number;
+  status: string;
+  password: string;
+  is_online: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProfileApiResponse {
+  success: boolean;
+  message: string;
+  result: UserProfile;
+  errors: any;
+  except: any;
+}
 
 export default function UserMetaCard() {
   const { isOpen, openModal, closeModal } = useModal();
-  // @ts-ignore
-  const { userData } = useAuth();
+  const [profileData, setProfileData] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
+
+  // Fetch profile data
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        toast.error(t("auth_error"), {
+          description: "Aucun token d'authentification trouvé.",
+        });
+        return;
+      }
+
+      const response = await axiosInstance.get("/auth/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        const apiResponse: ProfileApiResponse = response.data;
+        setProfileData(apiResponse.result);
+      } else {
+        toast.error(t("error"), {
+          description:
+            response.data.message || "Erreur lors du chargement du profil",
+        });
+      }
+    } catch (err: any) {
+      console.error("Erreur API profil :", err);
+      let errorMessage = "Erreur lors du chargement du profil.";
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        errorMessage = "Token invalide ou non autorisé.";
+        toast.error(t("auth_error"), {
+          description: errorMessage,
+        });
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 2000);
+      } else {
+        errorMessage =
+          err.response?.data?.message || err.message || errorMessage;
+        toast.error(t("error"), {
+          description: errorMessage,
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
   const handleSave = () => {
     // Handle save logic here
     console.log("Saving changes...");
     closeModal();
   };
+  if (loading) {
+    return (
+      <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+        <div className="flex items-center justify-center py-8">
+          <div className="text-gray-500 dark:text-gray-400">
+            Chargement du profil...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
@@ -25,17 +119,26 @@ export default function UserMetaCard() {
             </div>
             <div className="order-3 xl:order-2">
               <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-                {userData == undefined ? "..." : userData.firstname} {userData == undefined ? "..." : userData.lastname}
+                {profileData?.username || "..."}
               </h4>
               <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {userData == undefined ? "..." : userData.role.name}
+                  {profileData?.email || "..."}
                 </p>
                 <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 content-center">
-                  Ville, Pays
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      profileData?.status === "active"
+                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                        : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                    }`}
+                  >
+                    {profileData?.status === "active"
+                      ? t("active")
+                      : t("inactive")}
+                  </span>
                 </p>
-
               </div>
             </div>
             <div className="flex items-center order-2 gap-2 grow xl:order-3 xl:justify-end">
@@ -146,7 +249,6 @@ export default function UserMetaCard() {
             </svg>
             Edit
           </button>
-
         </div>
       </div>
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">

@@ -4,79 +4,269 @@ import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import useAuth from "../../providers/auth/useAuth.ts";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
+import axiosInstance from "../../api/axios";
+import { toast } from "sonner";
 
+interface UserProfile {
+  id: number;
+  public_id: string;
+  username: string;
+  email: string;
+  phone: string;
+  role_id: number;
+  status: string;
+  password: string;
+  is_online: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProfileApiResponse {
+  success: boolean;
+  message: string;
+  result: UserProfile;
+  errors: any;
+  except: any;
+}
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
-  // @ts-ignore
-  const { userInfo, userData, logout } = useAuth();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  const [profileData, setProfileData] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [editFormData, setEditFormData] = useState({
+    username: "",
+    email: "",
+    phone: "",
+  });
+  const [editLoading, setEditLoading] = useState(false);
+  const { t } = useTranslation();
+
+  // Fetch profile data
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        toast.error(t("auth_error"), {
+          description: "Aucun token d'authentification trouvé.",
+        });
+        return;
+      }
+
+      const response = await axiosInstance.get("/auth/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        const apiResponse: ProfileApiResponse = response.data;
+        setProfileData(apiResponse.result);
+        setEditFormData({
+          username: apiResponse.result.username,
+          email: apiResponse.result.email,
+          phone: apiResponse.result.phone,
+        });
+      } else {
+        toast.error(t("error"), {
+          description:
+            response.data.message || "Erreur lors du chargement du profil",
+        });
+      }
+    } catch (err: any) {
+      console.error("Erreur API profil :", err);
+      let errorMessage = "Erreur lors du chargement du profil.";
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        errorMessage = "Token invalide ou non autorisé.";
+        toast.error(t("auth_error"), {
+          description: errorMessage,
+        });
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 2000);
+      } else {
+        errorMessage =
+          err.response?.data?.message || err.message || errorMessage;
+        toast.error(t("error"), {
+          description: errorMessage,
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-      const { t, i18n } = useTranslation();
-  
-      const changeLanguage = (lng: string) => {
-          i18n.changeLanguage(lng);
-      };
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
-      
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSave = async () => {
+    if (!profileData) return;
+
+    setEditLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        toast.error(t("auth_error"), {
+          description: "Aucun token d'authentification trouvé.",
+        });
+        return;
+      }
+
+      const response = await axiosInstance.put(
+        `/auth/profile/${profileData.id}`,
+        editFormData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success(t("success"), {
+          description: response.data.message || "Profil mis à jour avec succès",
+        });
+        closeModal();
+        fetchProfile(); // Refresh profile data
+      } else {
+        toast.error(t("error"), {
+          description: response.data.message || "Erreur lors de la mise à jour",
+        });
+      }
+    } catch (err: any) {
+      console.error("Erreur API mise à jour profil :", err);
+      let errorMessage = "Erreur lors de la mise à jour du profil.";
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        errorMessage = "Token invalide ou non autorisé.";
+        toast.error(t("auth_error"), {
+          description: errorMessage,
+        });
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 2000);
+      } else {
+        errorMessage =
+          err.response?.data?.message || err.message || errorMessage;
+        toast.error(t("error"), {
+          description: errorMessage,
+        });
+      }
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+        <div className="flex items-center justify-center py-8">
+          <div className="text-gray-500 dark:text-gray-400">
+            Chargement du profil...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-            {/* Informations Personnelles */}
-
-            {t('pers_info')}
+            {t("pers_info")}
           </h4>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                {t('pers_name')}
+                {t("username")}
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {userData == undefined ? "..." : userData.lastname}
+                {profileData?.username || "..."}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                {t('pers_first_name')}
+                {t("email")}
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {userData == undefined ? "..." : userData.firstname}
+                {profileData?.email || "Pas d'email"}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-              {t('pers_mail')}
+                {t("phone")}
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {userData == undefined ? "..." : userData.email == null ? "Pas d'email" : userData.email}
+                {profileData?.phone || "Pas de numéro enregistré"}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-              {t('pers_phone')}
+                {t("status")}
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {userData == undefined ? "..." : userData.phone == null ? "Pas de numero enregistré!" : userData.phone}
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    profileData?.status === "active"
+                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                      : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                  }`}
+                >
+                  {profileData?.status === "active"
+                    ? t("active")
+                    : t("inactive")}
+                </span>
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  {t('pers_connex')}
+                {t("online_status")}
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {userData == undefined ? "..." : userData.isConnected ? t('user_connected')  : t('user_not_connected')}
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    profileData?.is_online
+                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                      : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                  }`}
+                >
+                  {profileData?.is_online ? t("online") : t("offline")}
+                </span>
+              </p>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                {t("created_at")}
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {profileData?.created_at
+                  ? formatDate(profileData.created_at)
+                  : "..."}
               </p>
             </div>
           </div>
@@ -101,7 +291,7 @@ export default function UserInfoCard() {
               fill=""
             />
           </svg>
-          Edit
+          {t("edit")}
         </button>
       </div>
 
@@ -109,86 +299,66 @@ export default function UserInfoCard() {
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Editer Vos Informations Personelles
+              {t("edit_profile")}
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Mettez à jour vos informations pour garder votre profil à jour.
+              {t("edit_profile_description")}
             </p>
           </div>
           <form className="flex flex-col">
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div>
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Liens sociaux
-                </h5>
-
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div>
-                    <Label>Facebook</Label>
-                    <Input
-                      type="text"
-                      value="https://www.facebook.com/PimjoHQ"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>X.com</Label>
-                    <Input type="text" value="https://x.com/PimjoHQ" />
-                  </div>
-
-                  <div>
-                    <Label>Linkedin</Label>
-                    <Input
-                      type="text"
-                      value="https://www.linkedin.com/company/pimjo"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Instagram</Label>
-                    <Input type="text" value="https://instagram.com/PimjoHQ" />
-                  </div>
-                </div>
-              </div>
-              <div className="mt-7">
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Informations Personelles
+                  {t("personal_information")}
                 </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Prénoms</Label>
-                    <Input type="text" value="Admin" />
+                    <Label>{t("username")}</Label>
+                    <Input
+                      type="text"
+                      name="username"
+                      value={editFormData.username}
+                      onChange={handleEditInputChange}
+                      disabled={editLoading}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Nom</Label>
-                    <Input type="text" value="OFR" />
+                    <Label>{t("email")}</Label>
+                    <Input
+                      type="email"
+                      name="email"
+                      value={editFormData.email}
+                      onChange={handleEditInputChange}
+                      disabled={editLoading}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Email</Label>
-                    <Input type="text" value="admin@ofr.com" />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Téléphone</Label>
-                    <Input type="text" value="+228 00 00 00 00" />
-                  </div>
-
-                  <div className="col-span-2">
-                    <Label>Bio</Label>
-                    <Input type="text" value="Gestionnaire d'équipe" />
+                    <Label>{t("phone")}</Label>
+                    <Input
+                      type="text"
+                      name="phone"
+                      value={editFormData.phone}
+                      onChange={handleEditInputChange}
+                      disabled={editLoading}
+                    />
                   </div>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
-                Fermer
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={closeModal}
+                disabled={editLoading}
+              >
+                {t("cancel")}
               </Button>
-              <Button size="sm" onClick={handleSave}>
-                Enregistrer
+              <Button size="sm" onClick={handleSave} disabled={editLoading}>
+                {editLoading ? t("saving") : t("save")}
               </Button>
             </div>
           </form>

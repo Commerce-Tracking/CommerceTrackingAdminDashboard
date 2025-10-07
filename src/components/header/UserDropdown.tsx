@@ -1,13 +1,79 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link } from "react-router";
 import useAuth from "../../providers/auth/useAuth.ts";
+import axiosInstance from "../../api/axios";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+
+interface UserProfile {
+  id: number;
+  public_id: string;
+  username: string;
+  email: string;
+  phone: string;
+  role_id: number;
+  status: string;
+  password: string;
+  is_online: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProfileApiResponse {
+  success: boolean;
+  message: string;
+  result: UserProfile;
+  errors: any;
+  except: any;
+}
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const [profileData, setProfileData] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
   // @ts-ignore
-  const { userInfo, userData, logout } = useAuth();
+  const { logout } = useAuth();
+
+  // Fetch profile data
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        console.warn("Aucun token d'authentification trouvé");
+        return;
+      }
+
+      const response = await axiosInstance.get("/auth/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        const apiResponse: ProfileApiResponse = response.data;
+        setProfileData(apiResponse.result);
+      }
+    } catch (err: any) {
+      console.error("Erreur API profil :", err);
+      // Si erreur 401, le token est invalide
+      if (err.response?.status === 401) {
+        console.warn("Token d'authentification invalide ou expiré");
+        // Optionnel : rediriger vers la page de connexion
+        // localStorage.removeItem("accessToken");
+        // window.location.href = "/auth/signin";
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -28,7 +94,8 @@ export default function UserDropdown() {
         </span>
 
         <span className="block mr-1 font-medium text-theme-sm">
-            {userData == undefined ? "..." : userData.firstname} {userData == undefined ? "..." : userData.lastname}</span>
+          {loading ? "..." : profileData?.username || "..."}
+        </span>
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -56,10 +123,10 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            {userData == undefined ? "..." : userData.firstname} {userData == undefined ? "..." : userData.lastname}
+            {loading ? "..." : profileData?.username || "..."}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {userData == undefined ? "..." : userData.email == null ? "Pas d'email" : userData.email}
+            {loading ? "..." : profileData?.email || "Pas d'email"}
           </span>
         </div>
 
@@ -86,7 +153,7 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              Voir le profil
+              {t("view_profile")}
             </DropdownItem>
           </li>
           <li>
@@ -111,7 +178,7 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              Paramètres
+              {t("settings")}
             </DropdownItem>
           </li>
         </ul>
@@ -135,7 +202,7 @@ export default function UserDropdown() {
               fill=""
             />
           </svg>
-          Déconnexion
+          {t("logout")}
         </Link>
       </Dropdown>
     </div>
