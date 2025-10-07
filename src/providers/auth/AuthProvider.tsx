@@ -93,13 +93,13 @@ export default function AuthProvider({ children }) {
   const authMe = async (id: any) => {
     try {
       console.log("Access Token", accessToken);
-      const user = await axiosInstance.get(`/auth/me`, {
+      const user = await axiosInstance.get(`/auth/profile`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
         withCredentials: false,
       });
-      const u = user.data.data;
+      const u = user.data.result; // Utiliser 'result' au lieu de 'data'
       setUserData(u);
       localStorage.setItem("userData", JSON.stringify(u));
 

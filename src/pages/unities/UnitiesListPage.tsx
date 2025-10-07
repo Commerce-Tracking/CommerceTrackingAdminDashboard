@@ -9,29 +9,14 @@ import Button from "../../components/ui/button/Button";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-interface Country {
+interface Unity {
   id: number;
   public_id: string;
   name: string;
-  iso: string;
-  prefix: string;
-  flag: string;
-  currency_id: number;
-  status: string;
-  metadata: any;
+  description: string;
+  symbol: string;
   created_at: string;
   updated_at: string;
-  currency: {
-    id: number;
-    public_id: string;
-    name: string;
-    code: string;
-    symbol: string;
-    flag: string | null;
-    status: string;
-    created_at: string;
-    updated_at: string;
-  };
 }
 
 interface PaginationInfo {
@@ -45,18 +30,17 @@ interface ApiResponse {
   success: boolean;
   message: string;
   result: {
-    data: Country[];
+    data: Unity[];
     pagination: PaginationInfo;
   };
   errors: any;
   except: any;
 }
 
-const CountriesListPage = () => {
-  const [countries, setCountries] = useState<Country[]>([]);
+const UnitiesListPage = () => {
+  const [unities, setUnities] = useState<Unity[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 10,
@@ -64,44 +48,20 @@ const CountriesListPage = () => {
     totalPages: 1,
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [editingCountry, setEditingCountry] = useState<Country | null>(null);
+  const [editingUnity, setEditingUnity] = useState<Unity | null>(null);
   const [editFormData, setEditFormData] = useState({
     name: "",
-    iso: "",
-    prefix: "",
-    currency_id: "",
-    status: "active",
+    description: "",
+    symbol: "",
   });
   const [editLoading, setEditLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
-  const [countryToDelete, setCountryToDelete] = useState<Country | null>(null);
-  const [currencies, setCurrencies] = useState<any[]>([]);
+  const [unityToDelete, setUnityToDelete] = useState<Unity | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState<boolean>(false);
+  const [selectedUnity, setSelectedUnity] = useState<Unity | null>(null);
   const { t } = useTranslation();
 
-  // Récupérer la liste des devises pour le modal d'édition
-  const fetchCurrencies = async () => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      if (!token) return;
-
-      const response = await axiosInstance.get(
-        "/admin/reference-data/currencies?page=1&limit=100",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.data.success) {
-        setCurrencies(response.data.result.data || []);
-      }
-    } catch (err: any) {
-      console.error("Erreur lors du chargement des devises:", err);
-    }
-  };
-
-  const fetchCountries = async (page: number = 1) => {
+  const fetchUnities = async (page: number = 1) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
@@ -124,12 +84,8 @@ const CountriesListPage = () => {
         params.append("search", searchTerm.trim());
       }
 
-      if (statusFilter) {
-        params.append("status", statusFilter);
-      }
-
       const response = await axiosInstance.get(
-        `/admin/reference-data/countries?${params.toString()}`,
+        `/admin/reference-data/unities?${params.toString()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -137,22 +93,22 @@ const CountriesListPage = () => {
         }
       );
 
-      console.log("Réponse API pays :", response.data);
+      console.log("Réponse API unités :", response.data);
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
-        setCountries(apiResponse.result.data || []);
+        setUnities(apiResponse.result.data || []);
         setPagination(apiResponse.result.pagination);
       } else {
         toast.error(t("error"), {
           description:
-            response.data.message || "Erreur lors du chargement des pays",
+            response.data.message || "Erreur lors du chargement des unités",
         });
-        setCountries([]);
+        setUnities([]);
       }
     } catch (err: any) {
-      console.error("Erreur API pays :", err);
-      let errorMessage = "Erreur lors du chargement des pays.";
+      console.error("Erreur API unités :", err);
+      let errorMessage = "Erreur lors du chargement des unités.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -168,52 +124,36 @@ const CountriesListPage = () => {
           description: errorMessage,
         });
       }
-      setCountries([]);
+      setUnities([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCountries(1);
-    fetchCurrencies();
+    fetchUnities(1);
   }, []);
 
   // Debounce pour la recherche
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      fetchCountries(1);
+      fetchUnities(1);
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, statusFilter]);
+  }, [searchTerm]);
 
   const handleSearch = () => {
-    fetchCountries(1);
+    fetchUnities(1);
   };
 
   const handlePageChange = (page: number) => {
-    fetchCountries(page);
+    fetchUnities(page);
   };
 
   const clearFilters = () => {
     setSearchTerm("");
-    setStatusFilter("");
-    fetchCountries(1);
-  };
-
-  const getStatusBadge = (status: string) => {
-    return (
-      <span
-        className={`px-2 py-1 text-xs font-medium rounded-full ${
-          status === "active"
-            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-            : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-        }`}
-      >
-        {status === "active" ? t("active") : t("inactive")}
-      </span>
-    );
+    fetchUnities(1);
   };
 
   const formatDate = (dateString: string) => {
@@ -225,32 +165,28 @@ const CountriesListPage = () => {
   };
 
   // Fonctions pour l'édition
-  const openEditModal = (country: Country) => {
-    setEditingCountry(country);
+  const openEditModal = (unity: Unity) => {
+    setEditingUnity(unity);
     setEditFormData({
-      name: country.name,
-      iso: country.iso,
-      prefix: country.prefix,
-      currency_id: country.currency_id.toString(),
-      status: country.status,
+      name: unity.name,
+      description: unity.description,
+      symbol: unity.symbol,
     });
     setIsEditModalOpen(true);
   };
 
   const closeEditModal = () => {
     setIsEditModalOpen(false);
-    setEditingCountry(null);
+    setEditingUnity(null);
     setEditFormData({
       name: "",
-      iso: "",
-      prefix: "",
-      currency_id: "",
-      status: "active",
+      description: "",
+      symbol: "",
     });
   };
 
   const handleEditInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setEditFormData((prev) => ({
@@ -259,31 +195,25 @@ const CountriesListPage = () => {
     }));
   };
 
-  const handleUpdateCountry = async () => {
-    if (!editingCountry) return;
+  const handleUpdateUnity = async () => {
+    if (!editingUnity) return;
 
     // Validation
     if (!editFormData.name.trim()) {
       toast.error(t("error"), {
-        description: t("country_name") + " " + t("is_required"),
+        description: t("unity_name") + " " + t("is_required"),
       });
       return;
     }
-    if (!editFormData.iso.trim()) {
+    if (!editFormData.description.trim()) {
       toast.error(t("error"), {
-        description: t("country_iso") + " " + t("is_required"),
+        description: t("unity_description") + " " + t("is_required"),
       });
       return;
     }
-    if (!editFormData.prefix.trim()) {
+    if (!editFormData.symbol.trim()) {
       toast.error(t("error"), {
-        description: t("country_prefix") + " " + t("is_required"),
-      });
-      return;
-    }
-    if (!editFormData.currency_id) {
-      toast.error(t("error"), {
-        description: t("country_currency") + " " + t("is_required"),
+        description: t("unity_symbol") + " " + t("is_required"),
       });
       return;
     }
@@ -300,11 +230,8 @@ const CountriesListPage = () => {
       }
 
       const response = await axiosInstance.put(
-        `/admin/reference-data/countries/${editingCountry.id}`,
-        {
-          ...editFormData,
-          currency_id: parseInt(editFormData.currency_id),
-        },
+        `/admin/reference-data/unities/${editingUnity.id}`,
+        editFormData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -316,14 +243,14 @@ const CountriesListPage = () => {
 
       if (response.data.success) {
         toast.success(t("success"), {
-          description: response.data.message || "Pays mis à jour avec succès",
+          description: response.data.message || "Unité mise à jour avec succès",
         });
 
         // Fermer le modal
         closeEditModal();
 
         // Rafraîchir la liste
-        fetchCountries(pagination.page);
+        fetchUnities(pagination.page);
       } else {
         toast.error(t("error"), {
           description: response.data.message || "Erreur lors de la mise à jour",
@@ -331,7 +258,7 @@ const CountriesListPage = () => {
       }
     } catch (err: any) {
       console.error("Erreur API mise à jour :", err);
-      let errorMessage = "Erreur lors de la mise à jour du pays.";
+      let errorMessage = "Erreur lors de la mise à jour de l'unité.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -353,16 +280,16 @@ const CountriesListPage = () => {
   };
 
   // Fonctions pour la suppression
-  const openDeleteConfirmation = (country: Country) => {
-    setCountryToDelete(country);
+  const openDeleteConfirmation = (unity: Unity) => {
+    setUnityToDelete(unity);
   };
 
   const closeDeleteConfirmation = () => {
-    setCountryToDelete(null);
+    setUnityToDelete(null);
   };
 
-  const handleDeleteCountry = async () => {
-    if (!countryToDelete) return;
+  const handleDeleteUnity = async () => {
+    if (!unityToDelete) return;
 
     setDeleteLoading(true);
 
@@ -376,7 +303,7 @@ const CountriesListPage = () => {
       }
 
       const response = await axiosInstance.delete(
-        `/admin/reference-data/countries/${countryToDelete.id}`,
+        `/admin/reference-data/unities/${unityToDelete.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -388,14 +315,14 @@ const CountriesListPage = () => {
 
       if (response.data.success) {
         toast.success(t("success"), {
-          description: response.data.message || "Pays supprimé avec succès",
+          description: response.data.message || "Unité supprimée avec succès",
         });
 
         // Fermer la confirmation
         closeDeleteConfirmation();
 
         // Rafraîchir la liste
-        fetchCountries(pagination.page);
+        fetchUnities(pagination.page);
       } else {
         toast.error(t("error"), {
           description: response.data.message || "Erreur lors de la suppression",
@@ -403,7 +330,7 @@ const CountriesListPage = () => {
       }
     } catch (err: any) {
       console.error("Erreur API suppression :", err);
-      let errorMessage = "Erreur lors de la suppression du pays.";
+      let errorMessage = "Erreur lors de la suppression de l'unité.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -424,46 +351,43 @@ const CountriesListPage = () => {
     }
   };
 
+  // Fonctions pour les détails
+  const openDetailsModal = (unity: Unity) => {
+    setSelectedUnity(unity);
+    setIsDetailsModalOpen(true);
+  };
+
+  const closeDetailsModal = () => {
+    setIsDetailsModalOpen(false);
+    setSelectedUnity(null);
+  };
+
   return (
     <>
       <PageMeta
-        title="OFR | Liste des pays"
-        description="Consulter la liste des pays pour Opération Fluidité Routière Agro-bétail"
+        title="OFR | Liste des unités"
+        description="Consulter la liste des unités pour Opération Fluidité Routière Agro-bétail"
       />
-      <PageBreadcrumb pageTitle={t("country_list")} />
+      <PageBreadcrumb pageTitle={t("unities_list")} />
       <div className="page-container">
         <div className="space-y-6">
           {/* Header with search and add button */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex-1 max-w-md">
               <Input
-                placeholder={t("search_country")}
+                placeholder={t("search_unity")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full"
               />
             </div>
-            <Link to="/pays">
-              <Button className="px-6 py-2">{t("add_country")}</Button>
+            <Link to="/unities/add">
+              <Button className="px-6 py-2">{t("add_unity")}</Button>
             </Link>
           </div>
 
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 max-w-xs">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t("status")}
-              </label>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              >
-                <option value="">{t("all_statuses")}</option>
-                <option value="active">{t("active")}</option>
-                <option value="inactive">{t("inactive")}</option>
-              </select>
-            </div>
             <div className="flex items-end gap-2">
               <Button
                 variant="outline"
@@ -482,14 +406,12 @@ const CountriesListPage = () => {
             </div>
           </div>
 
-          {/* Countries Table */}
-          <ComponentCard title={t("country_list")}>
-            {countries.length === 0 ? (
+          {/* Unities Table */}
+          <ComponentCard title={t("unities_list")}>
+            {unities.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
-                  {searchTerm || statusFilter
-                    ? t("no_search_results")
-                    : t("no_countries_found")}
+                  {searchTerm ? t("no_search_results") : t("no_unities_found")}
                 </p>
               </div>
             ) : (
@@ -498,22 +420,13 @@ const CountriesListPage = () => {
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("country_name")}
+                        {t("unity_name")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("country_iso")}
+                        {t("unity_description")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("country_prefix")}
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("country_currency")}
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("status")}
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("date_creation")}
+                        {t("unity_symbol")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
                         {t("actions")}
@@ -521,39 +434,40 @@ const CountriesListPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {countries.map((country) => (
+                    {unities.map((unity) => (
                       <tr
-                        key={country.id}
+                        key={unity.id}
                         className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
                       >
                         <td className="py-3 px-4 font-medium text-gray-900 dark:text-gray-100">
-                          {country.name}
+                          {unity.name}
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {country.iso}
+                          {unity.description.length > 50
+                            ? `${unity.description.substring(0, 50)}...`
+                            : unity.description}
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {country.prefix}
-                        </td>
-                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {country.currency?.name} ({country.currency?.code})
-                        </td>
-                        <td className="py-3 px-4">
-                          {getStatusBadge(country.status)}
-                        </td>
-                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {formatDate(country.created_at)}
+                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                            {unity.symbol}
+                          </span>
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex gap-2">
                             <button
-                              onClick={() => openEditModal(country)}
+                              onClick={() => openDetailsModal(unity)}
+                              className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                            >
+                              {t("details")}
+                            </button>
+                            <button
+                              onClick={() => openEditModal(unity)}
                               className="px-3 py-1 text-sm bg-blue-900 text-white rounded"
                             >
                               {t("edit")}
                             </button>
                             <button
-                              onClick={() => openDeleteConfirmation(country)}
+                              onClick={() => openDeleteConfirmation(unity)}
                               className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
                             >
                               {t("delete")}
@@ -627,6 +541,82 @@ const CountriesListPage = () => {
         </div>
       </div>
 
+      {/* Details Modal */}
+      {isDetailsModalOpen && selectedUnity && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="fixed inset-0 bg-black/10 backdrop-blur-sm"
+            onClick={closeDetailsModal}
+          ></div>
+          <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                {t("unity_details")}
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t("unity_name")}
+                  </label>
+                  <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                    {selectedUnity.name}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t("unity_symbol")}
+                  </label>
+                  <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                      {selectedUnity.symbol}
+                    </span>
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t("unity_description")}
+                  </label>
+                  <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                    {selectedUnity.description}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t("last_update")}
+                  </label>
+                  <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                    {formatDate(selectedUnity.updated_at)}
+                  </p>
+                </div>
+
+                {/* <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t("unity_id")}
+                  </label>
+                  <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                    {selectedUnity.public_id}
+                  </p>
+                </div> */}
+              </div>
+
+              <div className="flex justify-end mt-6">
+                <Button
+                  variant="outline"
+                  onClick={closeDetailsModal}
+                  className="px-4 py-2"
+                >
+                  {t("close")}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -637,13 +627,13 @@ const CountriesListPage = () => {
           <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                {t("edit_country")}
+                {t("edit_unity")}
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("country_name")} <span className="text-red-500">*</span>
+                    {t("unity_name")} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -657,12 +647,12 @@ const CountriesListPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("country_iso")} <span className="text-red-500">*</span>
+                    {t("unity_symbol")} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    name="iso"
-                    value={editFormData.iso}
+                    name="symbol"
+                    value={editFormData.symbol}
                     onChange={handleEditInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     disabled={editLoading}
@@ -671,55 +661,17 @@ const CountriesListPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("country_prefix")}{" "}
+                    {t("unity_description")}{" "}
                     <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="text"
-                    name="prefix"
-                    value={editFormData.prefix}
+                  <textarea
+                    name="description"
+                    value={editFormData.description}
                     onChange={handleEditInputChange}
+                    rows={4}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     disabled={editLoading}
                   />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("country_currency")}{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="currency_id"
-                    value={editFormData.currency_id}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    disabled={editLoading}
-                  >
-                    <option value="">{t("select_currency")}</option>
-                    {currencies.map((currency) => (
-                      <option key={currency.id} value={currency.id}>
-                        {currency.name} ({currency.code})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("country_status")}{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="status"
-                    value={editFormData.status}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    disabled={editLoading}
-                  >
-                    <option value="active">{t("active")}</option>
-                    <option value="inactive">{t("inactive")}</option>
-                  </select>
                 </div>
               </div>
 
@@ -733,7 +685,7 @@ const CountriesListPage = () => {
                   {t("cancel")}
                 </Button>
                 <Button
-                  onClick={handleUpdateCountry}
+                  onClick={handleUpdateUnity}
                   disabled={editLoading}
                   className="px-4 py-2"
                 >
@@ -746,7 +698,7 @@ const CountriesListPage = () => {
       )}
 
       {/* Delete Confirmation Modal */}
-      {countryToDelete && (
+      {unityToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="fixed inset-0 bg-black/10 backdrop-blur-sm"
@@ -760,7 +712,7 @@ const CountriesListPage = () => {
 
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 {t("delete_confirmation_message")}{" "}
-                <strong>{countryToDelete.name}</strong> ?
+                <strong>{unityToDelete.name}</strong> ?
               </p>
 
               <div className="flex justify-end gap-3">
@@ -773,7 +725,7 @@ const CountriesListPage = () => {
                   {t("cancel")}
                 </Button>
                 <Button
-                  onClick={handleDeleteCountry}
+                  onClick={handleDeleteUnity}
                   disabled={deleteLoading}
                   className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white"
                 >
@@ -788,4 +740,4 @@ const CountriesListPage = () => {
   );
 };
 
-export default CountriesListPage;
+export default UnitiesListPage;
