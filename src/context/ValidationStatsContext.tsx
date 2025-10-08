@@ -59,6 +59,7 @@ interface ValidationStatsContextType {
   refetch: () => Promise<void>;
   lastFetch: Date | null;
   isSessionExpired: boolean;
+  clearError: () => void;
 }
 
 const ValidationStatsContext = createContext<
@@ -78,6 +79,7 @@ export const ValidationStatsProvider: React.FC<
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
   const [isFetching, setIsFetching] = useState(false);
   const [isSessionExpired, setIsSessionExpired] = useState(false);
+  const [lastTokenCheck, setLastTokenCheck] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const fetchStats = async (forceRefresh = false) => {
@@ -158,9 +160,57 @@ export const ValidationStatsProvider: React.FC<
     await fetchStats(true);
   };
 
+  const clearError = () => {
+    setError(null);
+    setIsSessionExpired(false);
+  };
+
   useEffect(() => {
     fetchStats();
   }, []);
+
+  // Surveiller les changements de token pour recharger après reconnexion
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "accessToken" && e.newValue) {
+        console.log(
+          "🔄 Nouveau token détecté, rechargement des statistiques..."
+        );
+        // Réinitialiser l'état d'erreur et recharger
+        setError(null);
+        setIsSessionExpired(false);
+        fetchStats(true);
+      }
+    };
+
+    // Écouter les changements de localStorage
+    window.addEventListener("storage", handleStorageChange);
+
+    // Vérifier périodiquement si un nouveau token est disponible
+    const checkTokenInterval = setInterval(() => {
+      const token = localStorage.getItem("accessToken");
+
+      // Ne vérifier que si on était en état d'expiration
+      if (token && isSessionExpired) {
+        // Vérifier si c'est un nouveau token
+        if (token !== lastTokenCheck) {
+          console.log("🔄 Nouveau token détecté, rechargement...");
+          setLastTokenCheck(token);
+          setError(null);
+          setIsSessionExpired(false);
+          fetchStats(true);
+        }
+      } else if (!token) {
+        // Pas de token, réinitialiser le check
+        setLastTokenCheck(null);
+      }
+    }, 2000); // Vérifier toutes les 2 secondes (au lieu de 1)
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(checkTokenInterval);
+    };
+  }, [isSessionExpired, lastTokenCheck]);
 
   const value: ValidationStatsContextType = {
     stats,
@@ -169,6 +219,7 @@ export const ValidationStatsProvider: React.FC<
     refetch,
     lastFetch,
     isSessionExpired,
+    clearError,
   };
 
   return (

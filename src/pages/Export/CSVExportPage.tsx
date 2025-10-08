@@ -7,6 +7,7 @@ import {
   AlertCircle,
   CheckCircle,
   Loader2,
+  Calendar,
 } from "lucide-react";
 
 interface ExportResponse {
@@ -24,18 +25,82 @@ export default function CSVExportPage() {
   const [isExporting, setIsExporting] = useState(false);
   const [exportResult, setExportResult] = useState<ExportResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  // Fonction pour définir des dates par défaut (30 derniers jours)
+  const setDefaultDateRange = () => {
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+
+    const endDateStr = today.toISOString().split("T")[0];
+    const startDateStr = thirtyDaysAgo.toISOString().split("T")[0];
+
+    setEndDate(endDateStr);
+    setStartDate(startDateStr);
+  };
+
+  // Définir les dates par défaut au chargement du composant
+  React.useEffect(() => {
+    setDefaultDateRange();
+  }, []);
+
+  // Handlers pour les changements de dates
+  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStartDate(e.target.value);
+  };
+
+  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEndDate(e.target.value);
+  };
+
+  // Fonction pour ouvrir le sélecteur de date
+  const openDatePicker = (inputId: string) => {
+    const input = document.getElementById(inputId) as HTMLInputElement;
+    if (input) {
+      // Essayer d'ouvrir le sélecteur natif, sinon focuser l'input
+      try {
+        // Focuser d'abord l'input
+        input.focus();
+
+        // Puis essayer d'ouvrir le sélecteur
+        if (input.showPicker) {
+          // Petit délai pour s'assurer que le focus est établi
+          setTimeout(() => {
+            input.showPicker();
+          }, 10);
+        }
+      } catch (error) {
+        // Fallback: juste focuser l'input
+        input.focus();
+      }
+    }
+  };
 
   const handleExport = async () => {
+    // Validation des dates
+    if (!startDate || !endDate) {
+      setError(t("date_range_required"));
+      return;
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
+      setError(t("invalid_date_range"));
+      return;
+    }
+
     setIsExporting(true);
     setError(null);
     setExportResult(null);
 
     try {
-      console.log("🚀 Début de l'export CSV...");
+      const payload = {
+        startDate,
+        endDate,
+      };
 
-      const response = await axiosInstance.post("/admin/export-csv");
-
-      console.log("✅ Réponse API reçue:", response.data);
+      const response = await axiosInstance.post("/admin/export-csv", payload);
 
       if (response.data.success) {
         setExportResult(response.data);
@@ -53,8 +118,6 @@ export default function CSVExportPage() {
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-
-        console.log("📁 Fichier téléchargé:", response.data.filename);
       } else {
         setError(response.data.message || "Erreur lors de l'export");
       }
@@ -122,8 +185,104 @@ export default function CSVExportPage() {
             </div>
           </div>
 
+          {/* Date Range Selection */}
+          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="flex items-center mb-4">
+              <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                {t("date_range_selection")}
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="startDate"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  {t("start_date")}
+                </label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    id="startDate"
+                    value={startDate}
+                    onChange={handleStartDateChange}
+                    onClick={() => openDatePicker("startDate")}
+                    min="2020-01-01"
+                    max="2030-12-31"
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
+                    style={{ colorScheme: "dark" }}
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <button
+                      type="button"
+                      onClick={() => openDatePicker("startDate")}
+                      className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:text-blue-500"
+                      aria-label="Ouvrir le sélecteur de date"
+                    >
+                      <Calendar className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  {t("date_format_hint")}
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="endDate"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  {t("end_date")}
+                </label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    id="endDate"
+                    value={endDate}
+                    onChange={handleEndDateChange}
+                    onClick={() => openDatePicker("endDate")}
+                    min="2020-01-01"
+                    max="2030-12-31"
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
+                    style={{ colorScheme: "dark" }}
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <button
+                      type="button"
+                      onClick={() => openDatePicker("endDate")}
+                      className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:text-blue-500"
+                      aria-label="Ouvrir le sélecteur de date"
+                    >
+                      <Calendar className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  {t("date_format_hint")}
+                </p>
+              </div>
+            </div>
+
+            <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+              {t("select_date_range")}
+            </p>
+
+            <div className="mt-4">
+              <button
+                onClick={setDefaultDateRange}
+                className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                {t("reset_to_default")}
+              </button>
+            </div>
+          </div>
+
           {/* Export Button */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-6">
             <div className="flex-1">
               <button
                 onClick={handleExport}
@@ -131,7 +290,7 @@ export default function CSVExportPage() {
                 className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
                   isExporting
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    : "bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 } transition-colors duration-200`}
               >
                 {isExporting ? (
@@ -142,7 +301,9 @@ export default function CSVExportPage() {
                 ) : (
                   <>
                     <Download className="-ml-1 mr-3 h-5 w-5" />
-                    {t("export_csv")}
+                    {startDate && endDate
+                      ? t("export_with_dates")
+                      : t("export_csv")}
                   </>
                 )}
               </button>
