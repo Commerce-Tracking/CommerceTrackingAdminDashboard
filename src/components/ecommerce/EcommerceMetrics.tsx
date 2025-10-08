@@ -2,6 +2,7 @@ import React from "react";
 import { FileIcon, ListIcon } from "../../icons";
 import { useTranslation } from "react-i18next";
 import { useValidationStats } from "../../context/ValidationStatsContext";
+import { XCircle, AlertTriangle } from "lucide-react";
 
 export default function EcommerceMetrics() {
   const { t } = useTranslation();
@@ -108,31 +109,43 @@ export default function EcommerceMetrics() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
         {/* Rejetées (Chef d'équipe) */}
         <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-          <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-            <ListIcon className="text-gray-800 size-6 dark:text-white/90" />
+          <div className="flex items-center justify-center w-12 h-12 bg-red-50 rounded-xl dark:bg-red-900/20">
+            <XCircle className="text-red-600 size-6 dark:text-red-400" />
           </div>
           <div className="mt-5">
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-sm text-red-600 dark:text-red-400 font-semibold">
               {t("rejected_by_team_lead")}
             </span>
-            <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
+            <h4 className="mt-2 font-bold text-red-700 text-title-sm dark:text-red-300">
               {(stats?.total_rejected_by_team_lead || 0).toLocaleString()}
             </h4>
+            <div className="mt-2 flex items-center text-xs text-red-500 dark:text-red-400">
+              <AlertTriangle className="w-3 h-3 mr-1" />
+              <span className="font-medium">
+                {t("rejected_collections_label")}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Rejetées (Superviseur) */}
         <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-          <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-            <FileIcon className="text-gray-800 size-6 dark:text-white/90" />
+          <div className="flex items-center justify-center w-12 h-12 bg-red-50 rounded-xl dark:bg-red-900/20">
+            <XCircle className="text-red-600 size-6 dark:text-red-400" />
           </div>
           <div className="mt-5">
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-sm text-red-600 dark:text-red-400 font-semibold">
               {t("rejected_by_supervisor")}
             </span>
-            <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
+            <h4 className="mt-2 font-bold text-red-700 text-title-sm dark:text-red-300">
               {(stats?.total_rejected_by_supervisor || 0).toLocaleString()}
             </h4>
+            <div className="mt-2 flex items-center text-xs text-red-500 dark:text-red-400">
+              <AlertTriangle className="w-3 h-3 mr-1" />
+              <span className="font-medium">
+                {t("rejected_collections_label")}
+              </span>
+            </div>
           </div>
         </div>
       </div>

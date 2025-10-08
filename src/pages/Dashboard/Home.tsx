@@ -6,11 +6,52 @@ import PageMeta from "../../components/common/PageMeta";
 import ErrorBoundary from "../../components/common/ErrorBoundary";
 import { useTranslation } from "react-i18next";
 import { useValidationStats } from "../../context/ValidationStatsContext";
+import { useEffect } from "react";
 
 export default function Home() {
   const { t } = useTranslation();
   // Garder l'utilisation du contexte pour s'assurer qu'il est initialisé
-  const { loading } = useValidationStats();
+  const { loading, clearError, refetch } = useValidationStats();
+
+  // Détecter la reconnexion et recharger les données
+  useEffect(() => {
+    let lastCheckTime = 0;
+    const CHECK_INTERVAL = 5000; // 5 secondes minimum entre les vérifications
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        const now = Date.now();
+
+        // Éviter les vérifications trop fréquentes
+        if (now - lastCheckTime < CHECK_INTERVAL) {
+          console.log("🔄 Vérification trop récente, ignorée");
+          return;
+        }
+
+        lastCheckTime = now;
+
+        // Vérifier si l'utilisateur est de retour sur la page
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+          console.log("🔄 Page visible, vérification des données...");
+          // Ne recharger que si on était en état d'erreur
+          clearError();
+          // Le contexte gérera lui-même le rechargement si nécessaire
+        }
+      }
+    };
+
+    // Écouter les changements de visibilité de la page
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Écouter le focus de la fenêtre
+    window.addEventListener("focus", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleVisibilityChange);
+    };
+  }, [clearError]);
 
   return (
     <div className="page-container">
