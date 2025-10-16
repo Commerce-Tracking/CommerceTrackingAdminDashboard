@@ -13,8 +13,8 @@ interface Product {
   id: number;
   public_id: string;
   name: string;
+  name_eng: string;
   product_type_id: number;
-  HS_code: string;
   description: string;
   created_at: string;
   updated_at: string;
@@ -26,6 +26,22 @@ interface Product {
     created_at: string;
     updated_at: string;
   };
+  productCodes?: {
+    id: number;
+    product_id: number;
+    product_nature_id: number;
+    hs_code: string;
+    abbreviation: string;
+    created_at: string;
+    updated_at: string;
+    productNature?: {
+      id: number;
+      name_fr: string;
+      name_en: string;
+      created_at: string;
+      updated_at: string;
+    };
+  }[];
   collectionItems?: any[];
   tracasserieProducts?: any[];
   tracasserieControlPosts?: any[];
@@ -64,8 +80,8 @@ const ProductsListPage = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editFormData, setEditFormData] = useState({
     name: "",
+    name_eng: "",
     product_type_id: "",
-    HS_code: "",
     description: "",
   });
   const [editLoading, setEditLoading] = useState<boolean>(false);
@@ -74,7 +90,7 @@ const ProductsListPage = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productTypes, setProductTypes] = useState<any[]>([]);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Récupérer la liste des types de produits pour le modal d'édition
   const fetchProductTypes = async () => {
@@ -113,25 +129,18 @@ const ProductsListPage = () => {
         return;
       }
 
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: pagination.limit.toString(),
-      });
+      // Construction de l'URL avec pagination fonctionnelle
+      let url = `/admin/reference-data/products?page=${page}&limit=${pagination.limit}`;
 
       if (searchTerm.trim()) {
-        params.append("search", searchTerm.trim());
+        url += `&search=${encodeURIComponent(searchTerm.trim())}`;
       }
 
-      const response = await axiosInstance.get(
-        `/admin/reference-data/products?${params.toString()}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log("Réponse API produits :", response.data);
+      const response = await axiosInstance.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
@@ -145,7 +154,6 @@ const ProductsListPage = () => {
         setProducts([]);
       }
     } catch (err: any) {
-      console.error("Erreur API produits :", err);
       let errorMessage = "Erreur lors du chargement des produits.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -171,7 +179,7 @@ const ProductsListPage = () => {
   useEffect(() => {
     fetchProducts(1);
     fetchProductTypes();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Debounce pour la recherche
   useEffect(() => {
@@ -219,8 +227,8 @@ const ProductsListPage = () => {
     setEditingProduct(product);
     setEditFormData({
       name: product.name,
+      name_eng: product.name_eng || "",
       product_type_id: product.product_type_id.toString(),
-      HS_code: product.HS_code,
       description: product.description,
     });
     setIsEditModalOpen(true);
@@ -231,8 +239,8 @@ const ProductsListPage = () => {
     setEditingProduct(null);
     setEditFormData({
       name: "",
+      name_eng: "",
       product_type_id: "",
-      HS_code: "",
       description: "",
     });
   };
@@ -259,15 +267,15 @@ const ProductsListPage = () => {
       });
       return;
     }
-    if (!editFormData.product_type_id) {
+    if (!editFormData.name_eng.trim()) {
       toast.error(t("error"), {
-        description: t("product_type") + " " + t("is_required"),
+        description: t("name_english") + " " + t("is_required"),
       });
       return;
     }
-    if (!editFormData.HS_code.trim()) {
+    if (!editFormData.product_type_id) {
       toast.error(t("error"), {
-        description: t("hs_code") + " " + t("is_required"),
+        description: t("product_type") + " " + t("is_required"),
       });
       return;
     }
@@ -293,8 +301,8 @@ const ProductsListPage = () => {
         `/admin/reference-data/products/${editingProduct.id}`,
         {
           name: editFormData.name.trim(),
+          name_eng: editFormData.name_eng.trim(),
           product_type_id: parseInt(editFormData.product_type_id),
-          HS_code: editFormData.HS_code.trim(),
           description: editFormData.description.trim(),
         },
         {
@@ -485,7 +493,7 @@ const ProductsListPage = () => {
                         {t("product_type")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("hs_code")}
+                        {t("associated_product_codes")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
                         {t("product_description")}
@@ -508,7 +516,7 @@ const ProductsListPage = () => {
                           {product.productType?.name || "N/A"}
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400 font-mono text-sm">
-                          {product.HS_code}
+                          {product.productCodes?.length || 0}
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
                           <div
@@ -616,7 +624,7 @@ const ProductsListPage = () => {
           ></div>
           <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 mt-10">
                 {t("product_details")}
               </h3>
 
@@ -641,10 +649,10 @@ const ProductsListPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("hs_code")}
+                    {t("name_english")}
                   </label>
-                  <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100 font-mono">
-                    {selectedProduct.HS_code}
+                  <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100">
+                    {selectedProduct.name_eng || "N/A"}
                   </div>
                 </div>
 
@@ -655,6 +663,49 @@ const ProductsListPage = () => {
                   <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100 min-h-[100px] whitespace-pre-wrap">
                     {selectedProduct.description}
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("associated_product_codes")} (
+                    {selectedProduct.productCodes?.length || 0})
+                  </label>
+                  {selectedProduct.productCodes &&
+                  selectedProduct.productCodes.length > 0 ? (
+                    <div className="max-h-60 overflow-y-auto bg-gray-50 dark:bg-gray-700 rounded-md p-3">
+                      <div className="space-y-2">
+                        {selectedProduct.productCodes.map((code, index) => (
+                          <div
+                            key={code.id}
+                            className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded border"
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                  {code.hs_code || "N/A"}
+                                </span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  ({code.abbreviation})
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                {i18n.language === "fr"
+                                  ? code.productNature?.name_fr
+                                  : code.productNature?.name_en}
+                                {code.productNature && " • "}
+                                {t("product_nature_id")}:{" "}
+                                {code.product_nature_id}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-500 dark:text-gray-400 text-center">
+                      {t("no_product_codes_associated")}
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -751,12 +802,12 @@ const ProductsListPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("hs_code")} <span className="text-red-500">*</span>
+                    {t("name_english")} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    name="HS_code"
-                    value={editFormData.HS_code}
+                    name="name_eng"
+                    value={editFormData.name_eng}
                     onChange={handleEditInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     disabled={editLoading}

@@ -166,10 +166,7 @@ const AddCorridor = () => {
       setError(t("corridor_distance") + " " + t("is_required"));
       return false;
     }
-    if (!formData.nbre_checkpoints.trim()) {
-      setError(t("corridor_checkpoints") + " " + t("is_required"));
-      return false;
-    }
+    // Le nombre de checkpoints est optionnel
     return true;
   };
 
@@ -208,7 +205,9 @@ const AddCorridor = () => {
           city_start_id: parseInt(formData.city_start_id),
           city_end_id: parseInt(formData.city_end_id),
           distance: parseFloat(formData.distance),
-          nbre_checkpoints: parseInt(formData.nbre_checkpoints),
+          nbre_checkpoints: formData.nbre_checkpoints
+            ? parseInt(formData.nbre_checkpoints)
+            : null,
         },
         {
           headers: {
@@ -421,10 +420,7 @@ const AddCorridor = () => {
 
               {/* Nombre de checkpoints */}
               <div>
-                <Label>
-                  {t("corridor_checkpoints")}{" "}
-                  <span className="text-error-500">*</span>
-                </Label>
+                <Label>{t("corridor_checkpoints")}</Label>
                 <input
                   name="nbre_checkpoints"
                   type="number"

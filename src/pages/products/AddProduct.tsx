@@ -11,8 +11,8 @@ import { useTranslation } from "react-i18next";
 
 interface ProductFormData {
   name: string;
+  name_eng: string;
   product_type_id: string;
-  HS_code: string;
   description: string;
 }
 
@@ -33,8 +33,8 @@ const AddProduct = () => {
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
   const [formData, setFormData] = useState<ProductFormData>({
     name: "",
+    name_eng: "",
     product_type_id: "",
-    HS_code: "",
     description: "",
   });
 
@@ -97,20 +97,6 @@ const AddProduct = () => {
         return;
       }
 
-      if (!formData.HS_code.trim()) {
-        toast.error(t("error"), {
-          description: t("hs_code") + " " + t("is_required"),
-        });
-        return;
-      }
-
-      if (!formData.description.trim()) {
-        toast.error(t("error"), {
-          description: t("product_description") + " " + t("is_required"),
-        });
-        return;
-      }
-
       const token = localStorage.getItem("accessToken");
       if (!token) {
         toast.error(t("auth_error"), {
@@ -126,8 +112,8 @@ const AddProduct = () => {
         "/admin/reference-data/products",
         {
           name: formData.name.trim(),
+          name_eng: formData.name_eng.trim() || formData.name.trim(), // Utilise le nom français si anglais vide
           product_type_id: parseInt(formData.product_type_id),
-          HS_code: formData.HS_code.trim(),
           description: formData.description.trim(),
         },
         {
@@ -178,8 +164,8 @@ const AddProduct = () => {
   const handleReset = () => {
     setFormData({
       name: "",
+      name_eng: "",
       product_type_id: "",
-      HS_code: "",
       description: "",
     });
   };
@@ -235,24 +221,22 @@ const AddProduct = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("hs_code")} <span className="text-red-500">*</span>
+                    {t("name_english")}
                   </label>
                   <Input
                     type="text"
-                    name="HS_code"
-                    value={formData.HS_code}
+                    name="name_eng"
+                    value={formData.name_eng}
                     onChange={handleInputChange}
-                    placeholder={t("enter_hs_code")}
+                    placeholder={t("enter_name_english")}
                     className="w-full"
                     disabled={loading}
-                    required
                   />
                 </div>
 
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_description")}{" "}
-                    <span className="text-red-500">*</span>
+                    {t("product_description")}
                   </label>
                   <textarea
                     name="description"
@@ -262,7 +246,6 @@ const AddProduct = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     rows={4}
                     disabled={loading}
-                    required
                   />
                 </div>
               </div>

@@ -484,7 +484,14 @@ const CountriesListPage = () => {
 
           {/* Countries Table */}
           <ComponentCard title={t("country_list")}>
-            {countries.length === 0 ? (
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-2 text-gray-600 dark:text-gray-400">
+                  {t("loading")}...
+                </span>
+              </div>
+            ) : countries.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
                   {searchTerm || statusFilter

@@ -1,14 +1,28 @@
 import React from "react";
 import { FileIcon, ListIcon } from "../../icons";
 import { useTranslation } from "react-i18next";
-import { useValidationStats } from "../../context/ValidationStatsContext";
+import { usePendingCollections } from "../../context/PendingCollectionsContext";
+import { useRejectedByLevel } from "../../context/RejectedByLevelContext";
 import { XCircle, AlertTriangle } from "lucide-react";
 
 export default function EcommerceMetrics() {
   const { t } = useTranslation();
-  const { stats, loading, error, isSessionExpired } = useValidationStats();
+  const {
+    pendingTeamLead,
+    pendingSupervisor,
+    loading: pendingLoading,
+    error: pendingError,
+    isSessionExpired: pendingSessionExpired,
+  } = usePendingCollections();
+  const {
+    totalRejectedByTeamLead,
+    totalRejectedBySupervisor,
+    loading: rejectedLoading,
+    error: rejectedError,
+    isSessionExpired: rejectedSessionExpired,
+  } = useRejectedByLevel();
 
-  if (loading) {
+  if (pendingLoading || rejectedLoading) {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
@@ -28,7 +42,11 @@ export default function EcommerceMetrics() {
     );
   }
 
-  if (error && !isSessionExpired) {
+  if (
+    (pendingError || rejectedError) &&
+    !pendingSessionExpired &&
+    !rejectedSessionExpired
+  ) {
     return (
       <div className="space-y-6">
         <div className="rounded-2xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 p-6">
@@ -46,7 +64,7 @@ export default function EcommerceMetrics() {
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
               />
             </svg>
-            <span>{error}</span>
+            <span>{pendingError || rejectedError}</span>
           </div>
         </div>
       </div>
@@ -54,11 +72,16 @@ export default function EcommerceMetrics() {
   }
 
   // Si la session est expirée, ne rien afficher (redirection en cours)
-  if (isSessionExpired) {
+  if (pendingSessionExpired || rejectedSessionExpired) {
     return null;
   }
 
-  if (!stats) {
+  if (
+    pendingTeamLead === null ||
+    pendingSupervisor === null ||
+    totalRejectedByTeamLead === null ||
+    totalRejectedBySupervisor === null
+  ) {
     return (
       <div className="space-y-6">
         <div className="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03] p-6">
@@ -84,7 +107,7 @@ export default function EcommerceMetrics() {
               {t("pending_team_lead")}
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              {(stats?.pending_team_lead || 0).toLocaleString()}
+              {(pendingTeamLead || 0).toLocaleString()}
             </h4>
           </div>
         </div>
@@ -99,7 +122,7 @@ export default function EcommerceMetrics() {
               {t("pending_supervisor")}
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              {(stats?.pending_supervisor || 0).toLocaleString()}
+              {(pendingSupervisor || 0).toLocaleString()}
             </h4>
           </div>
         </div>
@@ -117,7 +140,7 @@ export default function EcommerceMetrics() {
               {t("rejected_by_team_lead")}
             </span>
             <h4 className="mt-2 font-bold text-red-700 text-title-sm dark:text-red-300">
-              {(stats?.total_rejected_by_team_lead || 0).toLocaleString()}
+              {(totalRejectedByTeamLead || 0).toLocaleString()}
             </h4>
             <div className="mt-2 flex items-center text-xs text-red-500 dark:text-red-400">
               <AlertTriangle className="w-3 h-3 mr-1" />
@@ -138,7 +161,7 @@ export default function EcommerceMetrics() {
               {t("rejected_by_supervisor")}
             </span>
             <h4 className="mt-2 font-bold text-red-700 text-title-sm dark:text-red-300">
-              {(stats?.total_rejected_by_supervisor || 0).toLocaleString()}
+              {(totalRejectedBySupervisor || 0).toLocaleString()}
             </h4>
             <div className="mt-2 flex items-center text-xs text-red-500 dark:text-red-400">
               <AlertTriangle className="w-3 h-3 mr-1" />

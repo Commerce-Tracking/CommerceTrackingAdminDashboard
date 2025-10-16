@@ -8,28 +8,28 @@ import React, {
 import axiosInstance from "../api/axios";
 import { useNavigate } from "react-router-dom";
 
-interface ValidationStats {
-  monthly_accepted_by_supervisor: Array<{
-    month: number;
-    count: number;
-  }>;
-  monthly_rejected: Array<{
-    month: number;
-    total_rejected: number;
-  }>;
+interface PendingCollectionsData {
+  pending_team_lead: number;
+  pending_supervisor: number;
+  total_pending: number;
   generated_at: string;
 }
 
-interface ValidationStatsResponse {
+interface PendingCollectionsResponse {
   success: boolean;
   message: string;
-  result: ValidationStats;
+  result: {
+    success: boolean;
+    data: PendingCollectionsData;
+  };
   errors: any;
   except: any;
 }
 
-interface ValidationStatsContextType {
-  stats: ValidationStats | null;
+interface PendingCollectionsContextType {
+  pendingTeamLead: number | null;
+  pendingSupervisor: number | null;
+  totalPending: number | null;
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
@@ -38,18 +38,22 @@ interface ValidationStatsContextType {
   clearError: () => void;
 }
 
-const ValidationStatsContext = createContext<
-  ValidationStatsContextType | undefined
+const PendingCollectionsContext = createContext<
+  PendingCollectionsContextType | undefined
 >(undefined);
 
-interface ValidationStatsProviderProps {
+interface PendingCollectionsProviderProps {
   children: ReactNode;
 }
 
-export const ValidationStatsProvider: React.FC<
-  ValidationStatsProviderProps
+export const PendingCollectionsProvider: React.FC<
+  PendingCollectionsProviderProps
 > = ({ children }) => {
-  const [stats, setStats] = useState<ValidationStats | null>(null);
+  const [pendingTeamLead, setPendingTeamLead] = useState<number | null>(null);
+  const [pendingSupervisor, setPendingSupervisor] = useState<number | null>(
+    null
+  );
+  const [totalPending, setTotalPending] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
@@ -58,10 +62,10 @@ export const ValidationStatsProvider: React.FC<
   const [lastTokenCheck, setLastTokenCheck] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const fetchStats = async (forceRefresh = false) => {
+  const fetchPendingCollections = async (forceRefresh = false) => {
     // Éviter les appels multiples simultanés
     if (isFetching) {
-      console.log("Appel API déjà en cours, attente...");
+      console.log("Appel API pending déjà en cours, attente...");
       return;
     }
 
@@ -72,7 +76,9 @@ export const ValidationStatsProvider: React.FC<
       lastFetch &&
       now.getTime() - lastFetch.getTime() < 30000
     ) {
-      console.log("Données récentes disponibles, pas de nouvel appel API");
+      console.log(
+        "Données pending récentes disponibles, pas de nouvel appel API"
+      );
       setLoading(false);
       return;
     }
@@ -81,6 +87,7 @@ export const ValidationStatsProvider: React.FC<
       setIsFetching(true);
       setLoading(true);
       setError(null);
+      setIsSessionExpired(false);
 
       const token = localStorage.getItem("accessToken");
       if (!token) {
@@ -88,37 +95,30 @@ export const ValidationStatsProvider: React.FC<
         return;
       }
 
-      console.log("🔄 Appel API validation-stats pour les graphiques...");
-
-      const res = await axiosInstance.get("/admin/validation-stats", {
+      console.log("🔄 Appel API pending...");
+      const res = await axiosInstance.get("/admin/stats/pending", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       if (res.data.success) {
-        const apiResponse: ValidationStatsResponse = res.data;
-        // Ne garder que les données nécessaires pour les graphiques
-        const chartData = {
-          monthly_accepted_by_supervisor:
-            apiResponse.result.monthly_accepted_by_supervisor || [],
-          monthly_rejected: apiResponse.result.monthly_rejected || [],
-          generated_at:
-            apiResponse.result.generated_at || new Date().toISOString(),
-        };
-        setStats(chartData);
+        const apiResponse: PendingCollectionsResponse = res.data;
+        setPendingTeamLead(apiResponse.result.data.pending_team_lead);
+        setPendingSupervisor(apiResponse.result.data.pending_supervisor);
+        setTotalPending(apiResponse.result.data.total_pending);
         setLastFetch(new Date());
         console.log(
-          "✅ Données validation-stats pour graphiques récupérées avec succès:",
-          chartData
+          "✅ Données pending récupérées avec succès:",
+          apiResponse.result.data
         );
       } else {
         setError("Erreur lors de la récupération des données");
-        console.error("❌ Erreur API validation-stats:", res.data);
+        console.error("❌ Erreur API pending:", res.data);
       }
     } catch (err: any) {
       console.error(
-        "❌ Erreur lors de la récupération des statistiques de validation :",
+        "❌ Erreur lors de la récupération des collectes en attente :",
         err
       );
       if (err.response?.status === 401) {
@@ -126,10 +126,8 @@ export const ValidationStatsProvider: React.FC<
           "🔒 Session expirée, redirection vers la page de connexion..."
         );
         setIsSessionExpired(true);
-        // Nettoyer le token expiré
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
-        // Rediriger vers la page de connexion
         navigate("/signin");
         return;
       } else {
@@ -142,7 +140,7 @@ export const ValidationStatsProvider: React.FC<
   };
 
   const refetch = async () => {
-    await fetchStats(true);
+    await fetchPendingCollections(true);
   };
 
   const clearError = () => {
@@ -151,7 +149,7 @@ export const ValidationStatsProvider: React.FC<
   };
 
   useEffect(() => {
-    fetchStats();
+    fetchPendingCollections();
   }, []);
 
   // Surveiller les changements de token pour recharger après reconnexion
@@ -159,37 +157,32 @@ export const ValidationStatsProvider: React.FC<
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "accessToken" && e.newValue) {
         console.log(
-          "🔄 Nouveau token détecté, rechargement des statistiques..."
+          "🔄 Nouveau token détecté, rechargement des collectes en attente..."
         );
-        // Réinitialiser l'état d'erreur et recharger
         setError(null);
         setIsSessionExpired(false);
-        fetchStats(true);
+        fetchPendingCollections(true);
       }
     };
 
-    // Écouter les changements de localStorage
     window.addEventListener("storage", handleStorageChange);
 
-    // Vérifier périodiquement si un nouveau token est disponible
     const checkTokenInterval = setInterval(() => {
       const token = localStorage.getItem("accessToken");
-
-      // Ne vérifier que si on était en état d'expiration
       if (token && isSessionExpired) {
-        // Vérifier si c'est un nouveau token
         if (token !== lastTokenCheck) {
-          console.log("🔄 Nouveau token détecté, rechargement...");
+          console.log(
+            "🔄 Token disponible après expiration, rechargement pending..."
+          );
           setLastTokenCheck(token);
           setError(null);
           setIsSessionExpired(false);
-          fetchStats(true);
+          fetchPendingCollections(true);
         }
       } else if (!token) {
-        // Pas de token, réinitialiser le check
         setLastTokenCheck(null);
       }
-    }, 2000); // Vérifier toutes les 2 secondes (au lieu de 1)
+    }, 2000);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
@@ -197,8 +190,10 @@ export const ValidationStatsProvider: React.FC<
     };
   }, [isSessionExpired, lastTokenCheck]);
 
-  const value: ValidationStatsContextType = {
-    stats,
+  const value: PendingCollectionsContextType = {
+    pendingTeamLead,
+    pendingSupervisor,
+    totalPending,
     loading,
     error,
     refetch,
@@ -208,17 +203,17 @@ export const ValidationStatsProvider: React.FC<
   };
 
   return (
-    <ValidationStatsContext.Provider value={value}>
+    <PendingCollectionsContext.Provider value={value}>
       {children}
-    </ValidationStatsContext.Provider>
+    </PendingCollectionsContext.Provider>
   );
 };
 
-export const useValidationStats = (): ValidationStatsContextType => {
-  const context = useContext(ValidationStatsContext);
+export const usePendingCollections = (): PendingCollectionsContextType => {
+  const context = useContext(PendingCollectionsContext);
   if (context === undefined) {
     throw new Error(
-      "useValidationStats must be used within a ValidationStatsProvider"
+      "usePendingCollections must be used within a PendingCollectionsProvider"
     );
   }
   return context;

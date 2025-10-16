@@ -16,7 +16,6 @@ import {
 import {
   ChevronDownIcon,
   FileIcon,
-  FolderIcon,
   GridIcon,
   GroupIcon,
   HorizontaLDots,
@@ -26,7 +25,7 @@ import {
   UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import { BiExport, BiSupport } from "react-icons/bi";
+import { BiExport } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 
 type NavItem = {
@@ -133,6 +132,11 @@ const AppSidebar: React.FC = () => {
     },
     {
       icon: <Tag />,
+      name: t("product_natures_list"),
+      path: "/product-natures/list",
+    },
+    {
+      icon: <Tag />,
       name: t("unities_list"),
       path: "/unities/list",
     },
@@ -196,24 +200,9 @@ const AppSidebar: React.FC = () => {
 
   const othersItems: NavItem[] = [
     {
-      icon: <FolderIcon />,
-      name: t("content_center"),
-      path: "/types",
-    },
-    {
-      icon: <SettingsIcon />,
-      name: t("preferences"),
-      path: "/types",
-    },
-    {
       icon: <BiExport />,
       name: t("export_data"),
       path: "/export-csv",
-    },
-    {
-      icon: <BiSupport />,
-      name: t("customer_support"),
-      path: "/types",
     },
   ];
 
