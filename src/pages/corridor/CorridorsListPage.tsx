@@ -319,7 +319,9 @@ const CorridorsListPage = () => {
           city_start_id: parseInt(editFormData.city_start_id),
           city_end_id: parseInt(editFormData.city_end_id),
           distance: parseFloat(editFormData.distance),
-          nbre_checkpoints: parseInt(editFormData.nbre_checkpoints),
+          nbre_checkpoints: editFormData.nbre_checkpoints
+            ? parseInt(editFormData.nbre_checkpoints)
+            : null,
         },
         {
           headers: {
@@ -491,7 +493,14 @@ const CorridorsListPage = () => {
 
           {/* Corridors Table */}
           <ComponentCard title={t("corridors_list")}>
-            {corridors.length === 0 ? (
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-2 text-gray-600 dark:text-gray-400">
+                  {t("loading")}...
+                </span>
+              </div>
+            ) : corridors.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
                   {searchTerm
@@ -777,8 +786,7 @@ const CorridorsListPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("corridor_checkpoints")}{" "}
-                    <span className="text-red-500">*</span>
+                    {t("corridor_checkpoints")}
                   </label>
                   <input
                     type="number"

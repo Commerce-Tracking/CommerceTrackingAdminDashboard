@@ -5,16 +5,17 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { MoreDotIcon } from "../../icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useValidationStats } from "../../context/ValidationStatsContext";
+import { useMonthlyCollections } from "../../context/MonthlyCollectionsContext";
 
 export default function MonthlySalesChart() {
   const { t } = useTranslation();
-  const { stats, loading, error, isSessionExpired } = useValidationStats();
+  const { monthlyCollections, loading, error, isSessionExpired } =
+    useMonthlyCollections();
   const [isOpen, setIsOpen] = useState(false);
 
   // Préparer les données pour le graphique
   const prepareChartData = () => {
-    if (!stats?.monthly_collections) {
+    if (!monthlyCollections) {
       return {
         categories: [
           "Jan",
@@ -52,7 +53,7 @@ export default function MonthlySalesChart() {
     ];
 
     // Mapper les données de l'API vers notre tableau
-    stats.monthly_collections.forEach((item) => {
+    monthlyCollections.forEach((item) => {
       const monthIndex = item.month - 1; // Convertir de 1-12 à 0-11
       if (monthIndex >= 0 && monthIndex < 12) {
         monthlyData[monthIndex] = item.count;
@@ -187,7 +188,7 @@ export default function MonthlySalesChart() {
     return null;
   }
 
-  if (!stats) {
+  if (!monthlyCollections) {
     return (
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
         <div className="flex items-center justify-center h-[180px] text-gray-500">
@@ -196,12 +197,13 @@ export default function MonthlySalesChart() {
       </div>
     );
   }
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
           {t("monthly_interventions_chart") ||
-            "Interventions réalisées par mois"}
+            "Collecctes réalisées par mois"}
         </h3>
         <div className="relative inline-block">
           <button className="dropdown-toggle" onClick={toggleDropdown}>

@@ -5,19 +5,35 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { CalenderIcon } from "../../icons";
 import { useTranslation } from "react-i18next";
-import { useValidationStats } from "../../context/ValidationStatsContext";
+import { useTotalCollections } from "../../context/TotalCollectionsContext";
+import { useAcceptedBySupervisor } from "../../context/AcceptedBySupervisorContext";
+import { useRejectedByLevel } from "../../context/RejectedByLevelContext";
 
 export default function MonthlyTarget() {
   const { t } = useTranslation();
-  const { stats, loading, error, isSessionExpired } = useValidationStats();
+  const {
+    totalCollections,
+    loading: totalLoading,
+    error: totalError,
+    isSessionExpired: totalSessionExpired,
+  } = useTotalCollections();
+  const {
+    totalAcceptedBySupervisor,
+    loading: acceptedLoading,
+    error: acceptedError,
+    isSessionExpired: acceptedSessionExpired,
+  } = useAcceptedBySupervisor();
+  const {
+    totalRejected,
+    loading: rejectedLoading,
+    error: rejectedError,
+    isSessionExpired: rejectedSessionExpired,
+  } = useRejectedByLevel();
   const [isOpen, setIsOpen] = useState(false);
 
   // Calculate percentage of accepted collections for the radial bar
-  const acceptedPercentage = stats?.total_collections
-    ? (
-        (stats.total_accepted_by_supervisor / stats.total_collections) *
-        100
-      ).toFixed(2)
+  const acceptedPercentage = totalCollections
+    ? (((totalAcceptedBySupervisor || 0) / totalCollections) * 100).toFixed(2)
     : 0;
   const series = [Number(acceptedPercentage)];
 
@@ -88,7 +104,7 @@ export default function MonthlyTarget() {
     setIsOpen(false);
   }
 
-  if (loading) {
+  if (totalLoading || acceptedLoading || rejectedLoading) {
     return (
       <div className="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03] p-6">
         <div className="flex items-center justify-center">
@@ -99,7 +115,12 @@ export default function MonthlyTarget() {
     );
   }
 
-  if (error && !isSessionExpired) {
+  if (
+    (totalError || acceptedError || rejectedError) &&
+    !totalSessionExpired &&
+    !acceptedSessionExpired &&
+    !rejectedSessionExpired
+  ) {
     return (
       <div className="rounded-2xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 p-6">
         <div className="flex items-center justify-center text-red-600 dark:text-red-400">
@@ -116,18 +137,22 @@ export default function MonthlyTarget() {
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
             />
           </svg>
-          <span>{error}</span>
+          <span>{totalError || acceptedError || rejectedError}</span>
         </div>
       </div>
     );
   }
 
   // Si la session est expirée, ne rien afficher (redirection en cours)
-  if (isSessionExpired) {
+  if (totalSessionExpired || acceptedSessionExpired || rejectedSessionExpired) {
     return null;
   }
 
-  if (!stats) {
+  if (
+    totalCollections === null ||
+    totalAcceptedBySupervisor === null ||
+    totalRejected === null
+  ) {
     return (
       <div className="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03] p-6">
         <div className="flex items-center justify-center text-gray-500">
@@ -149,7 +174,7 @@ export default function MonthlyTarget() {
           <div className="relative inline-block">
             <button className="dropdown-toggle" onClick={toggleDropdown}>
               <p className="flex items-center justify-center mt-1 gap-1 text-gray-500 text-theme-sm dark:text-gray-400">
-                {formatDate(stats.generated_at)}{" "}
+                Aujourd'hui{" "}
                 <CalenderIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
               </p>
             </button>
@@ -180,7 +205,7 @@ export default function MonthlyTarget() {
         <p className="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
           {t("collections_validation_message").replace(
             "{count}",
-            (stats?.total_accepted_by_supervisor || 0).toString()
+            (totalAcceptedBySupervisor || 0).toString()
           )}
         </p>
       </div>
@@ -190,7 +215,7 @@ export default function MonthlyTarget() {
             {t("total_collections")}
           </p>
           <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            {stats?.total_collections || 0}
+            {totalCollections || 0}
           </p>
         </div>
         <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
@@ -199,7 +224,7 @@ export default function MonthlyTarget() {
             {t("validated_collections")}
           </p>
           <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            {stats?.total_accepted_by_supervisor || 0}
+            {totalAcceptedBySupervisor || 0}
             <svg
               width="16"
               height="16"
@@ -222,7 +247,7 @@ export default function MonthlyTarget() {
             {t("rejected_collections")}
           </p>
           <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            {stats?.total_rejected || 0}
+            {totalRejected || 0}
             <svg
               width="16"
               height="16"
