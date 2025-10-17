@@ -12,6 +12,7 @@ import {
   Plus,
   Package,
   Tag,
+  MapPin,
 } from "lucide-react";
 import {
   ChevronDownIcon,
@@ -50,15 +51,20 @@ const AppSidebar: React.FC = () => {
 
   const usersItems: NavItem[] = [
     {
-      name: t("collector_list"),
+      name: t("collectors_list"),
       icon: <GroupIcon />,
-      path: "/users",
+      path: "/collectors/list",
     },
     {
-      icon: <PencilIcon />,
-      name: t("create_collector"),
-      path: "/create-user",
+      name: t("add_collector"),
+      icon: <Plus />,
+      path: "/collectors/add",
     },
+    // {
+    //   icon: <PencilIcon />,
+    //   name: t("create_collector"),
+    //   path: "/create-user",
+    // },
     {
       icon: <UserCircleIcon />,
       name: t("role_management"),
@@ -96,6 +102,16 @@ const AppSidebar: React.FC = () => {
       icon: <Plus />,
       name: t("add_corridors"),
       path: "/corridors/add",
+    },
+    {
+      icon: <MapPin />,
+      name: t("add_collection_point"),
+      path: "/collection-points/add",
+    },
+    {
+      icon: <MapPin />,
+      name: t("collection_points_list"),
+      path: "/collection-points/list",
     },
     {
       icon: <DollarSign />,

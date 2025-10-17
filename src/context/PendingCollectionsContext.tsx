@@ -149,7 +149,23 @@ export const PendingCollectionsProvider: React.FC<
   };
 
   useEffect(() => {
-    fetchPendingCollections();
+    // Attendre que le token soit disponible avant de faire l'appel API
+    const checkTokenAndFetch = () => {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        console.log(
+          "🔑 Token disponible, chargement des collectes en attente..."
+        );
+        fetchPendingCollections();
+      } else {
+        console.log("⏳ Token non disponible, attente...");
+        // Réessayer après 1 seconde (plus long pour être sûr)
+        setTimeout(checkTokenAndFetch, 1000);
+      }
+    };
+
+    // Démarrer la vérification après un petit délai pour laisser le temps au token d'être stocké
+    setTimeout(checkTokenAndFetch, 100);
   }, []);
 
   // Surveiller les changements de token pour recharger après reconnexion

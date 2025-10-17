@@ -50,6 +50,10 @@ import AddProductType from "./pages/product-types/AddProductType.tsx";
 import ProductTypesListPage from "./pages/product-types/ProductTypesListPage.tsx";
 import AddProduct from "./pages/products/AddProduct.tsx";
 import ProductsListPage from "./pages/products/ProductsListPage.tsx";
+import CollectorsListPage from "./pages/collectors/CollectorsListPage";
+import AddCollector from "./pages/collectors/AddCollector";
+import AddCollectionPoint from "./pages/collection-points/AddCollectionPoint";
+import CollectionPointsListPage from "./pages/collection-points/CollectionPointsListPage";
 import ProductNaturesListPage from "./pages/product-natures/ProductNaturesListPage.tsx";
 import AddService from "./pages/services/AddService.tsx";
 import ServicesListPage from "./pages/services/ServicesListPage.tsx";
@@ -126,6 +130,26 @@ export default function App() {
                               <Route
                                 path="/products/list"
                                 element={<ProductsListPage />}
+                              />
+
+                              <Route
+                                path="/collectors/list"
+                                element={<CollectorsListPage />}
+                              />
+
+                              <Route
+                                path="/collectors/add"
+                                element={<AddCollector />}
+                              />
+
+                              <Route
+                                path="/collection-points/add"
+                                element={<AddCollectionPoint />}
+                              />
+
+                              <Route
+                                path="/collection-points/list"
+                                element={<CollectionPointsListPage />}
                               />
 
                               <Route
