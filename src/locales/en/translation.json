@@ -68,7 +68,7 @@
   "description_placeholder": "Collection point description",
   "corridor": "Corridor",
   "select_corridor": "Select a corridor",
-  "locality": "Locality",
+
   "locality_placeholder": "Locality name",
   "region": "Region",
   "region_placeholder": "Region name",
@@ -95,8 +95,26 @@
   "collection_point": "Collection Point",
   "password": "Password",
   "confirm_password": "Confirm Password",
-  "reset": "Reset",
+
   "no_organization": "No organization",
+  "no_supervisor": "No supervisor",
+  "team_managers_list": "Team Managers List",
+  "team_manager_name": "Team Manager Name",
+  "search_team_manager": "Search team manager...",
+  "add_team_manager": "Add Team Manager",
+  "team_manager_details": "Team Manager Details",
+  "no_team_managers": "No team managers",
+  "no_team_managers_found": "No team managers found",
+  "supervisors_list": "Supervisors List",
+  "supervisor_name": "Supervisor Name",
+  "search_supervisor": "Search supervisor...",
+  "add_supervisor": "Add Supervisor",
+  "supervisor_details": "Supervisor Details",
+  "no_supervisors": "No supervisors",
+  "no_supervisors_found": "No supervisors found",
+  "supervisor_created_successfully": "Supervisor created successfully",
+  "select_supervisor": "Select a supervisor",
+
   "search_collector": "Search a collector...",
   "collector_details": "Collector Details",
   "no_collectors": "No collectors",
@@ -106,22 +124,19 @@
   "supervisor": "Supervisor",
   "team_manager": "Team Manager",
   "collector": "Collector",
-  "active": "Active",
-  "inactive": "Inactive",
+
   "male": "Male",
   "female": "Female",
   "single": "Single",
   "married": "Married",
   "divorced": "Divorced",
   "widowed": "Widowed",
-  "online_status": "Online Status",
-  "personal_information": "Personal Information",
+
   "professional_information": "Professional Information",
   "connection_information": "Connection Information",
   "first_name": "First Name",
   "last_name": "Last Name",
-  "email": "Email",
-  "phone": "Phone",
+
   "gender": "Gender",
   "marital_status": "Marital Status",
   "date_of_birth": "Date of Birth",
@@ -129,9 +144,9 @@
   "nationality": "Nationality",
   "role": "Role",
   "organization": "Organization",
-  "username": "Username",
+
   "last_connection": "Last Connection",
-  "created_at": "Created At",
+
   "view_details": "View Details",
   "refresh": "Refresh",
   "close": "Close",
@@ -154,19 +169,16 @@
   "transports": " Transport",
   "others": "Others",
 
-  "collector": "Collector",
-
   "position": "Position",
   "actions": "Actions",
 
   "user_details": "User Details",
   "full_name": "Full Name",
 
-  "add_collector": "Add a Collector",
   "form_instruction": "Please fill out this form",
-  "first_name": "First Name",
+
   "first_name_placeholder": "User's first name",
-  "last_name": "Last Name",
+
   "last_name_placeholder": "User's last name",
 
   "email_placeholder": "User's email",
@@ -181,7 +193,6 @@
   "data": " No data available",
   "load": "Loading...",
   "role_details": "Role details",
-  "close": "close",
 
   "add_reporting": "Add a Reporting",
   "reporting_form_title": "Reporting Submission Form",
@@ -236,15 +247,15 @@
   "additional_passengers": "Additional Passengers",
   "attachments": "Attachments",
 
-    "search_name": "Search by name",
-    "edit_entity": "Edit Entity",
+  "search_name": "Search by name",
+  "edit_entity": "Edit Entity",
   "entity_name": "Entity Name",
-   "cancel": "Cancel",
+  "cancel": "Cancel",
 
- "entity_form_title": "Entity creation form",
+  "entity_form_title": "Entity creation form",
 
-"enter_entity_name": "Enter the entity name", 
-"edit_country": "Edit Country",
+  "enter_entity_name": "Enter the entity name",
+  "edit_country": "Edit Country",
 
   "country_form_title": "Country creation form",
   "country_iso": "Country ISO Code",
@@ -294,10 +305,9 @@
   "enter_country_name": "Enter the country name",
 
   "search_locality": "Search for a locality",
-   "search_country": "Search for a country",
+  "search_country": "Search for a country",
   "lacality_name": "Name of locality",
-   "enter_locality_name": "Enter the locality name",
-  "select_country": "select country",
+  "enter_locality_name": "Enter the locality name",
 
   "currency_list": "Currency List",
   "add_currency": "Add Currency",
@@ -317,7 +327,7 @@
   "search_currency": "Search for a currency",
   "is_required": "is required",
   "success": "Success",
-  "error": "Error",
+
   "auth_error": "Authentication Error",
   "currency_created_successfully": "Currency created successfully",
   "no_search_results": "No results found",
@@ -337,6 +347,8 @@
   "updating": "Updating...",
   "confirm_delete": "Confirm Deletion",
   "delete_confirmation_message": "Are you sure you want to delete the currency",
+  "delete_collector_message": "Are you sure you want to delete the collector",
+  "delete_team_manager_message": "Are you sure you want to delete the team manager",
   "deleting": "Deleting...",
 
   "products_management": "Products Management",

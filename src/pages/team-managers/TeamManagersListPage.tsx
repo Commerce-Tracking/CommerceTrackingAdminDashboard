@@ -12,7 +12,7 @@ import { Modal } from "../../components/ui/modal";
 import { ModalHeader } from "../../components/ui/modal/ModalHeader";
 import { Plus } from "lucide-react";
 
-// Interface pour les données des acteurs/collecteurs
+// Interface pour les données des acteurs/chefs d'équipe
 interface Actor {
   id: number;
   public_id: string;
@@ -108,7 +108,7 @@ interface ActorsResponse {
   except: any;
 }
 
-export default function CollectorsListPage() {
+export default function TeamManagersListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [actors, setActors] = useState<Actor[]>([]);
@@ -153,12 +153,12 @@ export default function CollectorsListPage() {
         return;
       }
 
-      let url = `/admin/actors?actor_role=collector&page=${page}&limit=${pagination.limit}`;
+      let url = `/admin/actors?actor_role=team_manager&page=${page}&limit=${pagination.limit}`;
       if (search.trim()) {
         url += `&search=${encodeURIComponent(search.trim())}`;
       }
 
-      console.log("🔄 Appel API actors:", url);
+      console.log("🔄 Appel API team managers:", url);
       const response = await axiosInstance.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -170,15 +170,18 @@ export default function CollectorsListPage() {
         setActors(apiResponse.result.data);
         setPagination(apiResponse.result.pagination);
         console.log(
-          "✅ Acteurs récupérés avec succès:",
+          "✅ Chefs d'équipe récupérés avec succès:",
           apiResponse.result.data.length
         );
       } else {
-        setError("Erreur lors de la récupération des acteurs");
-        console.error("❌ Erreur API actors:", response.data);
+        setError("Erreur lors de la récupération des chefs d'équipe");
+        console.error("❌ Erreur API team managers:", response.data);
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la récupération des acteurs:", err);
+      console.error(
+        "❌ Erreur lors de la récupération des chefs d'équipe:",
+        err
+      );
       if (err.response?.status === 401) {
         console.log(
           "🔒 Session expirée, redirection vers la page de connexion..."
@@ -188,7 +191,9 @@ export default function CollectorsListPage() {
         window.location.href = "/signin";
         return;
       } else {
-        setError(err.message || "Erreur lors de la récupération des acteurs");
+        setError(
+          err.message || "Erreur lors de la récupération des chefs d'équipe"
+        );
       }
     } finally {
       setLoading(false);
@@ -295,7 +300,7 @@ export default function CollectorsListPage() {
     return true;
   };
 
-  // Fonction pour mettre à jour un collecteur
+  // Fonction pour mettre à jour un chef d'équipe
   const handleUpdateActor = async () => {
     if (!selectedActor) return;
 
@@ -331,7 +336,7 @@ export default function CollectorsListPage() {
         status: editFormData.status,
       };
 
-      console.log("🔄 Mise à jour du collecteur:", apiData);
+      console.log("🔄 Mise à jour du chef d'équipe:", apiData);
 
       const response = await axiosInstance.put(
         `/admin/actors/${selectedActor.id}`,
@@ -346,7 +351,7 @@ export default function CollectorsListPage() {
 
       if (response.data.success) {
         console.log(
-          "✅ Collecteur mis à jour avec succès:",
+          "✅ Chef d'équipe mis à jour avec succès:",
           response.data.result
         );
         // Rafraîchir la liste
@@ -354,7 +359,8 @@ export default function CollectorsListPage() {
         closeEditModal();
       } else {
         setError(
-          response.data.message || "Erreur lors de la mise à jour du collecteur"
+          response.data.message ||
+            "Erreur lors de la mise à jour du chef d'équipe"
         );
       }
     } catch (err: any) {
@@ -368,7 +374,7 @@ export default function CollectorsListPage() {
         setError(
           err.response?.data?.message ||
             err.message ||
-            "Erreur lors de la mise à jour du collecteur"
+            "Erreur lors de la mise à jour du chef d'équipe"
         );
       }
     } finally {
@@ -413,7 +419,7 @@ export default function CollectorsListPage() {
         // Rafraîchir la liste
         fetchActors(pagination.page, searchTerm);
         closeDeleteModal();
-        console.log("✅ Acteur supprimé avec succès");
+        console.log("✅ Chef d'équipe supprimé avec succès");
       } else {
         setError(response.data.message || "Erreur lors de la suppression");
       }
@@ -425,7 +431,9 @@ export default function CollectorsListPage() {
         window.location.href = "/signin";
         return;
       } else {
-        setError(err.message || "Erreur lors de la suppression de l'acteur");
+        setError(
+          err.message || "Erreur lors de la suppression du chef d'équipe"
+        );
       }
     } finally {
       setDeleteLoading(false);
@@ -496,8 +504,8 @@ export default function CollectorsListPage() {
     return (
       <div className="page-container">
         <PageMeta
-          title="Commerce Tracking | Collecteurs"
-          description="Liste des collecteurs"
+          title="Commerce Tracking | Chefs d'équipe"
+          description="Liste des chefs d'équipe"
         />
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -511,8 +519,8 @@ export default function CollectorsListPage() {
     return (
       <div className="page-container">
         <PageMeta
-          title="Commerce Tracking | Collecteurs"
-          description="Liste des collecteurs"
+          title="Commerce Tracking | Chefs d'équipe"
+          description="Liste des chefs d'équipe"
         />
         <div className="flex items-center justify-center h-64 text-red-600">
           <div className="text-center">
@@ -539,18 +547,18 @@ export default function CollectorsListPage() {
   return (
     <div className="page-container">
       <PageMeta
-        title="Commerce Tracking | Collecteurs"
-        description="Liste des collecteurs"
+        title="Commerce Tracking | Chefs d'équipe"
+        description="Liste des chefs d'équipe"
       />
 
-      <PageBreadcrumb pageTitle={t("collectors_list")} />
+      <PageBreadcrumb pageTitle={t("team_managers_list")} />
       <div className="page-container">
         <div className="space-y-6">
           {/* Header with search and add button */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex-1 max-w-md">
               <Input
-                placeholder={t("search_collector")}
+                placeholder={t("search_team_manager")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full"
@@ -558,17 +566,17 @@ export default function CollectorsListPage() {
             </div>
             <div className="flex gap-2">
               <Button
-                onClick={() => navigate("/collectors/add")}
+                onClick={() => navigate("/team-managers/add")}
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                {t("add_collector") || "Ajouter un Collecteur"}
+                {t("add_team_manager") || "Ajouter un Chef d'équipe"}
               </Button>
             </div>
           </div>
 
-          {/* Collectors Table */}
-          <ComponentCard title={t("collectors_list")}>
+          {/* Team Managers Table */}
+          <ComponentCard title={t("team_managers_list")}>
             {loading ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
@@ -578,7 +586,9 @@ export default function CollectorsListPage() {
             ) : actors.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
-                  {searchTerm ? t("no_collectors_found") : t("no_collectors")}
+                  {searchTerm
+                    ? t("no_team_managers_found")
+                    : t("no_team_managers")}
                 </p>
               </div>
             ) : (
@@ -587,7 +597,7 @@ export default function CollectorsListPage() {
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("collector_name")}
+                        {t("team_manager_name")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
                         {t("role")}
@@ -773,7 +783,7 @@ export default function CollectorsListPage() {
       >
         <ModalHeader>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t("collector_details") || "Détails du Collecteur"}
+            {t("team_manager_details") || "Détails du Chef d'équipe"}
           </h3>
         </ModalHeader>
         <div className="px-6 py-4">
@@ -926,17 +936,6 @@ export default function CollectorsListPage() {
                       </p>
                     </div>
                   )}
-                  {selectedActor.teamManager && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {t("team_manager") || "Chef d'équipe"}
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                        {selectedActor.teamManager.first_name}{" "}
-                        {selectedActor.teamManager.last_name}
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -1007,7 +1006,7 @@ export default function CollectorsListPage() {
       >
         <ModalHeader>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t("edit")} {t("collector")}
+            {t("edit")} {t("team_manager")}
           </h3>
         </ModalHeader>
         <div className="px-6 py-4">
@@ -1273,8 +1272,8 @@ export default function CollectorsListPage() {
               </h3>
 
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                {t("delete_collector_message") ||
-                  "Êtes-vous sûr de vouloir supprimer le collecteur"}{" "}
+                {t("delete_team_manager_message") ||
+                  "Êtes-vous sûr de vouloir supprimer le chef d'équipe"}{" "}
                 <strong>
                   {selectedActor.first_name} {selectedActor.last_name}
                 </strong>{" "}

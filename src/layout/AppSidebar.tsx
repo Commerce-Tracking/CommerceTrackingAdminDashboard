@@ -60,6 +60,26 @@ const AppSidebar: React.FC = () => {
       icon: <Plus />,
       path: "/collectors/add",
     },
+    {
+      name: t("supervisors_list"),
+      icon: <GroupIcon />,
+      path: "/supervisors/list",
+    },
+    {
+      name: t("add_supervisor"),
+      icon: <Plus />,
+      path: "/supervisors/add",
+    },
+    {
+      name: t("team_managers_list"),
+      icon: <GroupIcon />,
+      path: "/team-managers/list",
+    },
+    {
+      name: t("add_team_manager"),
+      icon: <Plus />,
+      path: "/team-managers/add",
+    },
     // {
     //   icon: <PencilIcon />,
     //   name: t("create_collector"),
@@ -223,7 +243,15 @@ const AppSidebar: React.FC = () => {
   ];
 
   const [openSubmenu, setOpenSubmenu] = useState<{
-    type: "dashboard" | "users" | "reporting" | "" | "localities" | "others";
+    type:
+      | "dashboard"
+      | "users"
+      | "reporting"
+      | ""
+      | "localities"
+      | "others"
+      | "products"
+      | "services";
     index: number;
   } | null>(null);
 
@@ -246,7 +274,13 @@ const AppSidebar: React.FC = () => {
           nav.subItems.forEach((subItem) => {
             if (isActive(subItem.path)) {
               setOpenSubmenu({
-                type: menuType as (typeof openSubmenu)["type"],
+                type: menuType as
+                  | "dashboard"
+                  | "users"
+                  | "reporting"
+                  | ""
+                  | "localities"
+                  | "others",
                 index,
               });
               submenuMatched = true;
@@ -275,7 +309,15 @@ const AppSidebar: React.FC = () => {
 
   const handleSubmenuToggle = (
     index: number,
-    menuType: (typeof openSubmenu)["type"]
+    menuType:
+      | "dashboard"
+      | "users"
+      | "reporting"
+      | ""
+      | "localities"
+      | "others"
+      | "products"
+      | "services"
   ) => {
     setOpenSubmenu((prevOpenSubmenu) =>
       prevOpenSubmenu &&
@@ -289,7 +331,15 @@ const AppSidebar: React.FC = () => {
   const renderMenuSection = (
     label: string,
     items: NavItem[],
-    menuType: (typeof openSubmenu)["type"]
+    menuType:
+      | "dashboard"
+      | "users"
+      | "reporting"
+      | ""
+      | "localities"
+      | "others"
+      | "products"
+      | "services"
   ) => (
     <div>
       <h2
@@ -309,7 +359,15 @@ const AppSidebar: React.FC = () => {
 
   const renderMenuItems = (
     items: NavItem[],
-    menuType: (typeof openSubmenu)["type"]
+    menuType:
+      | "dashboard"
+      | "users"
+      | "reporting"
+      | ""
+      | "localities"
+      | "others"
+      | "products"
+      | "services"
   ) => (
     <ul className="flex flex-col gap-4">
       {items.map((nav, index) => (

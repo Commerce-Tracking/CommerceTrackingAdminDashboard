@@ -52,6 +52,10 @@ import AddProduct from "./pages/products/AddProduct.tsx";
 import ProductsListPage from "./pages/products/ProductsListPage.tsx";
 import CollectorsListPage from "./pages/collectors/CollectorsListPage";
 import AddCollector from "./pages/collectors/AddCollector";
+import SupervisorsListPage from "./pages/supervisors/SupervisorsListPage";
+import AddSupervisor from "./pages/supervisors/AddSupervisor";
+import TeamManagersListPage from "./pages/team-managers/TeamManagersListPage";
+import AddTeamManager from "./pages/team-managers/AddTeamManager";
 import AddCollectionPoint from "./pages/collection-points/AddCollectionPoint";
 import CollectionPointsListPage from "./pages/collection-points/CollectionPointsListPage";
 import ProductNaturesListPage from "./pages/product-natures/ProductNaturesListPage.tsx";
@@ -140,6 +144,26 @@ export default function App() {
                               <Route
                                 path="/collectors/add"
                                 element={<AddCollector />}
+                              />
+
+                              <Route
+                                path="/supervisors/list"
+                                element={<SupervisorsListPage />}
+                              />
+
+                              <Route
+                                path="/supervisors/add"
+                                element={<AddSupervisor />}
+                              />
+
+                              <Route
+                                path="/team-managers/list"
+                                element={<TeamManagersListPage />}
+                              />
+
+                              <Route
+                                path="/team-managers/add"
+                                element={<AddTeamManager />}
                               />
 
                               <Route

@@ -12,7 +12,7 @@ import { Modal } from "../../components/ui/modal";
 import { ModalHeader } from "../../components/ui/modal/ModalHeader";
 import { Plus } from "lucide-react";
 
-// Interface pour les données des acteurs/collecteurs
+// Interface pour les données des acteurs/superviseurs
 interface Actor {
   id: number;
   public_id: string;
@@ -108,7 +108,7 @@ interface ActorsResponse {
   except: any;
 }
 
-export default function CollectorsListPage() {
+export default function SupervisorsListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [actors, setActors] = useState<Actor[]>([]);
@@ -116,6 +116,7 @@ export default function CollectorsListPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedActor, setSelectedActor] = useState<Actor | null>(null);
+  const [organizations, setOrganizations] = useState<any[]>([]);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -133,6 +134,7 @@ export default function CollectorsListPage() {
     place_of_birth: "",
     nationality: "",
     status: "active",
+    organization_id: "",
   });
   const [pagination, setPagination] = useState({
     page: 1,
@@ -140,6 +142,46 @@ export default function CollectorsListPage() {
     total: 0,
     totalPages: 0,
   });
+
+  // Fonction pour récupérer les organisations
+  const fetchOrganizations = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const response = await axiosInstance.get(
+        "/admin/reference-data/organizations",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("📡 Réponse API organizations:", response.data);
+
+      if (response.data.success) {
+        const organizationsData =
+          response.data.result?.data ||
+          response.data.result ||
+          response.data.data ||
+          [];
+        console.log("📊 Données organisations:", organizationsData);
+        console.log("🔍 Type de données:", typeof organizationsData);
+        console.log("🔍 Est un tableau:", Array.isArray(organizationsData));
+
+        setOrganizations(organizationsData);
+        console.log("✅ Organisations récupérées:", organizationsData.length);
+      } else {
+        console.error("❌ Erreur API organizations:", response.data);
+      }
+    } catch (err: any) {
+      console.error(
+        "❌ Erreur lors de la récupération des organisations:",
+        err
+      );
+    }
+  };
 
   // Fonction pour récupérer les acteurs
   const fetchActors = async (page = 1, search = "") => {
@@ -153,12 +195,12 @@ export default function CollectorsListPage() {
         return;
       }
 
-      let url = `/admin/actors?actor_role=collector&page=${page}&limit=${pagination.limit}`;
+      let url = `/admin/actors?actor_role=supervisor&page=${page}&limit=${pagination.limit}`;
       if (search.trim()) {
         url += `&search=${encodeURIComponent(search.trim())}`;
       }
 
-      console.log("🔄 Appel API actors:", url);
+      console.log("🔄 Appel API supervisors:", url);
       const response = await axiosInstance.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -170,15 +212,15 @@ export default function CollectorsListPage() {
         setActors(apiResponse.result.data);
         setPagination(apiResponse.result.pagination);
         console.log(
-          "✅ Acteurs récupérés avec succès:",
+          "✅ Superviseurs récupérés avec succès:",
           apiResponse.result.data.length
         );
       } else {
-        setError("Erreur lors de la récupération des acteurs");
-        console.error("❌ Erreur API actors:", response.data);
+        setError("Erreur lors de la récupération des superviseurs");
+        console.error("❌ Erreur API supervisors:", response.data);
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la récupération des acteurs:", err);
+      console.error("❌ Erreur lors de la récupération des superviseurs:", err);
       if (err.response?.status === 401) {
         console.log(
           "🔒 Session expirée, redirection vers la page de connexion..."
@@ -188,7 +230,9 @@ export default function CollectorsListPage() {
         window.location.href = "/signin";
         return;
       } else {
-        setError(err.message || "Erreur lors de la récupération des acteurs");
+        setError(
+          err.message || "Erreur lors de la récupération des superviseurs"
+        );
       }
     } finally {
       setLoading(false);
@@ -209,6 +253,7 @@ export default function CollectorsListPage() {
   // Chargement initial
   useEffect(() => {
     fetchActors();
+    fetchOrganizations();
   }, []);
 
   // Fonction pour ouvrir le modal de détails
@@ -225,6 +270,14 @@ export default function CollectorsListPage() {
 
   // Fonction pour ouvrir le modal d'édition
   const openEditModal = (actor: Actor) => {
+    console.log(
+      "🔍 Ouverture modal édition pour:",
+      actor.first_name,
+      actor.last_name
+    );
+    console.log("📊 Organisations disponibles:", organizations.length);
+    console.log("📊 Organisations:", organizations);
+
     setSelectedActor(actor);
     setEditFormData({
       first_name: actor.first_name,
@@ -238,6 +291,9 @@ export default function CollectorsListPage() {
       place_of_birth: actor.place_of_birth,
       nationality: actor.nationality,
       status: actor.status,
+      organization_id: actor.organization
+        ? actor.organization.id.toString()
+        : "",
     });
     setIsEditModalOpen(true);
   };
@@ -258,6 +314,7 @@ export default function CollectorsListPage() {
       place_of_birth: "",
       nationality: "",
       status: "active",
+      organization_id: "",
     });
   };
 
@@ -295,7 +352,7 @@ export default function CollectorsListPage() {
     return true;
   };
 
-  // Fonction pour mettre à jour un collecteur
+  // Fonction pour mettre à jour un superviseur
   const handleUpdateActor = async () => {
     if (!selectedActor) return;
 
@@ -329,9 +386,12 @@ export default function CollectorsListPage() {
           ? editFormData.nationality.trim()
           : "",
         status: editFormData.status,
+        organization_id: editFormData.organization_id
+          ? parseInt(editFormData.organization_id)
+          : null,
       };
 
-      console.log("🔄 Mise à jour du collecteur:", apiData);
+      console.log("🔄 Mise à jour du superviseur:", apiData);
 
       const response = await axiosInstance.put(
         `/admin/actors/${selectedActor.id}`,
@@ -346,7 +406,7 @@ export default function CollectorsListPage() {
 
       if (response.data.success) {
         console.log(
-          "✅ Collecteur mis à jour avec succès:",
+          "✅ Superviseur mis à jour avec succès:",
           response.data.result
         );
         // Rafraîchir la liste
@@ -354,7 +414,8 @@ export default function CollectorsListPage() {
         closeEditModal();
       } else {
         setError(
-          response.data.message || "Erreur lors de la mise à jour du collecteur"
+          response.data.message ||
+            "Erreur lors de la mise à jour du superviseur"
         );
       }
     } catch (err: any) {
@@ -368,7 +429,7 @@ export default function CollectorsListPage() {
         setError(
           err.response?.data?.message ||
             err.message ||
-            "Erreur lors de la mise à jour du collecteur"
+            "Erreur lors de la mise à jour du superviseur"
         );
       }
     } finally {
@@ -413,7 +474,7 @@ export default function CollectorsListPage() {
         // Rafraîchir la liste
         fetchActors(pagination.page, searchTerm);
         closeDeleteModal();
-        console.log("✅ Acteur supprimé avec succès");
+        console.log("✅ Superviseur supprimé avec succès");
       } else {
         setError(response.data.message || "Erreur lors de la suppression");
       }
@@ -425,7 +486,7 @@ export default function CollectorsListPage() {
         window.location.href = "/signin";
         return;
       } else {
-        setError(err.message || "Erreur lors de la suppression de l'acteur");
+        setError(err.message || "Erreur lors de la suppression du superviseur");
       }
     } finally {
       setDeleteLoading(false);
@@ -496,8 +557,8 @@ export default function CollectorsListPage() {
     return (
       <div className="page-container">
         <PageMeta
-          title="Commerce Tracking | Collecteurs"
-          description="Liste des collecteurs"
+          title="Commerce Tracking | Superviseurs"
+          description="Liste des superviseurs"
         />
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -511,8 +572,8 @@ export default function CollectorsListPage() {
     return (
       <div className="page-container">
         <PageMeta
-          title="Commerce Tracking | Collecteurs"
-          description="Liste des collecteurs"
+          title="Commerce Tracking | Superviseurs"
+          description="Liste des superviseurs"
         />
         <div className="flex items-center justify-center h-64 text-red-600">
           <div className="text-center">
@@ -539,18 +600,18 @@ export default function CollectorsListPage() {
   return (
     <div className="page-container">
       <PageMeta
-        title="Commerce Tracking | Collecteurs"
-        description="Liste des collecteurs"
+        title="Commerce Tracking | Superviseurs"
+        description="Liste des superviseurs"
       />
 
-      <PageBreadcrumb pageTitle={t("collectors_list")} />
+      <PageBreadcrumb pageTitle={t("supervisors_list")} />
       <div className="page-container">
         <div className="space-y-6">
           {/* Header with search and add button */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex-1 max-w-md">
               <Input
-                placeholder={t("search_collector")}
+                placeholder={t("search_supervisor")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full"
@@ -558,17 +619,17 @@ export default function CollectorsListPage() {
             </div>
             <div className="flex gap-2">
               <Button
-                onClick={() => navigate("/collectors/add")}
+                onClick={() => navigate("/supervisors/add")}
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                {t("add_collector") || "Ajouter un Collecteur"}
+                {t("add_supervisor") || "Ajouter un Superviseur"}
               </Button>
             </div>
           </div>
 
-          {/* Collectors Table */}
-          <ComponentCard title={t("collectors_list")}>
+          {/* Supervisors Table */}
+          <ComponentCard title={t("supervisors_list")}>
             {loading ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
@@ -578,7 +639,7 @@ export default function CollectorsListPage() {
             ) : actors.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
-                  {searchTerm ? t("no_collectors_found") : t("no_collectors")}
+                  {searchTerm ? t("no_supervisors_found") : t("no_supervisors")}
                 </p>
               </div>
             ) : (
@@ -587,16 +648,13 @@ export default function CollectorsListPage() {
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("collector_name")}
+                        {t("supervisor_name")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
                         {t("role")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
                         {t("organization")}
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("country")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
                         {t("status")}
@@ -652,16 +710,6 @@ export default function CollectorsListPage() {
                               {t("no_organization") || "Aucune organisation"}
                             </div>
                           )}
-                        </td>
-                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          <div className="flex items-center">
-                            <span className="text-lg mr-2">
-                              {actor.country.flag}
-                            </span>
-                            <span className="text-sm">
-                              {actor.country.name}
-                            </span>
-                          </div>
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
                           <span
@@ -772,8 +820,8 @@ export default function CollectorsListPage() {
         className="max-w-4xl"
       >
         <ModalHeader>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t("collector_details") || "Détails du Collecteur"}
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-20">
+            {t("supervisor_details") || "Détails du Superviseur"}
           </h3>
         </ModalHeader>
         <div className="px-6 py-4">
@@ -915,28 +963,6 @@ export default function CollectorsListPage() {
                         : t("inactive") || "Inactif"}
                     </p>
                   </div>
-                  {selectedActor.supervisor && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {t("supervisor") || "Superviseur"}
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                        {selectedActor.supervisor.first_name}{" "}
-                        {selectedActor.supervisor.last_name}
-                      </p>
-                    </div>
-                  )}
-                  {selectedActor.teamManager && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {t("team_manager") || "Chef d'équipe"}
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                        {selectedActor.teamManager.first_name}{" "}
-                        {selectedActor.teamManager.last_name}
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -1007,7 +1033,7 @@ export default function CollectorsListPage() {
       >
         <ModalHeader>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t("edit")} {t("collector")}
+            {t("edit")} {t("supervisor")}
           </h3>
         </ModalHeader>
         <div className="px-6 py-4">
@@ -1222,18 +1248,52 @@ export default function CollectorsListPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t("nationality") || "Nationalité"}
-                </label>
-                <input
-                  type="text"
-                  name="nationality"
-                  value={editFormData.nationality}
-                  onChange={handleEditInputChange}
-                  disabled={editLoading}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("nationality") || "Nationalité"}
+                  </label>
+                  <input
+                    type="text"
+                    name="nationality"
+                    value={editFormData.nationality}
+                    onChange={handleEditInputChange}
+                    disabled={editLoading}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("organization") || "Organisation"}
+                  </label>
+                  <select
+                    name="organization_id"
+                    value={editFormData.organization_id}
+                    onChange={handleEditInputChange}
+                    disabled={editLoading}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  >
+                    <option value="">
+                      {t("select_organization") ||
+                        "Sélectionner une organisation"}
+                    </option>
+                    {organizations && Array.isArray(organizations) ? (
+                      organizations.map((organization) => (
+                        <option key={organization.id} value={organization.id}>
+                          {organization.name} -{" "}
+                          {organization.metadata?.city || "N/A"}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>
+                        {organizations
+                          ? "Chargement..."
+                          : "Aucune organisation"}
+                      </option>
+                    )}
+                  </select>
+                </div>
               </div>
             </form>
           )}
@@ -1273,8 +1333,8 @@ export default function CollectorsListPage() {
               </h3>
 
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                {t("delete_collector_message") ||
-                  "Êtes-vous sûr de vouloir supprimer le collecteur"}{" "}
+                {t("delete_supervisor_message") ||
+                  "Êtes-vous sûr de vouloir supprimer le superviseur"}{" "}
                 <strong>
                   {selectedActor.first_name} {selectedActor.last_name}
                 </strong>{" "}
