@@ -51,6 +51,16 @@ const AppSidebar: React.FC = () => {
 
   const usersItems: NavItem[] = [
     {
+      name: t("organizations_list"),
+      icon: <Building2 />,
+      path: "/organizations/list",
+    },
+    {
+      name: t("add_organization"),
+      icon: <Plus />,
+      path: "/organizations/add",
+    },
+    {
       name: t("collectors_list"),
       icon: <GroupIcon />,
       path: "/collectors/list",
@@ -81,15 +91,10 @@ const AppSidebar: React.FC = () => {
       path: "/team-managers/add",
     },
     // {
-    //   icon: <PencilIcon />,
-    //   name: t("create_collector"),
-    //   path: "/create-user",
+    //   icon: <UserCircleIcon />,
+    //   name: t("role_management"),
+    //   path: "/role-managment",
     // },
-    {
-      icon: <UserCircleIcon />,
-      name: t("role_management"),
-      path: "/role-managment",
-    },
   ];
 
   const localities: NavItem[] = [

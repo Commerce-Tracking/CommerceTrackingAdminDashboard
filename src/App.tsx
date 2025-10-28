@@ -68,6 +68,8 @@ import TransportModesListPage from "./pages/transport-modes/TransportModesListPa
 import AddUnity from "./pages/unities/AddUnity.tsx";
 import UnitiesListPage from "./pages/unities/UnitiesListPage.tsx";
 import CSVExportPage from "./pages/Export/CSVExportPage.tsx";
+import OrganizationsListPage from "./pages/organizations/OrganizationsListPage";
+import AddOrganization from "./pages/organizations/AddOrganization";
 
 export default function App() {
   return (
@@ -221,6 +223,16 @@ export default function App() {
                               <Route
                                 path="/export-csv"
                                 element={<CSVExportPage />}
+                              />
+
+                              {/* Organizations Page */}
+                              <Route
+                                path="/organizations/list"
+                                element={<OrganizationsListPage />}
+                              />
+                              <Route
+                                path="/organizations/add"
+                                element={<AddOrganization />}
                               />
 
                               {/* Complaints Page */}

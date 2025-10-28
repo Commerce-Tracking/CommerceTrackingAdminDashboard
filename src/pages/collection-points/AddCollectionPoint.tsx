@@ -385,7 +385,6 @@ export default function AddCollectionPoint() {
                       t("collection_point_name_placeholder") ||
                       "Nom du point de collecte"
                     }
-                    required
                     disabled={loading}
                   />
                 </div>
@@ -523,7 +522,7 @@ export default function AddCollectionPoint() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t("latitude") || "Latitude"}
                   </label>
-                  <Input
+                  <input
                     type="number"
                     step="any"
                     name="latitude"
@@ -531,6 +530,7 @@ export default function AddCollectionPoint() {
                     onChange={handleInputChange}
                     placeholder={t("latitude_placeholder") || "Ex: 7.3167"}
                     disabled={loading}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
 
@@ -538,7 +538,7 @@ export default function AddCollectionPoint() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t("longitude") || "Longitude"}
                   </label>
-                  <Input
+                  <input
                     type="number"
                     step="any"
                     name="longitude"
@@ -546,6 +546,7 @@ export default function AddCollectionPoint() {
                     onChange={handleInputChange}
                     placeholder={t("longitude_placeholder") || "Ex: 13.5833"}
                     disabled={loading}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
               </div>
@@ -665,7 +666,6 @@ export default function AddCollectionPoint() {
               {/* Boutons d'action */}
               <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <Button
-                  type="button"
                   variant="outline"
                   onClick={handleReset}
                   disabled={loading}
@@ -673,11 +673,15 @@ export default function AddCollectionPoint() {
                 >
                   {t("reset") || "Réinitialiser"}
                 </Button>
-                <Button type="submit" disabled={loading} className="px-6 py-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md disabled:opacity-50"
+                >
                   {loading
                     ? t("creating") || "Création..."
                     : t("create") || "Créer"}
-                </Button>
+                </button>
               </div>
             </form>
           </ComponentCard>

@@ -854,7 +854,6 @@ export default function AddSupervisor() {
               {/* Boutons d'action */}
               <div className="flex justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <Button
-                  type="button"
                   variant="outline"
                   onClick={handleReset}
                   disabled={loading}
@@ -862,15 +861,15 @@ export default function AddSupervisor() {
                 >
                   {t("reset") || "Réinitialiser"}
                 </Button>
-                <Button
+                <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md disabled:opacity-50"
                 >
                   {loading
                     ? t("creating") || "Création..."
                     : t("create") || "Créer"}
-                </Button>
+                </button>
               </div>
             </form>
           </ComponentCard>
