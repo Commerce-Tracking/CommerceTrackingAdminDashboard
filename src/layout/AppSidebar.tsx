@@ -12,6 +12,7 @@ import {
   Plus,
   Package,
   Tag,
+  MapPin,
 } from "lucide-react";
 import {
   ChevronDownIcon,
@@ -50,20 +51,50 @@ const AppSidebar: React.FC = () => {
 
   const usersItems: NavItem[] = [
     {
-      name: t("collector_list"),
+      name: t("organizations_list"),
+      icon: <Building2 />,
+      path: "/organizations/list",
+    },
+    {
+      name: t("add_organization"),
+      icon: <Plus />,
+      path: "/organizations/add",
+    },
+    {
+      name: t("collectors_list"),
       icon: <GroupIcon />,
-      path: "/users",
+      path: "/collectors/list",
     },
     {
-      icon: <PencilIcon />,
-      name: t("create_collector"),
-      path: "/create-user",
+      name: t("add_collector"),
+      icon: <Plus />,
+      path: "/collectors/add",
     },
     {
-      icon: <UserCircleIcon />,
-      name: t("role_management"),
-      path: "/role-managment",
+      name: t("supervisors_list"),
+      icon: <GroupIcon />,
+      path: "/supervisors/list",
     },
+    {
+      name: t("add_supervisor"),
+      icon: <Plus />,
+      path: "/supervisors/add",
+    },
+    {
+      name: t("team_managers_list"),
+      icon: <GroupIcon />,
+      path: "/team-managers/list",
+    },
+    {
+      name: t("add_team_manager"),
+      icon: <Plus />,
+      path: "/team-managers/add",
+    },
+    // {
+    //   icon: <UserCircleIcon />,
+    //   name: t("role_management"),
+    //   path: "/role-managment",
+    // },
   ];
 
   const localities: NavItem[] = [
@@ -96,6 +127,16 @@ const AppSidebar: React.FC = () => {
       icon: <Plus />,
       name: t("add_corridors"),
       path: "/corridors/add",
+    },
+    {
+      icon: <MapPin />,
+      name: t("add_collection_point"),
+      path: "/collection-points/add",
+    },
+    {
+      icon: <MapPin />,
+      name: t("collection_points_list"),
+      path: "/collection-points/list",
     },
     {
       icon: <DollarSign />,
@@ -207,7 +248,15 @@ const AppSidebar: React.FC = () => {
   ];
 
   const [openSubmenu, setOpenSubmenu] = useState<{
-    type: "dashboard" | "users" | "reporting" | "" | "localities" | "others";
+    type:
+      | "dashboard"
+      | "users"
+      | "reporting"
+      | ""
+      | "localities"
+      | "others"
+      | "products"
+      | "services";
     index: number;
   } | null>(null);
 
@@ -230,7 +279,13 @@ const AppSidebar: React.FC = () => {
           nav.subItems.forEach((subItem) => {
             if (isActive(subItem.path)) {
               setOpenSubmenu({
-                type: menuType as (typeof openSubmenu)["type"],
+                type: menuType as
+                  | "dashboard"
+                  | "users"
+                  | "reporting"
+                  | ""
+                  | "localities"
+                  | "others",
                 index,
               });
               submenuMatched = true;
@@ -259,7 +314,15 @@ const AppSidebar: React.FC = () => {
 
   const handleSubmenuToggle = (
     index: number,
-    menuType: (typeof openSubmenu)["type"]
+    menuType:
+      | "dashboard"
+      | "users"
+      | "reporting"
+      | ""
+      | "localities"
+      | "others"
+      | "products"
+      | "services"
   ) => {
     setOpenSubmenu((prevOpenSubmenu) =>
       prevOpenSubmenu &&
@@ -273,7 +336,15 @@ const AppSidebar: React.FC = () => {
   const renderMenuSection = (
     label: string,
     items: NavItem[],
-    menuType: (typeof openSubmenu)["type"]
+    menuType:
+      | "dashboard"
+      | "users"
+      | "reporting"
+      | ""
+      | "localities"
+      | "others"
+      | "products"
+      | "services"
   ) => (
     <div>
       <h2
@@ -293,7 +364,15 @@ const AppSidebar: React.FC = () => {
 
   const renderMenuItems = (
     items: NavItem[],
-    menuType: (typeof openSubmenu)["type"]
+    menuType:
+      | "dashboard"
+      | "users"
+      | "reporting"
+      | ""
+      | "localities"
+      | "others"
+      | "products"
+      | "services"
   ) => (
     <ul className="flex flex-col gap-4">
       {items.map((nav, index) => (

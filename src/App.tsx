@@ -50,6 +50,14 @@ import AddProductType from "./pages/product-types/AddProductType.tsx";
 import ProductTypesListPage from "./pages/product-types/ProductTypesListPage.tsx";
 import AddProduct from "./pages/products/AddProduct.tsx";
 import ProductsListPage from "./pages/products/ProductsListPage.tsx";
+import CollectorsListPage from "./pages/collectors/CollectorsListPage";
+import AddCollector from "./pages/collectors/AddCollector";
+import SupervisorsListPage from "./pages/supervisors/SupervisorsListPage";
+import AddSupervisor from "./pages/supervisors/AddSupervisor";
+import TeamManagersListPage from "./pages/team-managers/TeamManagersListPage";
+import AddTeamManager from "./pages/team-managers/AddTeamManager";
+import AddCollectionPoint from "./pages/collection-points/AddCollectionPoint";
+import CollectionPointsListPage from "./pages/collection-points/CollectionPointsListPage";
 import ProductNaturesListPage from "./pages/product-natures/ProductNaturesListPage.tsx";
 import AddService from "./pages/services/AddService.tsx";
 import ServicesListPage from "./pages/services/ServicesListPage.tsx";
@@ -60,6 +68,8 @@ import TransportModesListPage from "./pages/transport-modes/TransportModesListPa
 import AddUnity from "./pages/unities/AddUnity.tsx";
 import UnitiesListPage from "./pages/unities/UnitiesListPage.tsx";
 import CSVExportPage from "./pages/Export/CSVExportPage.tsx";
+import OrganizationsListPage from "./pages/organizations/OrganizationsListPage";
+import AddOrganization from "./pages/organizations/AddOrganization";
 
 export default function App() {
   return (
@@ -129,6 +139,46 @@ export default function App() {
                               />
 
                               <Route
+                                path="/collectors/list"
+                                element={<CollectorsListPage />}
+                              />
+
+                              <Route
+                                path="/collectors/add"
+                                element={<AddCollector />}
+                              />
+
+                              <Route
+                                path="/supervisors/list"
+                                element={<SupervisorsListPage />}
+                              />
+
+                              <Route
+                                path="/supervisors/add"
+                                element={<AddSupervisor />}
+                              />
+
+                              <Route
+                                path="/team-managers/list"
+                                element={<TeamManagersListPage />}
+                              />
+
+                              <Route
+                                path="/team-managers/add"
+                                element={<AddTeamManager />}
+                              />
+
+                              <Route
+                                path="/collection-points/add"
+                                element={<AddCollectionPoint />}
+                              />
+
+                              <Route
+                                path="/collection-points/list"
+                                element={<CollectionPointsListPage />}
+                              />
+
+                              <Route
                                 path="/product-natures/list"
                                 element={<ProductNaturesListPage />}
                               />
@@ -173,6 +223,16 @@ export default function App() {
                               <Route
                                 path="/export-csv"
                                 element={<CSVExportPage />}
+                              />
+
+                              {/* Organizations Page */}
+                              <Route
+                                path="/organizations/list"
+                                element={<OrganizationsListPage />}
+                              />
+                              <Route
+                                path="/organizations/add"
+                                element={<AddOrganization />}
                               />
 
                               {/* Complaints Page */}

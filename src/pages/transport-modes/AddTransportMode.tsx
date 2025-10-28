@@ -61,7 +61,9 @@ const AddTransportMode = () => {
   }, []);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -181,7 +183,6 @@ const AddTransportMode = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder={t("enter_transport_mode_name")}
-                    required
                     disabled={loading}
                   />
                 </div>
@@ -228,7 +229,6 @@ const AddTransportMode = () => {
 
               <div className="flex justify-end gap-3">
                 <Button
-                  type="button"
                   variant="outline"
                   onClick={handleReset}
                   disabled={loading}
@@ -236,9 +236,13 @@ const AddTransportMode = () => {
                 >
                   {t("reset")}
                 </Button>
-                <Button type="submit" disabled={loading} className="px-6 py-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md disabled:opacity-50"
+                >
                   {loading ? t("creating") : t("create_transport_mode")}
-                </Button>
+                </button>
               </div>
             </form>
           </ComponentCard>

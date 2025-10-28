@@ -133,7 +133,6 @@ const AddUnity = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder={t("enter_unity_name")}
-                    required
                     disabled={loading}
                   />
                 </div>
@@ -148,7 +147,6 @@ const AddUnity = () => {
                     value={formData.symbol}
                     onChange={handleInputChange}
                     placeholder={t("enter_unity_symbol")}
-                    required
                     disabled={loading}
                   />
                 </div>
@@ -173,7 +171,6 @@ const AddUnity = () => {
 
               <div className="flex justify-end gap-3">
                 <Button
-                  type="button"
                   variant="outline"
                   onClick={handleReset}
                   disabled={loading}
@@ -181,9 +178,13 @@ const AddUnity = () => {
                 >
                   {t("reset")}
                 </Button>
-                <Button type="submit" disabled={loading} className="px-6 py-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md disabled:opacity-50"
+                >
                   {loading ? t("creating") : t("create_unity")}
-                </Button>
+                </button>
               </div>
             </form>
           </ComponentCard>

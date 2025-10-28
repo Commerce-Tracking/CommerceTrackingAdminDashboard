@@ -162,7 +162,6 @@ const AddTransportMethod = () => {
                     onChange={handleInputChange}
                     placeholder={t("enter_transport_method_name")}
                     disabled={loading}
-                    required
                   />
                 </div>
 
@@ -208,7 +207,6 @@ const AddTransportMethod = () => {
 
               <div className="flex justify-end gap-3 pt-4">
                 <Button
-                  type="button"
                   variant="outline"
                   onClick={handleReset}
                   disabled={loading}
@@ -216,9 +214,13 @@ const AddTransportMethod = () => {
                 >
                   {t("reset")}
                 </Button>
-                <Button type="submit" disabled={loading} className="px-6 py-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md disabled:opacity-50"
+                >
                   {loading ? t("creating") : t("create_transport_method")}
-                </Button>
+                </button>
               </div>
             </form>
           </ComponentCard>

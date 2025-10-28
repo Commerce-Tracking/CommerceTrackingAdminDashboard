@@ -7,8 +7,7 @@ import PhoneInput from "../group-input/PhoneInput.tsx";
 import { Toast } from "primereact/toast";
 
 import axiosInstance from "../../../api/axios.ts"; // Ajustez le chemin selon votre configuration
-import {useTranslation} from "react-i18next";
-
+import { useTranslation } from "react-i18next";
 
 interface Role {
   id: string;
@@ -43,8 +42,6 @@ export default function UserInputs() {
       try {
         const response = await axiosInstance.get("/admin/roles");
         setRoles(response.data);
-
-        
       } catch (err: any) {
         const errorMessage =
           err.response?.data?.message ||
@@ -131,11 +128,11 @@ export default function UserInputs() {
     try {
       const response = await axiosInstance.post("/admin/create-user", formData);
       toast.current?.show({
-  severity: "success",
-  summary: "Succès",
-  detail: `Utilisateur ${response.data.data.firstname} ${response.data.data.lastname} créé avec succès !`,
-  life: 3000,
-});
+        severity: "success",
+        summary: "Succès",
+        detail: `Utilisateur ${response.data.data.firstname} ${response.data.data.lastname} créé avec succès !`,
+        life: 3000,
+      });
       setFormData({
         firstname: "",
         lastname: "",
@@ -167,83 +164,81 @@ export default function UserInputs() {
   ];
 
   const { t, i18n } = useTranslation();
-            
-                const changeLanguage = (lng: string) => {
-                    i18n.changeLanguage(lng);
-                };
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
 
   return (
     <div className="p-4">
-      <ComponentCard title={t('form_instruction')}>
+      <ComponentCard title={t("form_instruction")}>
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && <p className="text-red-500">{error}</p>}
-         
 
           <div>
-            <Label htmlFor="firstname">{t('first_name')}</Label>
+            <Label htmlFor="firstname">{t("first_name")}</Label>
             <Input
               type="text"
               id="firstname"
               name="firstname"
               value={formData.firstname}
               onChange={handleInputChange}
-              placeholder={t('first_name_placeholder')}
+              placeholder={t("first_name_placeholder")}
             />
           </div>
 
           <div>
-            <Label htmlFor="lastname">{t('last_name')}</Label>
+            <Label htmlFor="lastname">{t("last_name")}</Label>
             <Input
               type="text"
               id="lastname"
               name="lastname"
               value={formData.lastname}
               onChange={handleInputChange}
-              placeholder={t('last_name_placeholder')}
+              placeholder={t("last_name_placeholder")}
             />
           </div>
 
           <div>
-            <Label htmlFor="email">{t('email')}</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input
               type="email"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder={t('email_placeholder')}
+              placeholder={t("email_placeholder")}
             />
           </div>
 
           <div>
-            <Label>{t('role')}</Label>
+            <Label>{t("role")}</Label>
             <Select
               options={roleOptions}
-              placeholder={t('select_role')}
-              value={formData.roleId}
+              placeholder={t("select_role")}
               onChange={handleSelectChange("roleId")}
               className="dark:bg-gray-900"
+              defaultValue={formData.roleId}
             />
           </div>
 
           <div>
-            <Label>{t('locality')}</Label>
+            <Label>{t("locality")}</Label>
             <Select
               options={localityOptions}
-              placeholder={t('select_locality')}
-              value={formData.localityId}
+              placeholder={t("select_locality")}
               onChange={handleSelectChange("localityId")}
               className="dark:bg-gray-900"
+              defaultValue={formData.localityId}
             />
           </div>
 
           <div>
-            <Label>{t('phone_number')}</Label>
+            <Label>{t("phone_number")}</Label>
             <PhoneInput
               selectPosition="start"
               countries={countries}
               placeholder="+228 00 00 00 00"
-              value={formData.phone}
               onChange={handlePhoneNumberChange}
             />
           </div>
@@ -255,7 +250,7 @@ export default function UserInputs() {
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            {loading ? "Création en cours..." : t('create_collector')}
+            {loading ? "Création en cours..." : t("create_collector")}
           </button>
         </form>
       </ComponentCard>
@@ -263,8 +258,3 @@ export default function UserInputs() {
     </div>
   );
 }
-
-
-
-
-

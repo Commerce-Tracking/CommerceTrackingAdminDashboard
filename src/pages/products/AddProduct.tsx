@@ -13,6 +13,7 @@ interface ProductFormData {
   name: string;
   name_eng: string;
   product_type_id: string;
+  product_nature_id: string;
   description: string;
 }
 
@@ -26,15 +27,26 @@ interface ProductType {
   products?: any[];
 }
 
+interface ProductNature {
+  id: number;
+  name_fr: string;
+  name_en: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const AddProduct = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [loading, setLoading] = useState<boolean>(false);
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
+  const [productNatures, setProductNatures] = useState<ProductNature[]>([]);
+
   const [formData, setFormData] = useState<ProductFormData>({
     name: "",
     name_eng: "",
     product_type_id: "",
+    product_nature_id: "",
     description: "",
   });
 
@@ -61,8 +73,42 @@ const AddProduct = () => {
     }
   };
 
+  // Récupérer la liste des natures de produits
+  const fetchProductNatures = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      // Limiter à 50 éléments pour éviter de surcharger le dropdown
+      // Si besoin de plus, utiliser un input avec autocomplétion
+      const response = await axiosInstance.get(
+        "/admin/reference-data/product-natures",
+        {
+          params: {
+            page: 1,
+            limit: 100, // Augmenter la limite si vous avez plus d'options
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        const naturesData = response.data.result.data || [];
+        setProductNatures(naturesData);
+        console.log(
+          ` ${naturesData.length} natures de produits chargées (limité à 50)`
+        );
+      }
+    } catch (err: any) {
+      console.error("Erreur lors du chargement des natures de produits:", err);
+    }
+  };
+
   useEffect(() => {
     fetchProductTypes();
+    fetchProductNatures();
   }, []);
 
   const handleInputChange = (
@@ -108,14 +154,21 @@ const AddProduct = () => {
         return;
       }
 
+      const requestData: any = {
+        name: formData.name.trim(),
+        name_eng: formData.name_eng.trim() || formData.name.trim(), // Utilise le nom français si anglais vide
+        product_type_id: parseInt(formData.product_type_id),
+        description: formData.description.trim(),
+      };
+
+      // Ajouter product_nature_id seulement s'il est renseigné
+      if (formData.product_nature_id && formData.product_nature_id.trim()) {
+        requestData.product_nature_id = parseInt(formData.product_nature_id);
+      }
+
       const response = await axiosInstance.post(
         "/admin/reference-data/products",
-        {
-          name: formData.name.trim(),
-          name_eng: formData.name_eng.trim() || formData.name.trim(), // Utilise le nom français si anglais vide
-          product_type_id: parseInt(formData.product_type_id),
-          description: formData.description.trim(),
-        },
+        requestData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -166,6 +219,7 @@ const AddProduct = () => {
       name: "",
       name_eng: "",
       product_type_id: "",
+      product_nature_id: "",
       description: "",
     });
   };
@@ -194,7 +248,6 @@ const AddProduct = () => {
                     placeholder={t("enter_product_name")}
                     className="w-full"
                     disabled={loading}
-                    required
                   />
                 </div>
 
@@ -216,6 +269,34 @@ const AddProduct = () => {
                         {type.name}
                       </option>
                     ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("product_nature") || "Nature du produit"}
+                  </label>
+                  <select
+                    name="product_nature_id"
+                    value={formData.product_nature_id}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    disabled={loading}
+                  >
+                    <option value="">
+                      {t("select_product_nature") || "Sélectionner une nature"}
+                    </option>
+                    {productNatures && productNatures.length > 0 ? (
+                      productNatures.map((nature) => (
+                        <option key={nature.id} value={nature.id}>
+                          {nature.name_fr}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        Aucune nature disponible
+                      </option>
+                    )}
                   </select>
                 </div>
 
@@ -252,7 +333,6 @@ const AddProduct = () => {
 
               <div className="flex justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <Button
-                  type="button"
                   variant="outline"
                   onClick={handleReset}
                   disabled={loading}
@@ -261,7 +341,6 @@ const AddProduct = () => {
                   {t("reset")}
                 </Button>
                 <Button
-                  type="button"
                   variant="outline"
                   onClick={() => navigate("/products/list")}
                   disabled={loading}
@@ -269,7 +348,7 @@ const AddProduct = () => {
                 >
                   {t("cancel")}
                 </Button>
-                <Button type="submit" disabled={loading} className="px-6 py-2">
+                <Button disabled={loading} className="px-6 py-2">
                   {loading ? t("creating") : t("create")}
                 </Button>
               </div>

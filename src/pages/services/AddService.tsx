@@ -152,7 +152,6 @@ const AddService = () => {
                     placeholder={t("enter_service_name")}
                     className="w-full"
                     disabled={loading}
-                    required
                   />
                 </div>
 
@@ -193,7 +192,6 @@ const AddService = () => {
 
               <div className="flex justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <Button
-                  type="button"
                   variant="outline"
                   onClick={handleReset}
                   disabled={loading}
@@ -202,7 +200,6 @@ const AddService = () => {
                   {t("reset")}
                 </Button>
                 <Button
-                  type="button"
                   variant="outline"
                   onClick={() => navigate("/services/list")}
                   disabled={loading}
@@ -210,9 +207,13 @@ const AddService = () => {
                 >
                   {t("cancel")}
                 </Button>
-                <Button type="submit" disabled={loading} className="px-6 py-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md disabled:opacity-50"
+                >
                   {loading ? t("creating") : t("create")}
-                </Button>
+                </button>
               </div>
             </form>
           </ComponentCard>
