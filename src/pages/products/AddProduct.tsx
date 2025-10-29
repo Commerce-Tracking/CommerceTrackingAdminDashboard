@@ -398,7 +398,7 @@ const AddProduct = () => {
                             disabled={loading}
                             className="ml-4 px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
                           >
-                            {t("remove") || "Supprimer"}
+                            {t("remove")}
                           </button>
                         </div>
                       );

@@ -93,6 +93,11 @@ const ProductsListPage = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productTypes, setProductTypes] = useState<any[]>([]);
+  const [productNatures, setProductNatures] = useState<any[]>([]);
+  const [editNatureFormData, setEditNatureFormData] = useState({
+    product_nature_id: "",
+    hs_code: "",
+  });
   const { t, i18n } = useTranslation();
 
   // Récupérer la liste des types de produits pour le modal d'édition
@@ -115,6 +120,33 @@ const ProductsListPage = () => {
       }
     } catch (err: any) {
       console.error("Erreur lors du chargement des types de produits:", err);
+    }
+  };
+
+  // Récupérer la liste des natures de produits pour le modal d'édition
+  const fetchProductNatures = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const response = await axiosInstance.get(
+        "/admin/reference-data/product-natures",
+        {
+          params: {
+            page: 1,
+            limit: 100,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setProductNatures(response.data.result.data || []);
+      }
+    } catch (err: any) {
+      console.error("Erreur lors du chargement des natures de produits:", err);
     }
   };
 
@@ -182,6 +214,7 @@ const ProductsListPage = () => {
   useEffect(() => {
     fetchProducts(1);
     fetchProductTypes();
+    fetchProductNatures();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Debounce pour la recherche
@@ -259,6 +292,10 @@ const ProductsListPage = () => {
       description: "",
     });
     setEditNaturesList([]);
+    setEditNatureFormData({
+      product_nature_id: "",
+      hs_code: "",
+    });
   };
 
   const handleEditInputChange = (
@@ -271,6 +308,38 @@ const ProductsListPage = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleEditNatureFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setEditNatureFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleAddEditNature = () => {
+    if (
+      editNatureFormData.product_nature_id &&
+      editNatureFormData.hs_code.trim()
+    ) {
+      const newNature = {
+        product_nature_id: parseInt(editNatureFormData.product_nature_id),
+        hs_code: editNatureFormData.hs_code.trim(),
+      };
+      setEditNaturesList([...editNaturesList, newNature]);
+      setEditNatureFormData({
+        product_nature_id: "",
+        hs_code: "",
+      });
+    }
+  };
+
+  const handleRemoveEditNature = (index: number) => {
+    const newList = editNaturesList.filter((_, i) => i !== index);
+    setEditNaturesList(newList);
   };
 
   const handleUpdateProduct = async () => {
@@ -326,6 +395,8 @@ const ProductsListPage = () => {
       }
 
       console.log("🔄 Payload de modification:", requestData);
+      console.log("📋 Natures à envoyer:", editNaturesList);
+      console.log("📊 Nombre de natures:", editNaturesList.length);
 
       const response = await axiosInstance.put(
         `/admin/reference-data/products/${editingProduct.id}`,
@@ -339,6 +410,7 @@ const ProductsListPage = () => {
       );
 
       console.log("Réponse API mise à jour :", response.data);
+      console.log("📦 Produit mis à jour:", response.data.result);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -349,8 +421,10 @@ const ProductsListPage = () => {
         // Fermer le modal
         closeEditModal();
 
-        // Rafraîchir la liste
-        fetchProducts(pagination.page);
+        // Attendre un peu avant de rafraîchir pour que le backend ait le temps de mettre à jour
+        setTimeout(() => {
+          fetchProducts(pagination.page);
+        }, 500);
       } else {
         toast.error(t("error"), {
           description: response.data.message || "Erreur lors de la mise à jour",
@@ -918,6 +992,101 @@ const ProductsListPage = () => {
                     rows={4}
                     disabled={editLoading}
                   />
+                </div>
+
+                {/* Section pour ajouter des natures */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("product_nature") || "Nature du produit"}
+                  </label>
+
+                  <div className="mb-2">
+                    <input
+                      type="text"
+                      name="hs_code"
+                      value={editNatureFormData.hs_code}
+                      onChange={handleEditNatureFormChange}
+                      placeholder={t("hs_code") || "Code HS"}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      disabled={editLoading}
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <select
+                      name="product_nature_id"
+                      value={editNatureFormData.product_nature_id}
+                      onChange={handleEditNatureFormChange}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      disabled={editLoading}
+                    >
+                      <option value="">
+                        {t("select_product_nature") ||
+                          "Sélectionner une nature"}
+                      </option>
+                      {productNatures && productNatures.length > 0 ? (
+                        productNatures.map((nature) => (
+                          <option key={nature.id} value={nature.id}>
+                            {nature.name_fr}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="" disabled>
+                          Aucune nature disponible
+                        </option>
+                      )}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={handleAddEditNature}
+                      disabled={
+                        editLoading ||
+                        !editNatureFormData.product_nature_id ||
+                        !editNatureFormData.hs_code.trim()
+                      }
+                      className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md disabled:opacity-50"
+                    >
+                      {t("add")}
+                    </button>
+                  </div>
+
+                  {/* Liste des natures ajoutées */}
+                  {editNaturesList.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {editNaturesList.map((nature, index) => {
+                        const natureDetails = productNatures.find(
+                          (n) => n.id === nature.product_nature_id
+                        );
+                        return (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-md"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-gray-900 dark:text-gray-100">
+                                {natureDetails?.name_fr ||
+                                  nature.product_nature_id}
+                              </span>
+                              <span className="text-gray-500 dark:text-gray-400">
+                                {"•"}
+                              </span>
+                              <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+                                {nature.hs_code}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveEditNature(index)}
+                              disabled={editLoading}
+                              className="ml-4 px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                            >
+                              {t("remove")}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
 
