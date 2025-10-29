@@ -382,7 +382,7 @@ const AddProduct = () => {
                                 nature.product_nature_id}
                             </span>
                             <span className="text-gray-500 dark:text-gray-400">
-                              •
+                              {"•"}
                             </span>
                             <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
                               {nature.hs_code}
