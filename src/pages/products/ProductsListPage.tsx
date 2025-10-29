@@ -84,6 +84,9 @@ const ProductsListPage = () => {
     product_type_id: "",
     description: "",
   });
+  const [editNaturesList, setEditNaturesList] = useState<
+    { product_nature_id: number; hs_code: string }[]
+  >([]);
   const [editLoading, setEditLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
@@ -231,6 +234,18 @@ const ProductsListPage = () => {
       product_type_id: product.product_type_id.toString(),
       description: product.description,
     });
+
+    // Charger les natures existantes
+    if (product.productCodes && product.productCodes.length > 0) {
+      const natures = product.productCodes.map((code) => ({
+        product_nature_id: code.product_nature_id,
+        hs_code: code.hs_code,
+      }));
+      setEditNaturesList(natures);
+    } else {
+      setEditNaturesList([]);
+    }
+
     setIsEditModalOpen(true);
   };
 
@@ -243,6 +258,7 @@ const ProductsListPage = () => {
       product_type_id: "",
       description: "",
     });
+    setEditNaturesList([]);
   };
 
   const handleEditInputChange = (
@@ -297,17 +313,27 @@ const ProductsListPage = () => {
         return;
       }
 
+      const requestData: any = {
+        name: editFormData.name.trim(),
+        name_eng: editFormData.name_eng.trim(),
+        product_type_id: parseInt(editFormData.product_type_id),
+        description: editFormData.description.trim(),
+      };
+
+      // Ajouter le tableau natures si des natures ont été modifiées
+      if (editNaturesList.length > 0) {
+        requestData.natures = editNaturesList;
+      }
+
+      console.log("🔄 Payload de modification:", requestData);
+
       const response = await axiosInstance.put(
         `/admin/reference-data/products/${editingProduct.id}`,
-        {
-          name: editFormData.name.trim(),
-          name_eng: editFormData.name_eng.trim(),
-          product_type_id: parseInt(editFormData.product_type_id),
-          description: editFormData.description.trim(),
-        },
+        requestData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
@@ -363,7 +389,13 @@ const ProductsListPage = () => {
   };
 
   const handleDeleteProduct = async () => {
-    if (!productToDelete) return;
+    if (!productToDelete) {
+      console.error("❌ Aucun produit à supprimer");
+      return;
+    }
+
+    console.log("📦 Produit à supprimer:", productToDelete);
+    console.log("🆔 ID du produit:", productToDelete.id);
 
     setDeleteLoading(true);
 
@@ -376,34 +408,93 @@ const ProductsListPage = () => {
         return;
       }
 
+      console.log("🔄 Suppression du produit ID:", productToDelete.id);
+      console.log(
+        "🔗 URL:",
+        `/admin/reference-data/products/${productToDelete.id}`
+      );
+
       const response = await axiosInstance.delete(
         `/admin/reference-data/products/${productToDelete.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
 
-      console.log("Réponse API suppression :", response.data);
+      console.log(
+        "📨 Réponse API suppression complète:",
+        JSON.stringify(response.data, null, 2)
+      );
+      console.log("📊 Status HTTP:", response.status);
 
       if (response.data.success) {
-        toast.success(t("success"), {
-          description: response.data.message || "Produit supprimé avec succès",
-        });
+        console.log("✅ Produit supprimé avec succès");
+        console.log("🆔 ID du produit supprimé:", productToDelete.id);
+        console.log("📋 Produits avant suppression:", products.length);
 
         // Fermer la confirmation
         closeDeleteConfirmation();
 
-        // Rafraîchir la liste
-        fetchProducts(pagination.page);
+        // Mettre à jour la liste locale en supprimant le produit
+        const filteredProducts = products.filter(
+          (p) => p.id !== productToDelete.id
+        );
+        console.log("📋 Produits après filtrage:", filteredProducts.length);
+
+        // Mettre à jour la liste locale
+        setProducts(filteredProducts);
+
+        // Ajuster le total après suppression
+        setPagination((prev) => ({
+          ...prev,
+          total: prev.total - 1,
+        }));
+
+        toast.success(t("success"), {
+          description: response.data.message || "Produit supprimé avec succès",
+        });
+
+        // Vérifier après un court délai si le produit est toujours présent côté serveur
+        setTimeout(async () => {
+          console.log("🔍 Vérification côté serveur après 2 secondes...");
+          try {
+            const verifyResponse = await axiosInstance.get(
+              `/admin/reference-data/products/${productToDelete.id}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            console.log(
+              "📊 Produit toujours présent côté serveur:",
+              verifyResponse.data
+            );
+          } catch (verifyErr: any) {
+            if (verifyErr.response?.status === 404) {
+              console.log("✅ Produit bien supprimé côté serveur (404)");
+            } else {
+              console.log(
+                "⚠️ Erreur lors de la vérification:",
+                verifyErr.message
+              );
+            }
+          }
+        }, 2000);
       } else {
         toast.error(t("error"), {
           description: response.data.message || "Erreur lors de la suppression",
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
+      console.error("❌ Erreur API suppression:", err);
+      console.error("📊 Status:", err.response?.status);
+      console.error("📋 Détails:", err.response?.data);
+      console.error("📋 Message:", err.message);
+
       let errorMessage = "Erreur lors de la suppression du produit.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

@@ -9,11 +9,17 @@ import Input from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
 import { useTranslation } from "react-i18next";
 
+interface NatureFormData {
+  product_nature_id: number;
+  hs_code: string;
+}
+
 interface ProductFormData {
   name: string;
   name_eng: string;
   product_type_id: string;
   product_nature_id: string;
+  hs_code: string;
   description: string;
 }
 
@@ -41,12 +47,14 @@ const AddProduct = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
   const [productNatures, setProductNatures] = useState<ProductNature[]>([]);
+  const [naturesList, setNaturesList] = useState<NatureFormData[]>([]);
 
   const [formData, setFormData] = useState<ProductFormData>({
     name: "",
     name_eng: "",
     product_type_id: "",
     product_nature_id: "",
+    hs_code: "",
     description: "",
   });
 
@@ -123,6 +131,30 @@ const AddProduct = () => {
     }));
   };
 
+  const handleAddNature = () => {
+    if (formData.product_nature_id && formData.hs_code.trim()) {
+      const newNature: NatureFormData = {
+        product_nature_id: parseInt(formData.product_nature_id),
+        hs_code: formData.hs_code.trim(),
+      };
+      setNaturesList([...naturesList, newNature]);
+      // Réinitialiser les champs
+      setFormData((prev) => ({
+        ...prev,
+        product_nature_id: "",
+        hs_code: "",
+      }));
+    }
+  };
+
+  const handleRemoveNature = (index: number) => {
+    console.log("🗑️ Suppression de la nature à l'index:", index);
+    console.log("📋 Liste actuelle:", naturesList);
+    const newList = naturesList.filter((_, i) => i !== index);
+    console.log("✨ Nouvelle liste:", newList);
+    setNaturesList(newList);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -161,9 +193,9 @@ const AddProduct = () => {
         description: formData.description.trim(),
       };
 
-      // Ajouter product_nature_id seulement s'il est renseigné
-      if (formData.product_nature_id && formData.product_nature_id.trim()) {
-        requestData.product_nature_id = parseInt(formData.product_nature_id);
+      // Ajouter le tableau natures seulement s'il contient des éléments
+      if (naturesList.length > 0) {
+        requestData.natures = naturesList;
       }
 
       const response = await axiosInstance.post(
@@ -220,8 +252,10 @@ const AddProduct = () => {
       name_eng: "",
       product_type_id: "",
       product_nature_id: "",
+      hs_code: "",
       description: "",
     });
+    setNaturesList([]);
   };
 
   return (
@@ -274,13 +308,31 @@ const AddProduct = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_nature") || "Nature du produit"}
+                    {t("hs_code") || "Code HS"}
                   </label>
+                  <Input
+                    type="text"
+                    name="hs_code"
+                    value={formData.hs_code}
+                    onChange={handleInputChange}
+                    placeholder={t("enter_hs_code") || "Ex: 0901.11"}
+                    className="w-full"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              {/* Section pour ajouter des natures */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t("product_nature") || "Nature du produit"}
+                </label>
+                <div className="flex gap-2">
                   <select
                     name="product_nature_id"
                     value={formData.product_nature_id}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     disabled={loading}
                   >
                     <option value="">
@@ -298,8 +350,64 @@ const AddProduct = () => {
                       </option>
                     )}
                   </select>
+                  <button
+                    type="button"
+                    onClick={handleAddNature}
+                    disabled={
+                      loading ||
+                      !formData.product_nature_id ||
+                      !formData.hs_code.trim()
+                    }
+                    className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md disabled:opacity-50"
+                  >
+                    {t("add") || "Ajouter"}
+                  </button>
                 </div>
 
+                {/* Liste des natures ajoutées */}
+                {naturesList.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    {naturesList.map((nature, index) => {
+                      const natureDetails = productNatures.find(
+                        (n) => n.id === nature.product_nature_id
+                      );
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-md"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-gray-900 dark:text-gray-100">
+                              {natureDetails?.name_fr ||
+                                nature.product_nature_id}
+                            </span>
+                            <span className="text-gray-500 dark:text-gray-400">
+                              •
+                            </span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+                              {nature.hs_code}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleRemoveNature(index);
+                            }}
+                            disabled={loading}
+                            className="ml-4 px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                          >
+                            {t("remove") || "Supprimer"}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t("name_english")}
