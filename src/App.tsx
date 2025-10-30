@@ -70,6 +70,10 @@ import UnitiesListPage from "./pages/unities/UnitiesListPage.tsx";
 import CSVExportPage from "./pages/Export/CSVExportPage.tsx";
 import OrganizationsListPage from "./pages/organizations/OrganizationsListPage";
 import AddOrganization from "./pages/organizations/AddOrganization";
+import AddAnimal from "./pages/animals/AddAnimal";
+import AnimalsListPage from "./pages/animals/AnimalsListPage";
+import AddAnimalType from "./pages/animals/AddAnimalType";
+import AnimalTypesListPage from "./pages/animals/AnimalTypesListPage";
 
 export default function App() {
   return (
@@ -136,6 +140,22 @@ export default function App() {
                               <Route
                                 path="/products/list"
                                 element={<ProductsListPage />}
+                              />
+                              <Route
+                                path="/animals/add"
+                                element={<AddAnimal />}
+                              />
+                              <Route
+                                path="/animals/list"
+                                element={<AnimalsListPage />}
+                              />
+                              <Route
+                                path="/animals/type/add"
+                                element={<AddAnimalType />}
+                              />
+                              <Route
+                                path="/animals/types/list"
+                                element={<AnimalTypesListPage />}
                               />
 
                               <Route

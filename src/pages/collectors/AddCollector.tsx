@@ -74,12 +74,12 @@ interface Organization {
   type: string;
   country_id: number;
   metadata: {
-    city: string;
-    email: string;
-    phone: string;
-    region: string;
-    website: string;
-  };
+    city?: string;
+    email?: string;
+    phone?: string;
+    region?: string;
+    website?: string;
+  } | null;
   created_at: string;
   updated_at: string;
 }
@@ -1143,7 +1143,8 @@ export default function AddCollector() {
                       </option>
                       {organizations.map((org) => (
                         <option key={org.id} value={org.id}>
-                          {org.name} - {org.metadata.city}
+                          {org.name}
+                          {org.metadata?.city ? ` - ${org.metadata.city}` : ""}
                         </option>
                       ))}
                     </select>
@@ -1214,7 +1215,7 @@ export default function AddCollector() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md disabled:opacity-50"
+                  className="px-6 py-2 bg-green-700 hover:bg-green-700 text-white rounded-md disabled:opacity-50"
                 >
                   {loading
                     ? t("creating") || "Création..."

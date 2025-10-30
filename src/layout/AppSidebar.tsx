@@ -188,6 +188,29 @@ const AppSidebar: React.FC = () => {
     },
   ];
 
+  const animalsItems: NavItem[] = [
+    {
+      icon: <Package />,
+      name: t("animals_list"),
+      path: "/animals/list",
+    },
+    {
+      icon: <Plus />,
+      name: t("add_animal"),
+      path: "/animals/add",
+    },
+    {
+      icon: <Package />,
+      name: t("animal_types_list") || "Liste des types d'animaux",
+      path: "/animals/types/list",
+    },
+    {
+      icon: <Plus />,
+      name: t("add_animal_type"),
+      path: "/animals/type/add",
+    },
+  ];
+
   const servicesItems: NavItem[] = [
     {
       icon: <SettingsIcon />,
@@ -256,6 +279,7 @@ const AppSidebar: React.FC = () => {
       | "localities"
       | "others"
       | "products"
+      | "animals"
       | "services";
     index: number;
   } | null>(null);
@@ -322,6 +346,7 @@ const AppSidebar: React.FC = () => {
       | "localities"
       | "others"
       | "products"
+      | "animals"
       | "services"
   ) => {
     setOpenSubmenu((prevOpenSubmenu) =>
@@ -344,6 +369,7 @@ const AppSidebar: React.FC = () => {
       | "localities"
       | "others"
       | "products"
+      | "animals"
       | "services"
   ) => (
     <div>
@@ -372,6 +398,7 @@ const AppSidebar: React.FC = () => {
       | "localities"
       | "others"
       | "products"
+      | "animals"
       | "services"
   ) => (
     <ul className="flex flex-col gap-4">
@@ -493,6 +520,7 @@ const AppSidebar: React.FC = () => {
               productsItems,
               "products"
             )}
+            {renderMenuSection("animals", animalsItems, "animals")}
             {renderMenuSection(
               "services_and_transports",
               servicesItems,
