@@ -9,43 +9,37 @@ import Button from "../../components/ui/button/Button";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-interface Product {
+interface Animal {
   id: number;
   public_id: string;
   name: string;
-  name_eng: string;
-  product_type_id: number;
-  description: string;
+  animal_type_id: number;
   created_at: string;
   updated_at: string;
-  productType?: {
+  animalType?: {
     id: number;
     public_id: string;
     name: string;
-    description: string;
+    description?: string;
     created_at: string;
     updated_at: string;
   };
-  productCodes?: {
+  animalCodes?: {
     id: number;
-    product_id: number;
-    product_nature_id: number;
+    animal_id: number;
+    animal_nature_id: number;
     hs_code: string;
     abbreviation: string;
-    created_at: string;
-    updated_at: string;
-    productNature?: {
+    created_at: string | null;
+    updated_at: string | null;
+    animalNature?: {
       id: number;
-      name_fr: string;
-      name_en: string;
+      name_fr?: string;
+      name_en?: string;
       created_at: string;
       updated_at: string;
     };
   }[];
-  collectionItems?: any[];
-  tracasserieProducts?: any[];
-  tracasserieControlPosts?: any[];
-  mainProductTracasseries?: any[];
 }
 
 interface PaginationInfo {
@@ -59,15 +53,15 @@ interface ApiResponse {
   success: boolean;
   message: string;
   result: {
-    data: Product[];
+    data: Animal[];
     pagination: PaginationInfo;
   };
   errors: any;
   except: any;
 }
 
-const ProductsListPage = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+const AnimalsListPage = () => {
+  const [animals, setAnimals] = useState<Animal[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [pagination, setPagination] = useState<PaginationInfo>({
@@ -76,61 +70,62 @@ const ProductsListPage = () => {
     total: 0,
     totalPages: 1,
   });
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
+  const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editingAnimal, setEditingAnimal] = useState<Animal | null>(null);
   const [editFormData, setEditFormData] = useState({
     name: "",
-    name_eng: "",
-    product_type_id: "",
-    description: "",
+    animal_type_id: "",
   });
   const [editNaturesList, setEditNaturesList] = useState<
-    { product_nature_id: number; hs_code: string }[]
+    { animal_nature_id: number; hs_code: string; abbreviation: string }[]
   >([]);
+  const [editNatureFormData, setEditNatureFormData] = useState({
+    animal_nature_id: "",
+    hs_code: "",
+    abbreviation: "",
+  });
   const [editLoading, setEditLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
-  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [productTypes, setProductTypes] = useState<any[]>([]);
-  const [productNatures, setProductNatures] = useState<any[]>([]);
-  const [editNatureFormData, setEditNatureFormData] = useState({
-    product_nature_id: "",
-    hs_code: "",
-  });
+  const [animalToDelete, setAnimalToDelete] = useState<Animal | null>(null);
+  const [animalTypes, setAnimalTypes] = useState<any[]>([]);
+  const [animalNatures, setAnimalNatures] = useState<any[]>([]);
   const { t, i18n } = useTranslation();
 
-  // Récupérer la liste des types de produits pour le modal d'édition
-  const fetchProductTypes = async () => {
+  // Récupérer la liste des types d'animaux pour le modal d'édition
+  const fetchAnimalTypes = async () => {
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) return;
 
-      const response = await axiosInstance.get(
-        "/admin/reference-data/product-types?page=1&limit=100",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axiosInstance.get("/common-data/animal-types", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.success) {
-        setProductTypes(response.data.result.data || []);
+        const data =
+          response.data.result?.data ||
+          response.data.result ||
+          response.data.data ||
+          [];
+        setAnimalTypes(Array.isArray(data) ? data : []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des types de produits:", err);
+      console.error("Erreur lors du chargement des types d'animaux:", err);
     }
   };
 
-  // Récupérer la liste des natures de produits pour le modal d'édition
-  const fetchProductNatures = async () => {
+  // Récupérer la liste des natures d'animaux pour le modal d'édition
+  const fetchAnimalNatures = async () => {
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) return;
 
       const response = await axiosInstance.get(
-        "/admin/reference-data/product-natures",
+        "/admin/reference-data/animal-natures",
         {
           params: {
             page: 1,
@@ -143,14 +138,14 @@ const ProductsListPage = () => {
       );
 
       if (response.data.success) {
-        setProductNatures(response.data.result.data || []);
+        setAnimalNatures(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des natures de produits:", err);
+      console.error("Erreur lors du chargement des natures d'animaux:", err);
     }
   };
 
-  const fetchProducts = async (page: number = 1) => {
+  const fetchAnimals = async (page: number = 1) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
@@ -164,32 +159,44 @@ const ProductsListPage = () => {
         return;
       }
 
-      // Construction de l'URL avec pagination fonctionnelle
-      let url = `/admin/reference-data/products?page=${page}&limit=${pagination.limit}`;
+      // Construction des paramètres de requête - l'API nécessite toujours page et limit
+      const params: any = {
+        page: page || 1,
+        limit: pagination.limit || 10,
+      };
 
       if (searchTerm.trim()) {
-        url += `&search=${encodeURIComponent(searchTerm.trim())}`;
+        params.search = searchTerm.trim();
       }
 
-      const response = await axiosInstance.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axiosInstance.get(
+        "/admin/reference-data/animals",
+        {
+          params: params,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
-        setProducts(apiResponse.result.data || []);
+        setAnimals(apiResponse.result.data || []);
         setPagination(apiResponse.result.pagination);
       } else {
         toast.error(t("error"), {
           description:
-            response.data.message || "Erreur lors du chargement des produits",
+            response.data.message || "Erreur lors du chargement des animaux",
         });
-        setProducts([]);
+        setAnimals([]);
       }
     } catch (err: any) {
-      let errorMessage = "Erreur lors du chargement des produits.";
+      console.error("Erreur API animaux:", err);
+      console.error("URL:", err.config?.url);
+      console.error("Status:", err.response?.status);
+      console.error("Response:", err.response?.data);
+
+      let errorMessage = "Erreur lors du chargement des animaux.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -198,6 +205,17 @@ const ProductsListPage = () => {
         setTimeout(() => {
           window.location.href = "/signin";
         }, 2000);
+      } else if (err.response?.status === 400) {
+        console.error("Détails de l'erreur 400:", err.response?.data);
+        if (err.response?.data?.except) {
+          console.error("Paramètres invalides:", err.response.data.except);
+        }
+        errorMessage =
+          err.response?.data?.message ||
+          "Requête invalide. Vérifiez les paramètres.";
+        toast.error(t("error"), {
+          description: errorMessage,
+        });
       } else {
         errorMessage =
           err.response?.data?.message || err.message || errorMessage;
@@ -205,38 +223,40 @@ const ProductsListPage = () => {
           description: errorMessage,
         });
       }
-      setProducts([]);
+      setAnimals([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProducts(1);
-    fetchProductTypes();
-    fetchProductNatures();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    fetchAnimals(1);
+    fetchAnimalTypes();
+    fetchAnimalNatures();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Debounce pour la recherche
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      fetchProducts(1);
+      fetchAnimals(1);
     }, 500);
 
     return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm]);
 
   const handleSearch = () => {
-    fetchProducts(1);
+    fetchAnimals(1);
   };
 
   const handlePageChange = (page: number) => {
-    fetchProducts(page);
+    fetchAnimals(page);
   };
 
   const clearFilters = () => {
     setSearchTerm("");
-    fetchProducts(1);
+    fetchAnimals(1);
   };
 
   const formatDate = (dateString: string) => {
@@ -248,31 +268,30 @@ const ProductsListPage = () => {
   };
 
   // Fonctions pour les détails
-  const openDetailModal = (product: Product) => {
-    setSelectedProduct(product);
+  const openDetailModal = (animal: Animal) => {
+    setSelectedAnimal(animal);
     setIsDetailModalOpen(true);
   };
 
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
-    setSelectedProduct(null);
+    setSelectedAnimal(null);
   };
 
   // Fonctions pour l'édition
-  const openEditModal = (product: Product) => {
-    setEditingProduct(product);
+  const openEditModal = (animal: Animal) => {
+    setEditingAnimal(animal);
     setEditFormData({
-      name: product.name,
-      name_eng: product.name_eng || "",
-      product_type_id: product.product_type_id.toString(),
-      description: product.description,
+      name: animal.name,
+      animal_type_id: animal.animal_type_id.toString(),
     });
 
-    // Charger les natures existantes
-    if (product.productCodes && product.productCodes.length > 0) {
-      const natures = product.productCodes.map((code) => ({
-        product_nature_id: code.product_nature_id,
+    // Charger les natures existantes (animalCodes)
+    if (animal.animalCodes && animal.animalCodes.length > 0) {
+      const natures = animal.animalCodes.map((code) => ({
+        animal_nature_id: code.animal_nature_id,
         hs_code: code.hs_code,
+        abbreviation: code.abbreviation,
       }));
       setEditNaturesList(natures);
     } else {
@@ -284,17 +303,16 @@ const ProductsListPage = () => {
 
   const closeEditModal = () => {
     setIsEditModalOpen(false);
-    setEditingProduct(null);
+    setEditingAnimal(null);
     setEditFormData({
       name: "",
-      name_eng: "",
-      product_type_id: "",
-      description: "",
+      animal_type_id: "",
     });
     setEditNaturesList([]);
     setEditNatureFormData({
-      product_nature_id: "",
+      animal_nature_id: "",
       hs_code: "",
+      abbreviation: "",
     });
   };
 
@@ -322,17 +340,20 @@ const ProductsListPage = () => {
 
   const handleAddEditNature = () => {
     if (
-      editNatureFormData.product_nature_id &&
-      editNatureFormData.hs_code.trim()
+      editNatureFormData.animal_nature_id &&
+      editNatureFormData.hs_code.trim() &&
+      editNatureFormData.abbreviation.trim()
     ) {
       const newNature = {
-        product_nature_id: parseInt(editNatureFormData.product_nature_id),
+        animal_nature_id: parseInt(editNatureFormData.animal_nature_id),
         hs_code: editNatureFormData.hs_code.trim(),
+        abbreviation: editNatureFormData.abbreviation.trim(),
       };
       setEditNaturesList([...editNaturesList, newNature]);
       setEditNatureFormData({
-        product_nature_id: "",
+        animal_nature_id: "",
         hs_code: "",
+        abbreviation: "",
       });
     }
   };
@@ -342,31 +363,19 @@ const ProductsListPage = () => {
     setEditNaturesList(newList);
   };
 
-  const handleUpdateProduct = async () => {
-    if (!editingProduct) return;
+  const handleUpdateAnimal = async () => {
+    if (!editingAnimal) return;
 
     // Validation
     if (!editFormData.name.trim()) {
       toast.error(t("error"), {
-        description: t("product_name") + " " + t("is_required"),
+        description: t("animal_name") + " " + t("is_required"),
       });
       return;
     }
-    if (!editFormData.name_eng.trim()) {
+    if (!editFormData.animal_type_id) {
       toast.error(t("error"), {
-        description: t("name_english") + " " + t("is_required"),
-      });
-      return;
-    }
-    if (!editFormData.product_type_id) {
-      toast.error(t("error"), {
-        description: t("product_type") + " " + t("is_required"),
-      });
-      return;
-    }
-    if (!editFormData.description.trim()) {
-      toast.error(t("error"), {
-        description: t("product_description") + " " + t("is_required"),
+        description: t("animal_type") + " " + t("is_required"),
       });
       return;
     }
@@ -384,9 +393,7 @@ const ProductsListPage = () => {
 
       const requestData: any = {
         name: editFormData.name.trim(),
-        name_eng: editFormData.name_eng.trim(),
-        product_type_id: parseInt(editFormData.product_type_id),
-        description: editFormData.description.trim(),
+        animal_type_id: parseInt(editFormData.animal_type_id),
       };
 
       // Ajouter le tableau natures si des natures ont été modifiées
@@ -394,12 +401,8 @@ const ProductsListPage = () => {
         requestData.natures = editNaturesList;
       }
 
-      console.log("🔄 Payload de modification:", requestData);
-      console.log("📋 Natures à envoyer:", editNaturesList);
-      console.log("📊 Nombre de natures:", editNaturesList.length);
-
       const response = await axiosInstance.put(
-        `/admin/reference-data/products/${editingProduct.id}`,
+        `/admin/reference-data/animals/${editingAnimal.id}`,
         requestData,
         {
           headers: {
@@ -409,21 +412,17 @@ const ProductsListPage = () => {
         }
       );
 
-      console.log("Réponse API mise à jour :", response.data);
-      console.log("📦 Produit mis à jour:", response.data.result);
-
       if (response.data.success) {
         toast.success(t("success"), {
-          description:
-            response.data.message || "Produit mis à jour avec succès",
+          description: response.data.message || "Animal mis à jour avec succès",
         });
 
         // Fermer le modal
         closeEditModal();
 
-        // Attendre un peu avant de rafraîchir pour que le backend ait le temps de mettre à jour
+        // Rafraîchir la liste
         setTimeout(() => {
-          fetchProducts(pagination.page);
+          fetchAnimals(pagination.page);
         }, 500);
       } else {
         toast.error(t("error"), {
@@ -432,7 +431,7 @@ const ProductsListPage = () => {
       }
     } catch (err: any) {
       console.error("Erreur API mise à jour :", err);
-      let errorMessage = "Erreur lors de la mise à jour du produit.";
+      let errorMessage = "Erreur lors de la mise à jour de l'animal.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -454,22 +453,19 @@ const ProductsListPage = () => {
   };
 
   // Fonctions pour la suppression
-  const openDeleteConfirmation = (product: Product) => {
-    setProductToDelete(product);
+  const openDeleteConfirmation = (animal: Animal) => {
+    setAnimalToDelete(animal);
   };
 
   const closeDeleteConfirmation = () => {
-    setProductToDelete(null);
+    setAnimalToDelete(null);
   };
 
-  const handleDeleteProduct = async () => {
-    if (!productToDelete) {
-      console.error("❌ Aucun produit à supprimer");
+  const handleDeleteAnimal = async () => {
+    if (!animalToDelete) {
+      console.error("❌ Aucun animal à supprimer");
       return;
     }
-
-    console.log("📦 Produit à supprimer:", productToDelete);
-    console.log("🆔 ID du produit:", productToDelete.id);
 
     setDeleteLoading(true);
 
@@ -482,14 +478,8 @@ const ProductsListPage = () => {
         return;
       }
 
-      console.log("🔄 Suppression du produit ID:", productToDelete.id);
-      console.log(
-        "🔗 URL:",
-        `/admin/reference-data/products/${productToDelete.id}`
-      );
-
       const response = await axiosInstance.delete(
-        `/admin/reference-data/products/${productToDelete.id}`,
+        `/admin/reference-data/animals/${animalToDelete.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -498,28 +488,16 @@ const ProductsListPage = () => {
         }
       );
 
-      console.log(
-        "📨 Réponse API suppression complète:",
-        JSON.stringify(response.data, null, 2)
-      );
-      console.log("📊 Status HTTP:", response.status);
-
       if (response.data.success) {
-        console.log("✅ Produit supprimé avec succès");
-        console.log("🆔 ID du produit supprimé:", productToDelete.id);
-        console.log("📋 Produits avant suppression:", products.length);
-
-        // Fermer la confirmation
         closeDeleteConfirmation();
 
-        // Mettre à jour la liste locale en supprimant le produit
-        const filteredProducts = products.filter(
-          (p) => p.id !== productToDelete.id
+        // Mettre à jour la liste locale en supprimant l'animal
+        const filteredAnimals = animals.filter(
+          (a) => a.id !== animalToDelete.id
         );
-        console.log("📋 Produits après filtrage:", filteredProducts.length);
 
         // Mettre à jour la liste locale
-        setProducts(filteredProducts);
+        setAnimals(filteredAnimals);
 
         // Ajuster le total après suppression
         setPagination((prev) => ({
@@ -528,36 +506,8 @@ const ProductsListPage = () => {
         }));
 
         toast.success(t("success"), {
-          description: response.data.message || "Produit supprimé avec succès",
+          description: response.data.message || "Animal supprimé avec succès",
         });
-
-        // Vérifier après un court délai si le produit est toujours présent côté serveur
-        setTimeout(async () => {
-          console.log("🔍 Vérification côté serveur après 2 secondes...");
-          try {
-            const verifyResponse = await axiosInstance.get(
-              `/admin/reference-data/products/${productToDelete.id}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
-            console.log(
-              "📊 Produit toujours présent côté serveur:",
-              verifyResponse.data
-            );
-          } catch (verifyErr: any) {
-            if (verifyErr.response?.status === 404) {
-              console.log("✅ Produit bien supprimé côté serveur (404)");
-            } else {
-              console.log(
-                "⚠️ Erreur lors de la vérification:",
-                verifyErr.message
-              );
-            }
-          }
-        }, 2000);
       } else {
         toast.error(t("error"), {
           description: response.data.message || "Erreur lors de la suppression",
@@ -565,11 +515,8 @@ const ProductsListPage = () => {
       }
     } catch (err: any) {
       console.error("❌ Erreur API suppression:", err);
-      console.error("📊 Status:", err.response?.status);
-      console.error("📋 Détails:", err.response?.data);
-      console.error("📋 Message:", err.message);
 
-      let errorMessage = "Erreur lors de la suppression du produit.";
+      let errorMessage = "Erreur lors de la suppression de l'animal.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -593,24 +540,24 @@ const ProductsListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des produits"
-        description="Consulter la liste des produits pour Opération Fluidité Routière Agro-bétail"
+        title="OFR | Liste des animaux"
+        description="Consulter la liste des animaux pour Opération Fluidité Routière Agro-bétail"
       />
-      <PageBreadcrumb pageTitle={t("products_list")} />
+      <PageBreadcrumb pageTitle={t("animals_list")} />
       <div className="page-container">
         <div className="space-y-6">
           {/* Header with search and add button */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex-1 max-w-md">
               <Input
-                placeholder={t("search_product")}
+                placeholder={t("search_animal")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full"
               />
             </div>
-            <Link to="/products/add">
-              <Button className="px-6 py-2">{t("add_product")}</Button>
+            <Link to="/animals/add">
+              <Button className="px-6 py-2">{t("add_animal")}</Button>
             </Link>
           </div>
 
@@ -632,18 +579,18 @@ const ProductsListPage = () => {
             </Button>
           </div>
 
-          {/* Products Table */}
-          <ComponentCard title={t("products_list")}>
+          {/* Animals Table */}
+          <ComponentCard title={t("animals_list")}>
             {loading ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
                   {t("loading")}...
                 </p>
               </div>
-            ) : products.length === 0 ? (
+            ) : animals.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
-                  {searchTerm ? t("no_search_results") : t("no_products_found")}
+                  {searchTerm ? t("no_search_results") : t("no_animals_found")}
                 </p>
               </div>
             ) : (
@@ -652,16 +599,16 @@ const ProductsListPage = () => {
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("product_name")}
+                        {t("animal_name")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("product_type")}
+                        {t("animal_type")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("associated_product_codes")}
+                        {t("associated_codes") || "Codes associés"}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("product_description")}
+                        {t("date_creation")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
                         {t("actions")}
@@ -669,44 +616,39 @@ const ProductsListPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {products.map((product) => (
+                    {animals.map((animal) => (
                       <tr
-                        key={product.id}
+                        key={animal.id}
                         className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
                       >
                         <td className="py-3 px-4 font-medium text-gray-900 dark:text-gray-100">
-                          {product.name}
+                          {animal.name}
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {product.productType?.name || "N/A"}
+                          {animal.animalType?.name || "N/A"}
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400 font-mono text-sm">
-                          {product.productCodes?.length || 0}
+                          {animal.animalCodes?.length || 0}
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          <div
-                            className="max-w-xs truncate"
-                            title={product.description}
-                          >
-                            {product.description}
-                          </div>
+                          {formatDate(animal.created_at)}
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex gap-2">
                             <button
-                              onClick={() => openDetailModal(product)}
+                              onClick={() => openDetailModal(animal)}
                               className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
                             >
                               {t("details")}
                             </button>
                             <button
-                              onClick={() => openEditModal(product)}
-                              className="px-3 py-1 text-sm bg-blue-900 text-white rounded"
+                              onClick={() => openEditModal(animal)}
+                              className="px-3 py-1 text-sm bg-blue-900 text-white rounded hover:bg-blue-800"
                             >
                               {t("edit")}
                             </button>
                             <button
-                              onClick={() => openDeleteConfirmation(product)}
+                              onClick={() => openDeleteConfirmation(animal)}
                               className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
                             >
                               {t("delete")}
@@ -781,7 +723,7 @@ const ProductsListPage = () => {
       </div>
 
       {/* Detail Modal */}
-      {isDetailModalOpen && selectedProduct && (
+      {isDetailModalOpen && selectedAnimal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="fixed inset-0 bg-black/10 backdrop-blur-sm"
@@ -790,58 +732,40 @@ const ProductsListPage = () => {
           <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 mt-10">
-                {t("product_details")}
+                {t("animal_details") || "Détails de l'animal"}
               </h3>
 
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_name")}
+                    {t("animal_name")}
                   </label>
                   <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100">
-                    {selectedProduct.name}
+                    {selectedAnimal.name}
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_type")}
+                    {t("animal_type")}
                   </label>
                   <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100">
-                    {selectedProduct.productType?.name || "N/A"}
+                    {selectedAnimal.animalType?.name || "N/A"}
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("name_english")}
+                    {t("associated_codes") || "Codes associés"} (
+                    {selectedAnimal.animalCodes?.length || 0})
                   </label>
-                  <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100">
-                    {selectedProduct.name_eng || "N/A"}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_description")}
-                  </label>
-                  <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100 min-h-[100px] whitespace-pre-wrap">
-                    {selectedProduct.description}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("associated_product_codes")} (
-                    {selectedProduct.productCodes?.length || 0})
-                  </label>
-                  {selectedProduct.productCodes &&
-                  selectedProduct.productCodes.length > 0 ? (
+                  {selectedAnimal.animalCodes &&
+                  selectedAnimal.animalCodes.length > 0 ? (
                     <div className="max-h-60 overflow-y-auto bg-gray-50 dark:bg-gray-700 rounded-md p-3">
                       <div className="space-y-2">
-                        {selectedProduct.productCodes.map((code, index) => (
+                        {selectedAnimal.animalCodes.map((code, index) => (
                           <div
-                            key={code.id}
+                            key={code.id || index}
                             className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded border"
                           >
                             <div className="flex-1">
@@ -855,11 +779,10 @@ const ProductsListPage = () => {
                               </div>
                               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                                 {i18n.language === "fr"
-                                  ? code.productNature?.name_fr
-                                  : code.productNature?.name_en}
-                                {code.productNature && " • "}
-                                {t("product_nature_id")}:{" "}
-                                {code.product_nature_id}
+                                  ? code.animalNature?.name_fr
+                                  : code.animalNature?.name_en}
+                                {code.animalNature && " • "}
+                                {t("animal_nature_id")}: {code.animal_nature_id}
                               </div>
                             </div>
                           </div>
@@ -868,7 +791,7 @@ const ProductsListPage = () => {
                     </div>
                   ) : (
                     <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-500 dark:text-gray-400 text-center">
-                      {t("no_product_codes_associated")}
+                      {t("no_codes_associated") || "Aucun code associé"}
                     </div>
                   )}
                 </div>
@@ -879,7 +802,7 @@ const ProductsListPage = () => {
                       {t("date_creation")}
                     </label>
                     <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100">
-                      {formatDate(selectedProduct.created_at)}
+                      {formatDate(selectedAnimal.created_at)}
                     </div>
                   </div>
 
@@ -888,7 +811,7 @@ const ProductsListPage = () => {
                       {t("last_update")}
                     </label>
                     <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100">
-                      {formatDate(selectedProduct.updated_at)}
+                      {formatDate(selectedAnimal.updated_at)}
                     </div>
                   </div>
                 </div>
@@ -905,7 +828,7 @@ const ProductsListPage = () => {
                 <Button
                   onClick={() => {
                     closeDetailModal();
-                    openEditModal(selectedProduct);
+                    openEditModal(selectedAnimal);
                   }}
                   className="px-4 py-2"
                 >
@@ -927,13 +850,13 @@ const ProductsListPage = () => {
           <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                {t("edit_product")}
+                {t("edit_animal") || "Modifier l'animal"}
               </h3>
 
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_name")} <span className="text-red-500">*</span>
+                    {t("animal_name")} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -947,17 +870,17 @@ const ProductsListPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_type")} <span className="text-red-500">*</span>
+                    {t("animal_type")} <span className="text-red-500">*</span>
                   </label>
                   <select
-                    name="product_type_id"
-                    value={editFormData.product_type_id}
+                    name="animal_type_id"
+                    value={editFormData.animal_type_id}
                     onChange={handleEditInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     disabled={editLoading}
                   >
-                    <option value="">{t("select_product_type")}</option>
-                    {productTypes.map((type) => (
+                    <option value="">{t("select_animal_type")}</option>
+                    {animalTypes.map((type) => (
                       <option key={type.id} value={type.id}>
                         {type.name}
                       </option>
@@ -965,42 +888,12 @@ const ProductsListPage = () => {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("name_english")} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="name_eng"
-                    value={editFormData.name_eng}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    disabled={editLoading}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_description")}{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="description"
-                    value={editFormData.description}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    rows={4}
-                    disabled={editLoading}
-                  />
-                </div>
-
                 {/* Section pour ajouter des natures */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_nature") || "Nature du produit"}
+                    {t("animal_nature") || "Nature de l'animal"}
                   </label>
-
-                  <div className="mb-2">
+                  <div className="mb-2 space-y-2">
                     <input
                       type="text"
                       name="hs_code"
@@ -1010,24 +903,33 @@ const ProductsListPage = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       disabled={editLoading}
                     />
+                    <input
+                      type="text"
+                      name="abbreviation"
+                      value={editNatureFormData.abbreviation}
+                      onChange={handleEditNatureFormChange}
+                      placeholder={
+                        t("enter_abbreviation") || "Abréviation (ex: BOV)"
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      disabled={editLoading}
+                    />
                   </div>
-
                   <div className="flex gap-2">
                     <select
-                      name="product_nature_id"
-                      value={editNatureFormData.product_nature_id}
+                      name="animal_nature_id"
+                      value={editNatureFormData.animal_nature_id}
                       onChange={handleEditNatureFormChange}
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       disabled={editLoading}
                     >
                       <option value="">
-                        {t("select_product_nature") ||
-                          "Sélectionner une nature"}
+                        {t("select_animal_nature") || "Sélectionner une nature"}
                       </option>
-                      {productNatures && productNatures.length > 0 ? (
-                        productNatures.map((nature) => (
+                      {animalNatures && animalNatures.length > 0 ? (
+                        animalNatures.map((nature) => (
                           <option key={nature.id} value={nature.id}>
-                            {nature.name_fr}
+                            {nature.name_fr || nature.name || nature.name_en}
                           </option>
                         ))
                       ) : (
@@ -1041,21 +943,21 @@ const ProductsListPage = () => {
                       onClick={handleAddEditNature}
                       disabled={
                         editLoading ||
-                        !editNatureFormData.product_nature_id ||
-                        !editNatureFormData.hs_code.trim()
+                        !editNatureFormData.animal_nature_id ||
+                        !editNatureFormData.hs_code.trim() ||
+                        !editNatureFormData.abbreviation.trim()
                       }
                       className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md disabled:opacity-50"
                     >
                       {t("add")}
                     </button>
                   </div>
-
                   {/* Liste des natures ajoutées */}
                   {editNaturesList.length > 0 && (
                     <div className="mt-4 space-y-2">
                       {editNaturesList.map((nature, index) => {
-                        const natureDetails = productNatures.find(
-                          (n) => n.id === nature.product_nature_id
+                        const natureDetails = animalNatures.find(
+                          (n) => n.id === nature.animal_nature_id
                         );
                         return (
                           <div
@@ -1065,13 +967,18 @@ const ProductsListPage = () => {
                             <div className="flex items-center gap-2">
                               <span className="font-medium text-gray-900 dark:text-gray-100">
                                 {natureDetails?.name_fr ||
-                                  nature.product_nature_id}
+                                  natureDetails?.name ||
+                                  natureDetails?.name_en ||
+                                  nature.animal_nature_id}
                               </span>
                               <span className="text-gray-500 dark:text-gray-400">
                                 {"•"}
                               </span>
                               <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
                                 {nature.hs_code}
+                              </span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                ({nature.abbreviation})
                               </span>
                             </div>
                             <button
@@ -1100,7 +1007,7 @@ const ProductsListPage = () => {
                   {t("cancel")}
                 </Button>
                 <Button
-                  onClick={handleUpdateProduct}
+                  onClick={handleUpdateAnimal}
                   disabled={editLoading}
                   className="px-4 py-2"
                 >
@@ -1113,7 +1020,7 @@ const ProductsListPage = () => {
       )}
 
       {/* Delete Confirmation Modal */}
-      {productToDelete && (
+      {animalToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="fixed inset-0 bg-black/10 backdrop-blur-sm"
@@ -1126,8 +1033,9 @@ const ProductsListPage = () => {
               </h3>
 
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                {t("delete_confirmation_message")}{" "}
-                <strong>{productToDelete.name}</strong> ?
+                {t("delete_confirmation_message") ||
+                  "Êtes-vous sûr de vouloir supprimer"}{" "}
+                <strong>{animalToDelete.name}</strong> ?
               </p>
 
               <div className="flex justify-end gap-3">
@@ -1140,7 +1048,7 @@ const ProductsListPage = () => {
                   {t("cancel")}
                 </Button>
                 <Button
-                  onClick={handleDeleteProduct}
+                  onClick={handleDeleteAnimal}
                   disabled={deleteLoading}
                   className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white"
                 >
@@ -1155,4 +1063,4 @@ const ProductsListPage = () => {
   );
 };
 
-export default ProductsListPage;
+export default AnimalsListPage;
