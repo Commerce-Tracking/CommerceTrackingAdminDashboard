@@ -177,6 +177,11 @@ const AppSidebar: React.FC = () => {
       path: "/product-natures/list",
     },
     {
+      icon: <Plus />,
+      name: t("add_product_nature"),
+      path: "/product-natures/add",
+    },
+    {
       icon: <Tag />,
       name: t("unities_list"),
       path: "/unities/list",

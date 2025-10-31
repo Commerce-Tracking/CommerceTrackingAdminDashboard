@@ -59,6 +59,7 @@ import AddTeamManager from "./pages/team-managers/AddTeamManager";
 import AddCollectionPoint from "./pages/collection-points/AddCollectionPoint";
 import CollectionPointsListPage from "./pages/collection-points/CollectionPointsListPage";
 import ProductNaturesListPage from "./pages/product-natures/ProductNaturesListPage.tsx";
+import AddProductNature from "./pages/product-natures/AddProductNature";
 import AddService from "./pages/services/AddService.tsx";
 import ServicesListPage from "./pages/services/ServicesListPage.tsx";
 import AddTransportMethod from "./pages/transport-methods/AddTransportMethod.tsx";
@@ -140,6 +141,10 @@ export default function App() {
                               <Route
                                 path="/products/list"
                                 element={<ProductsListPage />}
+                              />
+                              <Route
+                                path="/product-natures/add"
+                                element={<AddProductNature />}
                               />
                               <Route
                                 path="/animals/add"

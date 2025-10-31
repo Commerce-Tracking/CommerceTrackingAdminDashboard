@@ -396,6 +396,12 @@
 
   "product_natures": "Natures de produits",
   "product_natures_list": "Liste des natures de produits",
+  "add_product_nature": "Ajouter une nature de produit",
+  "product_nature_name_fr": "Nom de la nature (FR)",
+  "enter_product_nature_name_fr": "Entrez le nom (FR)",
+  "product_nature_name_en": "Nom de la nature (EN)",
+  "enter_product_nature_name_en": "Entrez le nom anglais (optionnel)",
+  "product_nature_created_successfully": "Nature de produit créée avec succès",
   "product_nature_name": "Nom de la nature",
   "product_nature_details": "Détails de la nature de produit",
   "product_nature_id": "ID de la nature de produit",

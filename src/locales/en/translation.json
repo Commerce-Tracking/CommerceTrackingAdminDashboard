@@ -390,6 +390,12 @@
 
   "product_natures": "Product Natures",
   "product_natures_list": "Product Natures List",
+  "add_product_nature": "Add Product Nature",
+  "product_nature_name_fr": "Nature Name (FR)",
+  "enter_product_nature_name_fr": "Enter French name",
+  "product_nature_name_en": "Nature Name (EN)",
+  "enter_product_nature_name_en": "Enter English name (optional)",
+  "product_nature_created_successfully": "Product nature created successfully",
   "product_nature_name": "Nature Name",
   "product_nature_details": "Product Nature Details",
   "product_nature_id": "Product Nature ID",
