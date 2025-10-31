@@ -7,32 +7,33 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Input from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
+import { Link } from "react-router";
 import { Search, Eye, Package, Hash } from "lucide-react";
 
-interface ProductNature {
+interface AnimalNature {
   id: number;
   name_fr: string;
   name_en: string;
-  created_at: string;
-  updated_at: string;
-  productCodes: ProductCode[];
+  created_at: string | null;
+  updated_at: string | null;
+  animalCodes: AnimalCode[];
 }
 
-interface ProductCode {
+interface AnimalCode {
   id: number;
-  product_id: number;
-  product_nature_id: number;
+  animal_id: number;
+  animal_nature_id: number;
   hs_code: string;
   abbreviation: string;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 interface ApiResponse {
   success: boolean;
   message: string;
   result: {
-    data: ProductNature[];
+    data: AnimalNature[];
     pagination: {
       page: number;
       limit: number;
@@ -51,8 +52,8 @@ interface PaginationInfo {
   totalPages: number;
 }
 
-const ProductNaturesListPage = () => {
-  const [productNatures, setProductNatures] = useState<ProductNature[]>([]);
+const AnimalNaturesListPage = () => {
+  const [animalNatures, setAnimalNatures] = useState<AnimalNature[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [pagination, setPagination] = useState<PaginationInfo>({
@@ -62,73 +63,100 @@ const ProductNaturesListPage = () => {
     totalPages: 1,
   });
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
-  const [selectedProductNature, setSelectedProductNature] =
-    useState<ProductNature | null>(null);
+  const [selectedAnimalNature, setSelectedAnimalNature] =
+    useState<AnimalNature | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [editingProductNature, setEditingProductNature] =
-    useState<ProductNature | null>(null);
+  const [editingAnimalNature, setEditingAnimalNature] =
+    useState<AnimalNature | null>(null);
   const [editFormData, setEditFormData] = useState({
     name_fr: "",
     name_en: "",
   });
   const [editLoading, setEditLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
-  const [productNatureToDelete, setProductNatureToDelete] =
-    useState<ProductNature | null>(null);
+  const [animalNatureToDelete, setAnimalNatureToDelete] =
+    useState<AnimalNature | null>(null);
   const { t } = useTranslation();
 
-  const fetchProductNatures = async (page: number = 1, search: string = "") => {
+  const fetchAnimalNatures = async (page: number = 1, search: string = "") => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) {
-        console.error("Token d'authentification manquant");
-        setLoading(false);
-        return;
-      }
-
-      let url = `/admin/reference-data/product-natures?page=${page}&limit=${pagination.limit}`;
-      if (search.trim()) {
-        url += `&search=${encodeURIComponent(search.trim())}`;
-      }
-
-      const response = await axiosInstance.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      console.log("Réponse API natures de produits :", response.data);
-
-      if (response.data.success) {
-        const apiResponse: ApiResponse = response.data;
-        setProductNatures(apiResponse.result.data || []);
-        setPagination(apiResponse.result.pagination);
-      } else {
-        console.error("Erreur API natures de produits :", response.data);
-      }
-    } catch (err: any) {
-      console.error("Erreur lors du chargement des natures de produits:", err);
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        // Redirection vers la page de connexion
+        toast.error(t("auth_error"), {
+          description: "Aucun token d'authentification trouvé.",
+        });
         setTimeout(() => {
           window.location.href = "/signin";
         }, 2000);
+        return;
       }
+
+      const params: any = {
+        page: page || 1,
+        limit: pagination.limit || 10,
+      };
+
+      if (search.trim()) {
+        params.search = search.trim();
+      }
+
+      const response = await axiosInstance.get(
+        "/admin/reference-data/animal-natures",
+        {
+          params: params,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        const apiResponse: ApiResponse = response.data;
+        setAnimalNatures(apiResponse.result.data || []);
+        setPagination(apiResponse.result.pagination);
+      } else {
+        toast.error(t("error"), {
+          description:
+            response.data.message ||
+            "Erreur lors du chargement des natures d'animaux",
+        });
+        setAnimalNatures([]);
+      }
+    } catch (err: any) {
+      console.error("Erreur API natures d'animaux :", err);
+      let errorMessage = "Erreur lors du chargement des natures d'animaux.";
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        errorMessage = "Token invalide ou non autorisé.";
+        toast.error(t("auth_error"), {
+          description: errorMessage,
+        });
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 2000);
+      } else {
+        errorMessage =
+          err.response?.data?.message || err.message || errorMessage;
+        toast.error(t("error"), {
+          description: errorMessage,
+        });
+      }
+      setAnimalNatures([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProductNatures();
+    fetchAnimalNatures();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Debounce pour la recherche en temps réel
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      fetchProductNatures(1, searchTerm);
-    }, 500); // Attendre 500ms après la dernière frappe
+      fetchAnimalNatures(1, searchTerm);
+    }, 500);
 
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
@@ -138,32 +166,32 @@ const ProductNaturesListPage = () => {
   };
 
   const handlePageChange = (newPage: number) => {
-    fetchProductNatures(newPage, searchTerm);
+    fetchAnimalNatures(newPage, searchTerm);
   };
 
-  const openDetailModal = (productNature: ProductNature) => {
-    setSelectedProductNature(productNature);
+  const openDetailModal = (animalNature: AnimalNature) => {
+    setSelectedAnimalNature(animalNature);
     setIsDetailModalOpen(true);
   };
 
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
-    setSelectedProductNature(null);
+    setSelectedAnimalNature(null);
   };
 
   // Fonctions pour l'édition
-  const openEditModal = (productNature: ProductNature) => {
-    setEditingProductNature(productNature);
+  const openEditModal = (animalNature: AnimalNature) => {
+    setEditingAnimalNature(animalNature);
     setEditFormData({
-      name_fr: productNature.name_fr,
-      name_en: productNature.name_en,
+      name_fr: animalNature.name_fr,
+      name_en: animalNature.name_en,
     });
     setIsEditModalOpen(true);
   };
 
   const closeEditModal = () => {
     setIsEditModalOpen(false);
-    setEditingProductNature(null);
+    setEditingAnimalNature(null);
     setEditFormData({
       name_fr: "",
       name_en: "",
@@ -178,21 +206,21 @@ const ProductNaturesListPage = () => {
     }));
   };
 
-  const handleUpdateProductNature = async () => {
-    if (!editingProductNature) return;
+  const handleUpdateAnimalNature = async () => {
+    if (!editingAnimalNature) return;
 
     // Validation
     if (!editFormData.name_fr.trim()) {
       toast.error(t("error"), {
         description:
-          (t("product_nature_name_fr") || "Nom FR") + " " + t("is_required"),
+          (t("animal_nature_name_fr") || "Nom FR") + " " + t("is_required"),
       });
       return;
     }
     if (!editFormData.name_en.trim()) {
       toast.error(t("error"), {
         description:
-          (t("product_nature_name_en") || "Nom EN") + " " + t("is_required"),
+          (t("animal_nature_name_en") || "Nom EN") + " " + t("is_required"),
       });
       return;
     }
@@ -209,7 +237,7 @@ const ProductNaturesListPage = () => {
       }
 
       const response = await axiosInstance.put(
-        `/admin/reference-data/product-natures/${editingProductNature.id}`,
+        `/admin/reference-data/animal-natures/${editingAnimalNature.id}`,
         {
           name_fr: editFormData.name_fr.trim(),
           name_en: editFormData.name_en.trim(),
@@ -224,12 +252,11 @@ const ProductNaturesListPage = () => {
       if (response.data.success) {
         toast.success(t("success"), {
           description:
-            response.data.message ||
-            "Nature de produit mise à jour avec succès",
+            response.data.message || "Nature d'animal mise à jour avec succès",
         });
 
         closeEditModal();
-        fetchProductNatures(pagination.page, searchTerm);
+        fetchAnimalNatures(pagination.page, searchTerm);
       } else {
         toast.error(t("error"), {
           description: response.data.message || "Erreur lors de la mise à jour",
@@ -237,8 +264,7 @@ const ProductNaturesListPage = () => {
       }
     } catch (err: any) {
       console.error("Erreur API mise à jour :", err);
-      let errorMessage =
-        "Erreur lors de la mise à jour de la nature de produit.";
+      let errorMessage = "Erreur lors de la mise à jour de la nature d'animal.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -260,16 +286,16 @@ const ProductNaturesListPage = () => {
   };
 
   // Fonctions pour la suppression
-  const openDeleteConfirmation = (productNature: ProductNature) => {
-    setProductNatureToDelete(productNature);
+  const openDeleteConfirmation = (animalNature: AnimalNature) => {
+    setAnimalNatureToDelete(animalNature);
   };
 
   const closeDeleteConfirmation = () => {
-    setProductNatureToDelete(null);
+    setAnimalNatureToDelete(null);
   };
 
-  const handleDeleteProductNature = async () => {
-    if (!productNatureToDelete) return;
+  const handleDeleteAnimalNature = async () => {
+    if (!animalNatureToDelete) return;
 
     setDeleteLoading(true);
 
@@ -283,7 +309,7 @@ const ProductNaturesListPage = () => {
       }
 
       const response = await axiosInstance.delete(
-        `/admin/reference-data/product-natures/${productNatureToDelete.id}`,
+        `/admin/reference-data/animal-natures/${animalNatureToDelete.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -294,11 +320,11 @@ const ProductNaturesListPage = () => {
       if (response.data.success) {
         toast.success(t("success"), {
           description:
-            response.data.message || "Nature de produit supprimée avec succès",
+            response.data.message || "Nature d'animal supprimée avec succès",
         });
 
         closeDeleteConfirmation();
-        fetchProductNatures(pagination.page, searchTerm);
+        fetchAnimalNatures(pagination.page, searchTerm);
       } else {
         toast.error(t("error"), {
           description: response.data.message || "Erreur lors de la suppression",
@@ -306,8 +332,7 @@ const ProductNaturesListPage = () => {
       }
     } catch (err: any) {
       console.error("Erreur API suppression :", err);
-      let errorMessage =
-        "Erreur lors de la suppression de la nature de produit.";
+      let errorMessage = "Erreur lors de la suppression de la nature d'animal.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -328,65 +353,67 @@ const ProductNaturesListPage = () => {
     }
   };
 
-  const getProductNatureName = (productNature: ProductNature) => {
+  const getAnimalNatureName = (animalNature: AnimalNature) => {
     const currentLanguage = localStorage.getItem("i18nextLng") || "fr";
     return currentLanguage === "en"
-      ? productNature.name_en
-      : productNature.name_fr;
+      ? animalNature.name_en
+      : animalNature.name_fr;
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("fr-FR", {
       year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
     });
   };
 
   return (
     <>
       <PageMeta
-        title="OFR | Natures de produits"
-        description="Liste des natures de produits pour Opération Fluidité Routière Agro-bétail"
+        title="OFR | Liste des natures d'animaux"
+        description="Consulter la liste des natures d'animaux pour Opération Fluidité Routière Agro-bétail"
       />
-      <PageBreadcrumb pageTitle={t("product_natures_list")} />
+      <PageBreadcrumb
+        pageTitle={t("animal_natures_list") || "Liste des natures d'animaux"}
+      />
       <div className="page-container">
         <div className="space-y-6">
-          <ComponentCard title={t("product_natures_list")}>
-            {/* Barre de recherche */}
-            <div className="mb-6">
-              <div className="relative max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  type="text"
-                  placeholder={t("search_product_nature")}
-                  value={searchTerm}
-                  onChange={handleSearchInputChange}
-                  className="pl-10"
-                />
-              </div>
+          {/* Header with search and add button */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex-1 max-w-md">
+              <Input
+                placeholder={
+                  t("search_animal_nature") || "Rechercher une nature d'animal"
+                }
+                value={searchTerm}
+                onChange={handleSearchInputChange}
+                className="w-full"
+              />
             </div>
+            <Link to="/animals/nature/add">
+              <Button className="px-6 py-2">{t("add_animal_nature")}</Button>
+            </Link>
+          </div>
 
-            {/* Tableau des natures de produits */}
+          {/* Animal Natures Table */}
+          <ComponentCard
+            title={t("animal_natures_list") || "Liste des natures d'animaux"}
+          >
             {loading ? (
-              <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span className="ml-2 text-gray-600 dark:text-gray-400">
+              <div className="text-center py-8">
+                <p className="text-gray-500 dark:text-gray-400">
                   {t("loading")}...
-                </span>
+                </p>
               </div>
-            ) : productNatures.length === 0 ? (
-              <div className="text-center py-12">
-                <Package className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                  {t("no_product_natures_found")}
-                </h3>
+            ) : animalNatures.length === 0 ? (
+              <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
                   {searchTerm
                     ? t("no_search_results")
-                    : t("no_product_natures_available")}
+                    : t("no_animal_natures_found") ||
+                      "Aucune nature d'animal trouvée"}
                 </p>
               </div>
             ) : (
@@ -395,10 +422,10 @@ const ProductNaturesListPage = () => {
                   <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        {t("product_nature_name")}
+                        {t("animal_nature_name") || "Nom de la nature"}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        {t("associated_product_codes")}
+                        {t("associated_codes") || "Codes associés"}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         {t("actions")}
@@ -406,9 +433,9 @@ const ProductNaturesListPage = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                    {productNatures.map((productNature) => (
+                    {animalNatures.map((animalNature) => (
                       <tr
-                        key={productNature.id}
+                        key={animalNature.id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-800"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -420,11 +447,8 @@ const ProductNaturesListPage = () => {
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                {getProductNatureName(productNature)}
+                                {getAnimalNatureName(animalNature)}
                               </div>
-                              {/* <div className="text-sm text-gray-500 dark:text-gray-400">
-                                ID: {productNature.id}
-                              </div> */}
                             </div>
                           </div>
                         </td>
@@ -432,28 +456,28 @@ const ProductNaturesListPage = () => {
                           <div className="flex items-center">
                             <Hash className="h-4 w-4 text-gray-400 mr-2" />
                             <span className="text-sm text-gray-900 dark:text-white">
-                              {productNature.productCodes.length}
+                              {animalNature.animalCodes.length}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex gap-2">
                             <button
-                              onClick={() => openDetailModal(productNature)}
+                              onClick={() => openDetailModal(animalNature)}
                               className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-1"
                             >
                               <Eye className="h-3 w-3" />
                               {t("details")}
                             </button>
                             <button
-                              onClick={() => openEditModal(productNature)}
+                              onClick={() => openEditModal(animalNature)}
                               className="px-3 py-1 text-sm bg-blue-900 text-white rounded hover:bg-blue-800"
                             >
                               {t("edit")}
                             </button>
                             <button
                               onClick={() =>
-                                openDeleteConfirmation(productNature)
+                                openDeleteConfirmation(animalNature)
                               }
                               className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
                             >
@@ -529,7 +553,7 @@ const ProductNaturesListPage = () => {
       </div>
 
       {/* Modal de détails */}
-      {isDetailModalOpen && selectedProductNature && (
+      {isDetailModalOpen && selectedAnimalNature && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="fixed inset-0 bg-black/10 backdrop-blur-sm"
@@ -539,7 +563,8 @@ const ProductNaturesListPage = () => {
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mt-10">
-                  {t("product_nature_details")}
+                  {t("animal_nature_details") ||
+                    "Détails de la nature d'animal"}
                 </h3>
                 <button
                   onClick={closeDetailModal}
@@ -569,28 +594,20 @@ const ProductNaturesListPage = () => {
                     {t("general_information")}
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {t("product_nature_id")}
-                      </label>
-                      <p className="mt-1 text-sm text-gray-900 dark:text-white">
-                        {selectedProductNature.id}
-                      </p>
-                    </div> */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {t("name_french")}
+                        {t("name_french") || "Nom (Français)"}
                       </label>
                       <p className="mt-1 text-sm text-gray-900 dark:text-white">
-                        {selectedProductNature.name_fr}
+                        {selectedAnimalNature.name_fr}
                       </p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {t("name_english")}
+                        {t("name_english") || "Nom (Anglais)"}
                       </label>
                       <p className="mt-1 text-sm text-gray-900 dark:text-white">
-                        {selectedProductNature.name_en}
+                        {selectedAnimalNature.name_en}
                       </p>
                     </div>
                     <div>
@@ -598,21 +615,29 @@ const ProductNaturesListPage = () => {
                         {t("created_at")}
                       </label>
                       <p className="mt-1 text-sm text-gray-900 dark:text-white">
-                        {formatDate(selectedProductNature.created_at)}
+                        {formatDate(selectedAnimalNature.created_at)}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {t("updated_at") || "Dernière modification"}
+                      </label>
+                      <p className="mt-1 text-sm text-gray-900 dark:text-white">
+                        {formatDate(selectedAnimalNature.updated_at)}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Codes produits associés */}
+                {/* Codes animaux associés */}
                 <div>
                   <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">
-                    {t("associated_product_codes")} (
-                    {selectedProductNature.productCodes.length})
+                    {t("associated_codes") || "Codes animaux associés"} (
+                    {selectedAnimalNature.animalCodes.length})
                   </h4>
-                  {selectedProductNature.productCodes.length === 0 ? (
+                  {selectedAnimalNature.animalCodes.length === 0 ? (
                     <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      {t("no_product_codes_associated")}
+                      {t("no_codes_associated") || "Aucun code associé"}
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
@@ -626,12 +651,12 @@ const ProductNaturesListPage = () => {
                               {t("abbreviation")}
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                              {t("product_id")}
+                              {t("animal_id") || "ID Animal"}
                             </th>
                           </tr>
                         </thead>
                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                          {selectedProductNature.productCodes.map((code) => (
+                          {selectedAnimalNature.animalCodes.map((code) => (
                             <tr key={code.id}>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                 {code.hs_code}
@@ -640,7 +665,7 @@ const ProductNaturesListPage = () => {
                                 {code.abbreviation}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {code.product_id}
+                                {code.animal_id}
                               </td>
                             </tr>
                           ))}
@@ -662,7 +687,7 @@ const ProductNaturesListPage = () => {
                 <Button
                   onClick={() => {
                     closeDetailModal();
-                    openEditModal(selectedProductNature);
+                    openEditModal(selectedAnimalNature);
                   }}
                   className="px-6 py-2"
                 >
@@ -684,13 +709,13 @@ const ProductNaturesListPage = () => {
           <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                {t("edit_product_nature") || "Modifier la nature de produit"}
+                {t("edit_animal_nature") || "Modifier la nature d'animal"}
               </h3>
 
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_nature_name_fr") || "Nom (FR)"}{" "}
+                    {t("animal_nature_name_fr") || "Nom (FR)"}{" "}
                     <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -705,7 +730,7 @@ const ProductNaturesListPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_nature_name_en") || "Nom (EN)"}{" "}
+                    {t("animal_nature_name_en") || "Nom (EN)"}{" "}
                     <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -729,7 +754,7 @@ const ProductNaturesListPage = () => {
                   {t("cancel")}
                 </Button>
                 <Button
-                  onClick={handleUpdateProductNature}
+                  onClick={handleUpdateAnimalNature}
                   disabled={editLoading}
                   className="px-4 py-2"
                 >
@@ -742,7 +767,7 @@ const ProductNaturesListPage = () => {
       )}
 
       {/* Delete Confirmation Modal */}
-      {productNatureToDelete && (
+      {animalNatureToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="fixed inset-0 bg-black/10 backdrop-blur-sm"
@@ -757,7 +782,7 @@ const ProductNaturesListPage = () => {
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 {t("delete_confirmation_message") ||
                   "Êtes-vous sûr de vouloir supprimer"}{" "}
-                <strong>{getProductNatureName(productNatureToDelete)}</strong> ?
+                <strong>{getAnimalNatureName(animalNatureToDelete)}</strong> ?
               </p>
 
               <div className="flex justify-end gap-3">
@@ -770,7 +795,7 @@ const ProductNaturesListPage = () => {
                   {t("cancel")}
                 </Button>
                 <Button
-                  onClick={handleDeleteProductNature}
+                  onClick={handleDeleteAnimalNature}
                   disabled={deleteLoading}
                   className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white"
                 >
@@ -785,4 +810,4 @@ const ProductNaturesListPage = () => {
   );
 };
 
-export default ProductNaturesListPage;
+export default AnimalNaturesListPage;

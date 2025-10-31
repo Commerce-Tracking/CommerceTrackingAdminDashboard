@@ -177,6 +177,11 @@ const AppSidebar: React.FC = () => {
       path: "/product-natures/list",
     },
     {
+      icon: <Plus />,
+      name: t("add_product_nature"),
+      path: "/product-natures/add",
+    },
+    {
       icon: <Tag />,
       name: t("unities_list"),
       path: "/unities/list",
@@ -208,6 +213,16 @@ const AppSidebar: React.FC = () => {
       icon: <Plus />,
       name: t("add_animal_type"),
       path: "/animals/type/add",
+    },
+    {
+      icon: <Plus />,
+      name: t("add_animal_nature"),
+      path: "/animals/nature/add",
+    },
+    {
+      icon: <Package />,
+      name: t("animal_natures_list") || "Liste des natures d'animaux",
+      path: "/animals/natures/list",
     },
   ];
 

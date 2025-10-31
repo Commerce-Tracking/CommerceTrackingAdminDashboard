@@ -59,6 +59,7 @@ import AddTeamManager from "./pages/team-managers/AddTeamManager";
 import AddCollectionPoint from "./pages/collection-points/AddCollectionPoint";
 import CollectionPointsListPage from "./pages/collection-points/CollectionPointsListPage";
 import ProductNaturesListPage from "./pages/product-natures/ProductNaturesListPage.tsx";
+import AddProductNature from "./pages/product-natures/AddProductNature";
 import AddService from "./pages/services/AddService.tsx";
 import ServicesListPage from "./pages/services/ServicesListPage.tsx";
 import AddTransportMethod from "./pages/transport-methods/AddTransportMethod.tsx";
@@ -74,6 +75,8 @@ import AddAnimal from "./pages/animals/AddAnimal";
 import AnimalsListPage from "./pages/animals/AnimalsListPage";
 import AddAnimalType from "./pages/animals/AddAnimalType";
 import AnimalTypesListPage from "./pages/animals/AnimalTypesListPage";
+import AddAnimalNature from "./pages/animals/AddAnimalNature";
+import AnimalNaturesListPage from "./pages/animals/AnimalNaturesListPage";
 
 export default function App() {
   return (
@@ -142,6 +145,10 @@ export default function App() {
                                 element={<ProductsListPage />}
                               />
                               <Route
+                                path="/product-natures/add"
+                                element={<AddProductNature />}
+                              />
+                              <Route
                                 path="/animals/add"
                                 element={<AddAnimal />}
                               />
@@ -156,6 +163,14 @@ export default function App() {
                               <Route
                                 path="/animals/types/list"
                                 element={<AnimalTypesListPage />}
+                              />
+                              <Route
+                                path="/animals/nature/add"
+                                element={<AddAnimalNature />}
+                              />
+                              <Route
+                                path="/animals/natures/list"
+                                element={<AnimalNaturesListPage />}
                               />
 
                               <Route
