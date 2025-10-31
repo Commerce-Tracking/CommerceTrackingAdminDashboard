@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import axiosInstance from "../../api/axios";
+import * as XLSX from "xlsx";
 import {
   Download,
   FileText,
@@ -8,6 +9,7 @@ import {
   CheckCircle,
   Loader2,
   Calendar,
+  FileSpreadsheet,
 } from "lucide-react";
 
 interface ExportResponse {
@@ -20,6 +22,8 @@ interface ExportResponse {
   fileSize: number;
 }
 
+type ExportFormat = "csv" | "excel";
+
 export default function CSVExportPage() {
   const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
@@ -27,6 +31,7 @@ export default function CSVExportPage() {
   const [error, setError] = useState<string | null>(null);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [exportFormat, setExportFormat] = useState<ExportFormat>("csv");
 
   // Fonction pour définir des dates par défaut (30 derniers jours)
   const setDefaultDateRange = () => {
@@ -78,6 +83,66 @@ export default function CSVExportPage() {
     }
   };
 
+  // Fonction pour convertir CSV en Excel
+  const convertCSVToExcel = (csvData: string): Blob => {
+    // Parser le CSV en lignes
+    const lines = csvData.split("\n").filter((line) => line.trim() !== "");
+    if (lines.length === 0) {
+      throw new Error("Aucune donnée à convertir");
+    }
+
+    // Parser la première ligne comme en-têtes
+    const headers = lines[0].split(",").map((h) => h.trim());
+
+    // Parser les lignes de données
+    const rows = lines.slice(1).map((line) => {
+      // Gérer les virgules dans les valeurs entre guillemets
+      const values: string[] = [];
+      let currentValue = "";
+      let insideQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === "," && !insideQuotes) {
+          values.push(currentValue.trim());
+          currentValue = "";
+        } else {
+          currentValue += char;
+        }
+      }
+      values.push(currentValue.trim());
+      return values;
+    });
+
+    // Créer un workbook Excel
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+
+    // Ajuster la largeur des colonnes
+    const colWidths = headers.map((_, colIndex) => {
+      const maxLength = Math.max(
+        headers[colIndex].length,
+        ...rows.map((row) => (row[colIndex] || "").toString().length)
+      );
+      return { wch: Math.min(maxLength + 2, 50) };
+    });
+    worksheet["!cols"] = colWidths;
+
+    // Ajouter la feuille au workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Export");
+
+    // Convertir en blob
+    const excelBuffer = XLSX.write(workbook, {
+      type: "array",
+      bookType: "xlsx",
+    });
+    return new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+  };
+
   const handleExport = async () => {
     // Validation des dates
     if (!startDate || !endDate) {
@@ -100,20 +165,55 @@ export default function CSVExportPage() {
         endDate,
       };
 
-      const response = await axiosInstance.post("/admin/export-csv", payload);
+      // Utiliser l'endpoint Excel si le format est Excel, sinon CSV
+      const endpoint =
+        exportFormat === "excel" ? "/admin/export-excel" : "/admin/export-csv";
+
+      const response = await axiosInstance.post(endpoint, payload);
 
       if (response.data.success) {
         setExportResult(response.data);
 
-        // Créer et télécharger le fichier CSV
-        const blob = new Blob([response.data.data], {
-          type: response.data.mimeType || "text/csv",
-        });
+        let blob: Blob;
+        let filename: string;
+        let mimeType: string;
+
+        if (exportFormat === "excel") {
+          // Si l'API retourne déjà un fichier Excel
+          if (
+            response.data.mimeType?.includes("excel") ||
+            response.data.mimeType?.includes("spreadsheet")
+          ) {
+            blob = new Blob([response.data.data], {
+              type:
+                response.data.mimeType ||
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            filename = response.data.filename || "export.xlsx";
+          } else {
+            // Sinon, convertir le CSV en Excel
+            blob = convertCSVToExcel(response.data.data);
+            filename =
+              (response.data.filename || "export.csv").replace(
+                ".csv",
+                ".xlsx"
+              ) || "export.xlsx";
+          }
+          mimeType =
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        } else {
+          // Export CSV
+          blob = new Blob([response.data.data], {
+            type: response.data.mimeType || "text/csv",
+          });
+          filename = response.data.filename || "export.csv";
+          mimeType = response.data.mimeType || "text/csv";
+        }
 
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = response.data.filename || "export.csv";
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -122,7 +222,7 @@ export default function CSVExportPage() {
         setError(response.data.message || "Erreur lors de l'export");
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de l'export CSV:", err);
+      console.error("❌ Erreur lors de l'export:", err);
 
       if (err.response?.status === 401) {
         setError("Session expirée. Veuillez vous reconnecter.");
@@ -281,6 +381,51 @@ export default function CSVExportPage() {
             </div>
           </div>
 
+          {/* Export Format Selection */}
+          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              {t("export_format") || "Format d'export"}
+            </label>
+            <div className="flex gap-4">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="exportFormat"
+                  value="csv"
+                  checked={exportFormat === "csv"}
+                  onChange={(e) =>
+                    setExportFormat(e.target.value as ExportFormat)
+                  }
+                  className="mr-2 text-blue-600 focus:ring-blue-500"
+                  disabled={isExporting}
+                />
+                <div className="flex items-center">
+                  <FileText className="h-4 w-4 mr-2 text-gray-600 dark:text-gray-400" />
+                  <span className="text-gray-700 dark:text-gray-300">CSV</span>
+                </div>
+              </label>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="exportFormat"
+                  value="excel"
+                  checked={exportFormat === "excel"}
+                  onChange={(e) =>
+                    setExportFormat(e.target.value as ExportFormat)
+                  }
+                  className="mr-2 text-blue-600 focus:ring-blue-500"
+                  disabled={isExporting}
+                />
+                <div className="flex items-center">
+                  <FileSpreadsheet className="h-4 w-4 mr-2 text-green-600 dark:text-green-400" />
+                  <span className="text-gray-700 dark:text-gray-300">
+                    Excel (.xlsx)
+                  </span>
+                </div>
+              </label>
+            </div>
+          </div>
+
           {/* Export Button */}
           <div className="flex items-center justify-between mt-6">
             <div className="flex-1">
@@ -290,7 +435,9 @@ export default function CSVExportPage() {
                 className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
                   isExporting
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    : exportFormat === "excel"
+                    ? "bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    : "bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 } transition-colors duration-200`}
               >
                 {isExporting ? (
@@ -300,9 +447,18 @@ export default function CSVExportPage() {
                   </>
                 ) : (
                   <>
-                    <Download className="-ml-1 mr-3 h-5 w-5" />
+                    {exportFormat === "excel" ? (
+                      <FileSpreadsheet className="-ml-1 mr-3 h-5 w-5" />
+                    ) : (
+                      <Download className="-ml-1 mr-3 h-5 w-5" />
+                    )}
                     {startDate && endDate
-                      ? t("export_with_dates")
+                      ? exportFormat === "excel"
+                        ? t("export_excel_with_dates") ||
+                          "Exporter Excel avec dates"
+                        : t("export_with_dates")
+                      : exportFormat === "excel"
+                      ? t("export_excel") || "Exporter Excel"
                       : t("export_csv")}
                   </>
                 )}
