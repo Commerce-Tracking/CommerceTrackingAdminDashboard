@@ -265,7 +265,7 @@ const ProductsListPage = () => {
       name: product.name,
       name_eng: product.name_eng || "",
       product_type_id: product.product_type_id.toString(),
-      description: product.description,
+      description: product.description || "",
     });
 
     // Charger les natures existantes
@@ -364,12 +364,6 @@ const ProductsListPage = () => {
       });
       return;
     }
-    if (!editFormData.description.trim()) {
-      toast.error(t("error"), {
-        description: t("product_description") + " " + t("is_required"),
-      });
-      return;
-    }
 
     setEditLoading(true);
 
@@ -386,7 +380,7 @@ const ProductsListPage = () => {
         name: editFormData.name.trim(),
         name_eng: editFormData.name_eng.trim(),
         product_type_id: parseInt(editFormData.product_type_id),
-        description: editFormData.description.trim(),
+        description: editFormData.description?.trim() || null,
       };
 
       // Ajouter le tableau natures si des natures ont été modifiées
@@ -981,12 +975,11 @@ const ProductsListPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("product_description")}{" "}
-                    <span className="text-red-500">*</span>
+                    {t("product_description")}
                   </label>
                   <textarea
                     name="description"
-                    value={editFormData.description}
+                    value={editFormData.description || ""}
                     onChange={handleEditInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     rows={4}

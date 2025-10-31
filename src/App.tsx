@@ -75,6 +75,8 @@ import AddAnimal from "./pages/animals/AddAnimal";
 import AnimalsListPage from "./pages/animals/AnimalsListPage";
 import AddAnimalType from "./pages/animals/AddAnimalType";
 import AnimalTypesListPage from "./pages/animals/AnimalTypesListPage";
+import AddAnimalNature from "./pages/animals/AddAnimalNature";
+import AnimalNaturesListPage from "./pages/animals/AnimalNaturesListPage";
 
 export default function App() {
   return (
@@ -161,6 +163,14 @@ export default function App() {
                               <Route
                                 path="/animals/types/list"
                                 element={<AnimalTypesListPage />}
+                              />
+                              <Route
+                                path="/animals/nature/add"
+                                element={<AddAnimalNature />}
+                              />
+                              <Route
+                                path="/animals/natures/list"
+                                element={<AnimalNaturesListPage />}
                               />
 
                               <Route

@@ -270,7 +270,7 @@ const AddProduct = () => {
           <ComponentCard title={t("add_product")}>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
+                <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t("product_name")} <span className="text-red-500">*</span>
                   </label>
@@ -280,6 +280,21 @@ const AddProduct = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder={t("enter_product_name")}
+                    className="w-full"
+                    disabled={loading}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("name_english")}
+                  </label>
+                  <Input
+                    type="text"
+                    name="name_eng"
+                    value={formData.name_eng}
+                    onChange={handleInputChange}
+                    placeholder={t("enter_name_english")}
                     className="w-full"
                     disabled={loading}
                   />
@@ -304,21 +319,6 @@ const AddProduct = () => {
                       </option>
                     ))}
                   </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("hs_code") || "Code HS"}
-                  </label>
-                  <Input
-                    type="text"
-                    name="hs_code"
-                    value={formData.hs_code}
-                    onChange={handleInputChange}
-                    placeholder={t("enter_hs_code") || "Ex: 0901.11"}
-                    className="w-full"
-                    disabled={loading}
-                  />
                 </div>
               </div>
 
@@ -362,6 +362,22 @@ const AddProduct = () => {
                   >
                     {t("add") || "Ajouter"}
                   </button>
+                </div>
+
+                {/* Code HS en bas de la section nature */}
+                <div className="mt-3">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("hs_code") || "Code HS"}
+                  </label>
+                  <Input
+                    type="text"
+                    name="hs_code"
+                    value={formData.hs_code}
+                    onChange={handleInputChange}
+                    placeholder={t("enter_hs_code") || "Ex: 0901.11"}
+                    className="w-full"
+                    disabled={loading}
+                  />
                 </div>
 
                 {/* Liste des natures ajoutées */}
@@ -408,21 +424,6 @@ const AddProduct = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("name_english")}
-                  </label>
-                  <Input
-                    type="text"
-                    name="name_eng"
-                    value={formData.name_eng}
-                    onChange={handleInputChange}
-                    placeholder={t("enter_name_english")}
-                    className="w-full"
-                    disabled={loading}
-                  />
-                </div>
-
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t("product_description")}

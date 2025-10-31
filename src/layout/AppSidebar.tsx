@@ -214,6 +214,16 @@ const AppSidebar: React.FC = () => {
       name: t("add_animal_type"),
       path: "/animals/type/add",
     },
+    {
+      icon: <Plus />,
+      name: t("add_animal_nature"),
+      path: "/animals/nature/add",
+    },
+    {
+      icon: <Package />,
+      name: t("animal_natures_list") || "Liste des natures d'animaux",
+      path: "/animals/natures/list",
+    },
   ];
 
   const servicesItems: NavItem[] = [
