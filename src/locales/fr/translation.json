@@ -407,6 +407,7 @@
   "product_nature_id": "ID de la nature de produit",
   "product_nature": "Nature du produit",
   "select_product_nature": "Sélectionner une nature de produit",
+  "edit_product_nature": "Modifier la nature de produit",
   "product_codes_count": "Nombre de codes",
   "search_product_nature": "Rechercher une nature de produit",
   "no_product_natures_found": "Aucune nature de produit trouvée",

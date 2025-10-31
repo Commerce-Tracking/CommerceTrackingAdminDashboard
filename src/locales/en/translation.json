@@ -401,6 +401,7 @@
   "product_nature_id": "Product Nature ID",
   "product_nature": "Product Nature",
   "select_product_nature": "Select a product nature",
+  "edit_product_nature": "Edit Product Nature",
   "product_codes_count": "Codes Count",
   "search_product_nature": "Search product nature",
   "no_product_natures_found": "No product natures found",

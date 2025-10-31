@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import axiosInstance from "../../api/axios";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
@@ -63,14 +64,26 @@ const ProductNaturesListPage = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
   const [selectedProductNature, setSelectedProductNature] =
     useState<ProductNature | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [editingProductNature, setEditingProductNature] =
+    useState<ProductNature | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    name_fr: "",
+    name_en: "",
+  });
+  const [editLoading, setEditLoading] = useState<boolean>(false);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [productNatureToDelete, setProductNatureToDelete] =
+    useState<ProductNature | null>(null);
   const { t } = useTranslation();
 
   const fetchProductNatures = async (page: number = 1, search: string = "") => {
+    setLoading(true);
     try {
-      setLoading(true);
       const token = localStorage.getItem("accessToken");
       if (!token) {
         console.error("Token d'authentification manquant");
+        setLoading(false);
         return;
       }
 
@@ -136,6 +149,183 @@ const ProductNaturesListPage = () => {
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
     setSelectedProductNature(null);
+  };
+
+  // Fonctions pour l'édition
+  const openEditModal = (productNature: ProductNature) => {
+    setEditingProductNature(productNature);
+    setEditFormData({
+      name_fr: productNature.name_fr,
+      name_en: productNature.name_en,
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingProductNature(null);
+    setEditFormData({
+      name_fr: "",
+      name_en: "",
+    });
+  };
+
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdateProductNature = async () => {
+    if (!editingProductNature) return;
+
+    // Validation
+    if (!editFormData.name_fr.trim()) {
+      toast.error(t("error"), {
+        description:
+          (t("product_nature_name_fr") || "Nom FR") + " " + t("is_required"),
+      });
+      return;
+    }
+    if (!editFormData.name_en.trim()) {
+      toast.error(t("error"), {
+        description:
+          (t("product_nature_name_en") || "Nom EN") + " " + t("is_required"),
+      });
+      return;
+    }
+
+    setEditLoading(true);
+
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        toast.error(t("auth_error"), {
+          description: "Aucun token d'authentification trouvé.",
+        });
+        return;
+      }
+
+      const response = await axiosInstance.put(
+        `/admin/reference-data/product-natures/${editingProductNature.id}`,
+        {
+          name_fr: editFormData.name_fr.trim(),
+          name_en: editFormData.name_en.trim(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success(t("success"), {
+          description:
+            response.data.message ||
+            "Nature de produit mise à jour avec succès",
+        });
+
+        closeEditModal();
+        fetchProductNatures(pagination.page, searchTerm);
+      } else {
+        toast.error(t("error"), {
+          description: response.data.message || "Erreur lors de la mise à jour",
+        });
+      }
+    } catch (err: any) {
+      console.error("Erreur API mise à jour :", err);
+      let errorMessage =
+        "Erreur lors de la mise à jour de la nature de produit.";
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        errorMessage = "Token invalide ou non autorisé.";
+        toast.error(t("auth_error"), {
+          description: errorMessage,
+        });
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 2000);
+      } else {
+        errorMessage =
+          err.response?.data?.message || err.message || errorMessage;
+        toast.error(t("error"), {
+          description: errorMessage,
+        });
+      }
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  // Fonctions pour la suppression
+  const openDeleteConfirmation = (productNature: ProductNature) => {
+    setProductNatureToDelete(productNature);
+  };
+
+  const closeDeleteConfirmation = () => {
+    setProductNatureToDelete(null);
+  };
+
+  const handleDeleteProductNature = async () => {
+    if (!productNatureToDelete) return;
+
+    setDeleteLoading(true);
+
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        toast.error(t("auth_error"), {
+          description: "Aucun token d'authentification trouvé.",
+        });
+        return;
+      }
+
+      const response = await axiosInstance.delete(
+        `/admin/reference-data/product-natures/${productNatureToDelete.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success(t("success"), {
+          description:
+            response.data.message || "Nature de produit supprimée avec succès",
+        });
+
+        closeDeleteConfirmation();
+        fetchProductNatures(pagination.page, searchTerm);
+      } else {
+        toast.error(t("error"), {
+          description: response.data.message || "Erreur lors de la suppression",
+        });
+      }
+    } catch (err: any) {
+      console.error("Erreur API suppression :", err);
+      let errorMessage =
+        "Erreur lors de la suppression de la nature de produit.";
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        errorMessage = "Token invalide ou non autorisé.";
+        toast.error(t("auth_error"), {
+          description: errorMessage,
+        });
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 2000);
+      } else {
+        errorMessage =
+          err.response?.data?.message || err.message || errorMessage;
+        toast.error(t("error"), {
+          description: errorMessage,
+        });
+      }
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const getProductNatureName = (productNature: ProductNature) => {
@@ -254,6 +444,20 @@ const ProductNaturesListPage = () => {
                             >
                               <Eye className="h-3 w-3" />
                               {t("details")}
+                            </button>
+                            <button
+                              onClick={() => openEditModal(productNature)}
+                              className="px-3 py-1 text-sm bg-blue-900 text-white rounded hover:bg-blue-800"
+                            >
+                              {t("edit")}
+                            </button>
+                            <button
+                              onClick={() =>
+                                openDeleteConfirmation(productNature)
+                              }
+                              className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                            >
+                              {t("delete")}
                             </button>
                           </div>
                         </td>
@@ -447,13 +651,130 @@ const ProductNaturesListPage = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end mt-6">
+              <div className="flex justify-end gap-3 mt-6">
                 <Button
                   variant="outline"
                   onClick={closeDetailModal}
                   className="px-6 py-2"
                 >
                   {t("close")}
+                </Button>
+                <Button
+                  onClick={() => {
+                    closeDetailModal();
+                    openEditModal(selectedProductNature);
+                  }}
+                  className="px-6 py-2"
+                >
+                  {t("edit")}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="fixed inset-0 bg-black/10 backdrop-blur-sm"
+            onClick={closeEditModal}
+          ></div>
+          <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                {t("edit_product_nature") || "Modifier la nature de produit"}
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("product_nature_name_fr") || "Nom (FR)"}{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name_fr"
+                    value={editFormData.name_fr}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    disabled={editLoading}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("product_nature_name_en") || "Nom (EN)"}{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name_en"
+                    value={editFormData.name_en}
+                    onChange={handleEditInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    disabled={editLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <Button
+                  variant="outline"
+                  onClick={closeEditModal}
+                  disabled={editLoading}
+                  className="px-4 py-2"
+                >
+                  {t("cancel")}
+                </Button>
+                <Button
+                  onClick={handleUpdateProductNature}
+                  disabled={editLoading}
+                  className="px-4 py-2"
+                >
+                  {editLoading ? t("updating") : t("update")}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {productNatureToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="fixed inset-0 bg-black/10 backdrop-blur-sm"
+            onClick={closeDeleteConfirmation}
+          ></div>
+          <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                {t("confirm_delete")}
+              </h3>
+
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                {t("delete_confirmation_message") ||
+                  "Êtes-vous sûr de vouloir supprimer"}{" "}
+                <strong>{getProductNatureName(productNatureToDelete)}</strong> ?
+              </p>
+
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  onClick={closeDeleteConfirmation}
+                  disabled={deleteLoading}
+                  className="px-4 py-2"
+                >
+                  {t("cancel")}
+                </Button>
+                <Button
+                  onClick={handleDeleteProductNature}
+                  disabled={deleteLoading}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {deleteLoading ? t("deleting") : t("delete")}
                 </Button>
               </div>
             </div>
