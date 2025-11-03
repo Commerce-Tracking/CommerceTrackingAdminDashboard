@@ -74,7 +74,7 @@ const TransportModesListPage = () => {
     useState<TransportMode | null>(null);
   const { t } = useTranslation();
 
-  // Récupérer la liste des méthodes de transport pour le modal d'édition
+  // Charger les modes de transport (transport-methods)
   const fetchTransportMethods = async () => {
     try {
       const token = localStorage.getItem("accessToken");
@@ -93,10 +93,7 @@ const TransportModesListPage = () => {
         setTransportMethods(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error(
-        "Erreur lors du chargement des méthodes de transport:",
-        err
-      );
+      console.error("Erreur lors du chargement des modes de transport:", err);
     }
   };
 
@@ -227,7 +224,9 @@ const TransportModesListPage = () => {
   };
 
   const handleEditInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setEditFormData((prev) => ({
@@ -273,7 +272,8 @@ const TransportModesListPage = () => {
       const response = await axiosInstance.put(
         `/admin/reference-data/transport-modes/${editingTransportMode.id}`,
         {
-          ...editFormData,
+          name: editFormData.name.trim(),
+          description: editFormData.description.trim(),
           transport_method_id: parseInt(editFormData.transport_method_id),
         },
         {
@@ -286,9 +286,16 @@ const TransportModesListPage = () => {
       console.log("Réponse API mise à jour :", response.data);
 
       if (response.data.success) {
+        // Remplacer "transport mode" par "moyen de transport" dans le message de l'API
+        const apiMessage =
+          response.data.message || "Moyen de transport mis à jour avec succès";
+        const formattedMessage = apiMessage.replace(
+          /transport mode/gi,
+          "moyen de transport"
+        );
+
         toast.success(t("success"), {
-          description:
-            response.data.message || "Mode de transport mis à jour avec succès",
+          description: formattedMessage,
         });
 
         // Fermer le modal
@@ -303,7 +310,7 @@ const TransportModesListPage = () => {
       }
     } catch (err: any) {
       console.error("Erreur API mise à jour :", err);
-      let errorMessage = "Erreur lors de la mise à jour du mode de transport.";
+      let errorMessage = "Erreur lors de la mise à jour du moyen de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -359,9 +366,16 @@ const TransportModesListPage = () => {
       console.log("Réponse API suppression :", response.data);
 
       if (response.data.success) {
+        // Remplacer "transport mode" par "moyen de transport" dans le message de l'API
+        const apiMessage =
+          response.data.message || "Moyen de transport supprimé avec succès";
+        const formattedMessage = apiMessage.replace(
+          /transport mode/gi,
+          "moyen de transport"
+        );
+
         toast.success(t("success"), {
-          description:
-            response.data.message || "Mode de transport supprimé avec succès",
+          description: formattedMessage,
         });
 
         // Fermer la confirmation
@@ -376,7 +390,7 @@ const TransportModesListPage = () => {
       }
     } catch (err: any) {
       console.error("Erreur API suppression :", err);
-      let errorMessage = "Erreur lors de la suppression du mode de transport.";
+      let errorMessage = "Erreur lors de la suppression du moyen de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -411,8 +425,8 @@ const TransportModesListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des modes de transport"
-        description="Consulter la liste des modes de transport pour Opération Fluidité Routière Agro-bétail"
+        title="OFR | Liste des moyens de transport"
+        description="Consulter la liste des moyens de transport pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("transport_modes_list")} />
       <div className="page-container">
@@ -478,9 +492,6 @@ const TransportModesListPage = () => {
                         {t("transport_mode_name")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("transport_method")}
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
                         {t("transport_mode_description")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
@@ -496,10 +507,6 @@ const TransportModesListPage = () => {
                       >
                         <td className="py-3 px-4 font-medium text-gray-900 dark:text-gray-100">
                           {transportMode.name}
-                        </td>
-                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {transportMode.transportMethod?.name} (
-                          {transportMode.transportMethod?.type})
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
                           {transportMode.description.length > 50
@@ -622,16 +629,6 @@ const TransportModesListPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t("transport_method")}
-                  </label>
-                  <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                    {selectedTransportMode.transportMethod?.name} (
-                    {selectedTransportMode.transportMethod?.type})
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t("transport_mode_description")}
                   </label>
                   <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
@@ -686,40 +683,42 @@ const TransportModesListPage = () => {
               </h3>
 
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("transport_mode_name")}{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={editFormData.name}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    disabled={editLoading}
-                  />
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t("transport_mode_name")}{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={editFormData.name}
+                      onChange={handleEditInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      disabled={editLoading}
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("transport_method")}{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="transport_method_id"
-                    value={editFormData.transport_method_id}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    disabled={editLoading}
-                  >
-                    <option value="">{t("select_transport_method")}</option>
-                    {transportMethods.map((method) => (
-                      <option key={method.id} value={method.id}>
-                        {method.name} ({method.type})
-                      </option>
-                    ))}
-                  </select>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t("transport_method")}{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="transport_method_id"
+                      value={editFormData.transport_method_id}
+                      onChange={handleEditInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      disabled={editLoading}
+                    >
+                      <option value="">{t("select_transport_method")}</option>
+                      {transportMethods.map((method) => (
+                        <option key={method.id} value={method.id}>
+                          {method.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 <div>

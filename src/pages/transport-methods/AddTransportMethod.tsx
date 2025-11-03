@@ -12,14 +12,12 @@ import { useTranslation } from "react-i18next";
 interface TransportMethodFormData {
   name: string;
   description: string;
-  type: string;
 }
 
 const AddTransportMethod = () => {
   const [formData, setFormData] = useState<TransportMethodFormData>({
     name: "",
     description: "",
-    type: "road",
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +72,10 @@ const AddTransportMethod = () => {
 
       const response = await axiosInstance.post(
         "/admin/reference-data/transport-methods",
-        formData,
+        {
+          name: formData.name.trim(),
+          description: formData.description.trim(),
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -82,12 +83,19 @@ const AddTransportMethod = () => {
         }
       );
 
-      console.log("Réponse API création méthode de transport :", response.data);
+      console.log("Réponse API création mode de transport :", response.data);
 
       if (response.data.success) {
+        // Remplacer "transport method" par "mode de transport" dans le message de l'API
+        const apiMessage =
+          response.data.message || "Mode de transport créé avec succès";
+        const formattedMessage = apiMessage.replace(
+          /transport method/gi,
+          "mode de transport"
+        );
+
         toast.success(t("success"), {
-          description:
-            response.data.message || "Méthode de transport créée avec succès",
+          description: formattedMessage,
         });
 
         // Réinitialiser le formulaire au lieu de rediriger
@@ -98,9 +106,8 @@ const AddTransportMethod = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API création méthode de transport :", err);
-      let errorMessage =
-        "Erreur lors de la création de la méthode de transport.";
+      console.error("Erreur API création mode de transport :", err);
+      let errorMessage = "Erreur lors de la création du mode de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -126,7 +133,6 @@ const AddTransportMethod = () => {
     setFormData({
       name: "",
       description: "",
-      type: "road",
     });
     setError(null);
   };
@@ -134,8 +140,8 @@ const AddTransportMethod = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter une méthode de transport"
-        description="Ajouter une nouvelle méthode de transport pour Opération Fluidité Routière Agro-bétail"
+        title="OFR | Ajouter un mode de transport"
+        description="Ajouter un nouveau mode de transport pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_transport_method")} />
       <div className="page-container">
@@ -148,7 +154,7 @@ const AddTransportMethod = () => {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
                 <div>
                   <Label htmlFor="name">
                     {t("transport_method_name")}{" "}
@@ -162,31 +168,11 @@ const AddTransportMethod = () => {
                     onChange={handleInputChange}
                     placeholder={t("enter_transport_method_name")}
                     disabled={loading}
+                    className="w-full"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="type">
-                    {t("transport_method_type")}{" "}
-                    <span className="text-red-500">*</span>
-                  </Label>
-                  <select
-                    id="type"
-                    name="type"
-                    value={formData.type}
-                    onChange={handleInputChange}
-                    disabled={loading}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                  >
-                    <option value="road">{t("road")}</option>
-                    <option value="railway">{t("railway")}</option>
-                    <option value="air">{t("air")}</option>
-                    <option value="sea">{t("sea")}</option>
-                  </select>
-                </div>
-
-                <div className="md:col-span-2">
                   <Label htmlFor="description">
                     {t("transport_method_description")}{" "}
                     <span className="text-red-500">*</span>

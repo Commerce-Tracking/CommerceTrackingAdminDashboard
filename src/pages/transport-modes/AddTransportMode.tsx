@@ -30,7 +30,7 @@ const AddTransportMode = () => {
   );
   const { t } = useTranslation();
 
-  // Charger les méthodes de transport
+  // Charger les modes de transport (transport-methods)
   const fetchTransportMethods = async () => {
     try {
       const token = localStorage.getItem("accessToken");
@@ -49,10 +49,7 @@ const AddTransportMode = () => {
         setTransportMethods(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error(
-        "Erreur lors du chargement des méthodes de transport:",
-        err
-      );
+      console.error("Erreur lors du chargement des modes de transport:", err);
     }
   };
 
@@ -108,7 +105,8 @@ const AddTransportMode = () => {
       const response = await axiosInstance.post(
         "/admin/reference-data/transport-modes",
         {
-          ...formData,
+          name: formData.name.trim(),
+          description: formData.description.trim(),
           transport_method_id: parseInt(formData.transport_method_id),
         },
         {
@@ -119,9 +117,16 @@ const AddTransportMode = () => {
       );
 
       if (response.data.success) {
+        // Remplacer "transport mode" par "moyen de transport" dans le message de l'API
+        const apiMessage =
+          response.data.message || "Moyen de transport créé avec succès";
+        const formattedMessage = apiMessage.replace(
+          /transport mode/gi,
+          "moyen de transport"
+        );
+
         toast.success(t("success"), {
-          description:
-            response.data.message || "Mode de transport créé avec succès",
+          description: formattedMessage,
         });
         handleReset();
       } else {
@@ -131,7 +136,7 @@ const AddTransportMode = () => {
       }
     } catch (err: any) {
       console.error("Erreur API:", err);
-      let errorMessage = "Erreur lors de la création du mode de transport.";
+      let errorMessage = "Erreur lors de la création du moyen de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -163,8 +168,8 @@ const AddTransportMode = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter un mode de transport"
-        description="Ajouter un nouveau mode de transport pour Opération Fluidité Routière Agro-bétail"
+        title="OFR | Ajouter un moyen de transport"
+        description="Ajouter un nouveau moyen de transport pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_transport_mode")} />
       <div className="page-container">
@@ -184,6 +189,7 @@ const AddTransportMode = () => {
                     onChange={handleInputChange}
                     placeholder={t("enter_transport_mode_name")}
                     disabled={loading}
+                    className="w-full"
                   />
                 </div>
 
@@ -203,7 +209,7 @@ const AddTransportMode = () => {
                     <option value="">{t("select_transport_method")}</option>
                     {transportMethods.map((method) => (
                       <option key={method.id} value={method.id}>
-                        {method.name} ({method.type})
+                        {method.name}
                       </option>
                     ))}
                   </select>

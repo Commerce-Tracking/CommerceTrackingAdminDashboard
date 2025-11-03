@@ -316,10 +316,10 @@ export default function AddSupervisor() {
         nationality: formData.nationality ? formData.nationality.trim() : null,
         status: formData.status,
         actor_role: "supervisor",
-        supervisor_id: null, // Un superviseur n'a pas de superviseur parent
+        supervisor_id: null, // Un éditeur n'a pas d'éditeur parent
       };
 
-      console.log("🔄 Création du superviseur:", apiData);
+      console.log("🔄 Création de l'éditeur:", apiData);
 
       const response = await axiosInstance.post("/admin/actors", apiData, {
         headers: {
@@ -331,9 +331,9 @@ export default function AddSupervisor() {
       console.log("📡 Réponse API:", response);
 
       if (response.data.success) {
-        console.log("✅ Superviseur créé avec succès:", response.data.result);
+        console.log("✅ Éditeur créé avec succès:", response.data.result);
         toast.success(
-          t("supervisor_created_successfully") || "Superviseur créé avec succès"
+          t("supervisor_created_successfully") || "Éditeur créé avec succès"
         );
         handleReset();
       } else {
@@ -343,7 +343,7 @@ export default function AddSupervisor() {
         const errorMessage =
           response.data.errors ||
           response.data.message ||
-          "Erreur lors de la création du superviseur";
+          "Erreur lors de la création de l'éditeur";
         console.log("🚨 Message d'erreur de la réponse:", errorMessage);
 
         if (
@@ -377,10 +377,7 @@ export default function AddSupervisor() {
           errorMessage.includes("même pays") ||
           errorMessage.includes("supervisor must belong")
         ) {
-          console.log(
-            "🎯 Erreur de validation pays/superviseur:",
-            errorMessage
-          );
+          console.log("🎯 Erreur de validation pays/éditeur:", errorMessage);
           setFieldError("country_id", errorMessage);
           toast.error(errorMessage);
         } else {
@@ -481,7 +478,7 @@ export default function AddSupervisor() {
           err.response?.data?.message ||
           err.response?.data?.errors ||
           err.message ||
-          "Erreur lors de la création du superviseur";
+          "Erreur lors de la création de l'éditeur";
         const finalErrorMessage = Array.isArray(errorMessage)
           ? errorMessage.join(", ")
           : errorMessage;
@@ -518,8 +515,8 @@ export default function AddSupervisor() {
   return (
     <div className="page-container">
       <PageMeta
-        title="Commerce Tracking | Ajouter un Superviseur"
-        description="Formulaire d'ajout d'un superviseur"
+        title="Commerce Tracking | Ajouter un Éditeur"
+        description="Formulaire d'ajout d'un éditeur"
       />
 
       <PageBreadcrumb pageTitle={t("add_supervisor")} />
