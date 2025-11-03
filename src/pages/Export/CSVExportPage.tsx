@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import axiosInstance from "../../api/axios";
+import * as XLSX from "xlsx";
 import {
-  Download,
   FileText,
   AlertCircle,
   CheckCircle,
   Loader2,
   Calendar,
+  FileSpreadsheet,
 } from "lucide-react";
 
 interface ExportResponse {
@@ -18,6 +19,7 @@ interface ExportResponse {
   totalRecords: number;
   mimeType: string;
   fileSize: number;
+  encoding?: string;
 }
 
 export default function CSVExportPage() {
@@ -78,6 +80,123 @@ export default function CSVExportPage() {
     }
   };
 
+  // Fonction pour décoder le base64 en Excel
+  const decodeBase64ToExcel = (base64Data: string): Blob => {
+    // Décoder le base64 en binaire
+    const binaryString = atob(base64Data);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return new Blob([bytes], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+  };
+
+  // Fonction pour convertir CSV ou données en Excel (fallback si nécessaire)
+  const convertDataToExcel = (data: any): Blob => {
+    let workbook: XLSX.WorkBook;
+    let worksheet: XLSX.WorkSheet;
+
+    // Vérifier le type de données reçu
+    if (Array.isArray(data)) {
+      // Si c'est un tableau d'objets JSON
+      if (
+        data.length > 0 &&
+        typeof data[0] === "object" &&
+        !Array.isArray(data[0])
+      ) {
+        // Convertir les objets en tableau de tableaux
+        const headers = Object.keys(data[0]);
+        const rows = data.map((obj) => headers.map((key) => obj[key] || ""));
+        worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+      } else {
+        // Si c'est déjà un tableau de tableaux
+        worksheet = XLSX.utils.aoa_to_sheet(data);
+      }
+    } else if (typeof data === "string") {
+      // Si c'est une chaîne CSV
+      try {
+        // Essayer de parser comme CSV avec XLSX
+        const csvWorkbook = XLSX.read(data, { type: "string" });
+        worksheet = csvWorkbook.Sheets[csvWorkbook.SheetNames[0]];
+      } catch (e) {
+        // Fallback: parser manuellement le CSV
+        const lines = data
+          .split("\n")
+          .filter((line: string) => line.trim() !== "");
+        if (lines.length === 0) {
+          throw new Error("Aucune donnée à convertir");
+        }
+
+        // Parser la première ligne comme en-têtes
+        const headers = lines[0]
+          .split(",")
+          .map((h: string) => h.trim().replace(/^"|"$/g, ""));
+
+        // Parser les lignes de données
+        const rows = lines.slice(1).map((line: string) => {
+          // Gérer les virgules dans les valeurs entre guillemets
+          const values: string[] = [];
+          let currentValue = "";
+          let insideQuotes = false;
+
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+              insideQuotes = !insideQuotes;
+            } else if (char === "," && !insideQuotes) {
+              values.push(currentValue.trim().replace(/^"|"$/g, ""));
+              currentValue = "";
+            } else {
+              currentValue += char;
+            }
+          }
+          values.push(currentValue.trim().replace(/^"|"$/g, ""));
+          return values;
+        });
+
+        worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+      }
+    } else {
+      throw new Error("Format de données non supporté");
+    }
+
+    // Créer le workbook
+    workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Export");
+
+    // Ajuster la largeur des colonnes si possible
+    if (worksheet["!ref"]) {
+      const range = XLSX.utils.decode_range(worksheet["!ref"]);
+      const colWidths: { wch: number }[] = [];
+      for (let col = 0; col <= range.e.c; col++) {
+        let maxLength = 0;
+        for (let row = 0; row <= range.e.r; row++) {
+          const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
+          const cell = worksheet[cellAddress];
+          if (cell && cell.v) {
+            const cellValue = String(cell.v);
+            if (cellValue.length > maxLength) {
+              maxLength = cellValue.length;
+            }
+          }
+        }
+        colWidths.push({ wch: Math.min(maxLength + 2, 50) });
+      }
+      worksheet["!cols"] = colWidths;
+    }
+
+    // Convertir en blob
+    const excelBuffer = XLSX.write(workbook, {
+      type: "array",
+      bookType: "xlsx",
+    });
+    return new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+  };
+
   const handleExport = async () => {
     // Validation des dates
     if (!startDate || !endDate) {
@@ -100,20 +219,40 @@ export default function CSVExportPage() {
         endDate,
       };
 
+      // Endpoint pour export Excel
       const response = await axiosInstance.post("/admin/export-csv", payload);
 
       if (response.data.success) {
         setExportResult(response.data);
 
-        // Créer et télécharger le fichier CSV
-        const blob = new Blob([response.data.data], {
-          type: response.data.mimeType || "text/csv",
-        });
+        let blob: Blob;
+        let filename: string;
+
+        // Vérifier si les données sont en base64
+        if (
+          response.data.encoding === "base64" ||
+          response.data.mimeType?.includes("excel") ||
+          response.data.mimeType?.includes("spreadsheet")
+        ) {
+          // Décoder le base64 en Excel
+          blob = decodeBase64ToExcel(response.data.data);
+          filename = response.data.filename || "export.xlsx";
+        } else if (typeof response.data.data === "string") {
+          // Si c'est une chaîne CSV, la convertir en Excel
+          blob = convertDataToExcel(response.data.data);
+          filename =
+            (response.data.filename || "export.csv").replace(".csv", ".xlsx") ||
+            "export.xlsx";
+        } else {
+          // Si c'est un tableau, le convertir en Excel
+          blob = convertDataToExcel(response.data.data);
+          filename = response.data.filename || "export.xlsx";
+        }
 
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = response.data.filename || "export.csv";
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -122,7 +261,7 @@ export default function CSVExportPage() {
         setError(response.data.message || "Erreur lors de l'export");
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de l'export CSV:", err);
+      console.error("❌ Erreur lors de l'export:", err);
 
       if (err.response?.status === 401) {
         setError("Session expirée. Veuillez vous reconnecter.");
@@ -162,10 +301,11 @@ export default function CSVExportPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t("csv_export_title")}
+            {t("excel_export_title") || "Export des données Excel"}
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            {t("csv_export_subtitle")}
+            {t("excel_export_subtitle") ||
+              "Exportez toutes les données de collecte au format Excel pour analyse externe"}
           </p>
         </div>
 
@@ -180,7 +320,8 @@ export default function CSVExportPage() {
                 {t("export_collections_data")}
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
-                {t("export_description")}
+                {t("excel_export_description") ||
+                  "Générez et téléchargez un fichier Excel contenant les données complètes de collecte : informations produits, transport, douanes, géolocalisation, valeurs commerciales et métriques physiques détaillées."}
               </p>
             </div>
           </div>
@@ -290,7 +431,7 @@ export default function CSVExportPage() {
                 className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
                   isExporting
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    : "bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 } transition-colors duration-200`}
               >
                 {isExporting ? (
@@ -300,10 +441,11 @@ export default function CSVExportPage() {
                   </>
                 ) : (
                   <>
-                    <Download className="-ml-1 mr-3 h-5 w-5" />
+                    <FileSpreadsheet className="-ml-1 mr-3 h-5 w-5" />
                     {startDate && endDate
-                      ? t("export_with_dates")
-                      : t("export_csv")}
+                      ? t("export_excel_with_dates") ||
+                        "Exporter Excel avec dates"
+                      : t("export_excel") || "Exporter Excel"}
                   </>
                 )}
               </button>
@@ -399,10 +541,9 @@ export default function CSVExportPage() {
                   {t("file_format")}
                 </h4>
                 <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <li>• {t("csv_format")}</li>
+                  <li>• Excel (.xlsx)</li>
                   <li>• {t("utf8_encoding")}</li>
-                  <li>• {t("comma_separated")}</li>
-                  <li>• {t("excel_compatible")}</li>
+                  <li>• Format compatible Microsoft Excel</li>
                 </ul>
               </div>
             </div>

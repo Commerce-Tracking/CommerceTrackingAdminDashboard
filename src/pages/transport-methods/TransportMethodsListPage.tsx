@@ -244,10 +244,16 @@ const TransportMethodsListPage = () => {
       console.log("Réponse API mise à jour :", response.data);
 
       if (response.data.success) {
+        // Remplacer "transport method" par "mode de transport" dans le message de l'API
+        const apiMessage =
+          response.data.message || "Mode de transport mis à jour avec succès";
+        const formattedMessage = apiMessage.replace(
+          /transport method/gi,
+          "mode de transport"
+        );
+
         toast.success(t("success"), {
-          description:
-            response.data.message ||
-            "Méthode de transport mise à jour avec succès",
+          description: formattedMessage,
         });
 
         // Fermer le modal
@@ -262,8 +268,7 @@ const TransportMethodsListPage = () => {
       }
     } catch (err: any) {
       console.error("Erreur API mise à jour :", err);
-      let errorMessage =
-        "Erreur lors de la mise à jour de la méthode de transport.";
+      let errorMessage = "Erreur lors de la mise à jour du mode de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -319,10 +324,16 @@ const TransportMethodsListPage = () => {
       console.log("Réponse API suppression :", response.data);
 
       if (response.data.success) {
+        // Remplacer "transport method" par "mode de transport" dans le message de l'API
+        const apiMessage =
+          response.data.message || "Mode de transport supprimé avec succès";
+        const formattedMessage = apiMessage.replace(
+          /transport method/gi,
+          "mode de transport"
+        );
+
         toast.success(t("success"), {
-          description:
-            response.data.message ||
-            "Méthode de transport supprimée avec succès",
+          description: formattedMessage,
         });
 
         // Fermer la confirmation
@@ -337,8 +348,7 @@ const TransportMethodsListPage = () => {
       }
     } catch (err: any) {
       console.error("Erreur API suppression :", err);
-      let errorMessage =
-        "Erreur lors de la suppression de la méthode de transport.";
+      let errorMessage = "Erreur lors de la suppression du mode de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
         toast.error(t("auth_error"), {
@@ -373,8 +383,8 @@ const TransportMethodsListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des méthodes de transport"
-        description="Consulter la liste des méthodes de transport pour Opération Fluidité Routière Agro-bétail"
+        title="OFR | Liste des modes de transport"
+        description="Consulter la liste des modes de transport pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("transport_methods_list")} />
       <div className="page-container">
@@ -739,7 +749,7 @@ const TransportMethodsListPage = () => {
               </h3>
 
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                {t("delete_confirmation_message")}{" "}
+                {t("delete_transport_method_confirmation")}{" "}
                 <strong>{transportMethodToDelete.name}</strong> ?
               </p>
 

@@ -12,7 +12,7 @@ import { Modal } from "../../components/ui/modal";
 import { ModalHeader } from "../../components/ui/modal/ModalHeader";
 import { Plus } from "lucide-react";
 
-// Interface pour les données des acteurs/superviseurs
+// Interface pour les données des acteurs/éditeurs
 interface Actor {
   id: number;
   public_id: string;
@@ -212,15 +212,15 @@ export default function SupervisorsListPage() {
         setActors(apiResponse.result.data);
         setPagination(apiResponse.result.pagination);
         console.log(
-          "✅ Superviseurs récupérés avec succès:",
+          "✅ Éditeurs récupérés avec succès:",
           apiResponse.result.data.length
         );
       } else {
-        setError("Erreur lors de la récupération des superviseurs");
+        setError("Erreur lors de la récupération des éditeurs");
         console.error("❌ Erreur API supervisors:", response.data);
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la récupération des superviseurs:", err);
+      console.error("❌ Erreur lors de la récupération des éditeurs:", err);
       if (err.response?.status === 401) {
         console.log(
           "🔒 Session expirée, redirection vers la page de connexion..."
@@ -230,9 +230,7 @@ export default function SupervisorsListPage() {
         window.location.href = "/signin";
         return;
       } else {
-        setError(
-          err.message || "Erreur lors de la récupération des superviseurs"
-        );
+        setError(err.message || "Erreur lors de la récupération des éditeurs");
       }
     } finally {
       setLoading(false);
@@ -352,7 +350,7 @@ export default function SupervisorsListPage() {
     return true;
   };
 
-  // Fonction pour mettre à jour un superviseur
+  // Fonction pour mettre à jour un éditeur
   const handleUpdateActor = async () => {
     if (!selectedActor) return;
 
@@ -391,7 +389,7 @@ export default function SupervisorsListPage() {
           : null,
       };
 
-      console.log("🔄 Mise à jour du superviseur:", apiData);
+      console.log("🔄 Mise à jour de l'éditeur:", apiData);
 
       const response = await axiosInstance.put(
         `/admin/actors/${selectedActor.id}`,
@@ -405,17 +403,13 @@ export default function SupervisorsListPage() {
       );
 
       if (response.data.success) {
-        console.log(
-          "✅ Superviseur mis à jour avec succès:",
-          response.data.result
-        );
+        console.log("✅ Éditeur mis à jour avec succès:", response.data.result);
         // Rafraîchir la liste
         fetchActors(pagination.page, searchTerm);
         closeEditModal();
       } else {
         setError(
-          response.data.message ||
-            "Erreur lors de la mise à jour du superviseur"
+          response.data.message || "Erreur lors de la mise à jour de l'éditeur"
         );
       }
     } catch (err: any) {
@@ -429,7 +423,7 @@ export default function SupervisorsListPage() {
         setError(
           err.response?.data?.message ||
             err.message ||
-            "Erreur lors de la mise à jour du superviseur"
+            "Erreur lors de la mise à jour de l'éditeur"
         );
       }
     } finally {
@@ -474,7 +468,7 @@ export default function SupervisorsListPage() {
         // Rafraîchir la liste
         fetchActors(pagination.page, searchTerm);
         closeDeleteModal();
-        console.log("✅ Superviseur supprimé avec succès");
+        console.log("✅ Éditeur supprimé avec succès");
       } else {
         setError(response.data.message || "Erreur lors de la suppression");
       }
@@ -486,7 +480,7 @@ export default function SupervisorsListPage() {
         window.location.href = "/signin";
         return;
       } else {
-        setError(err.message || "Erreur lors de la suppression du superviseur");
+        setError(err.message || "Erreur lors de la suppression de l'éditeur");
       }
     } finally {
       setDeleteLoading(false);
@@ -527,7 +521,7 @@ export default function SupervisorsListPage() {
   const getRoleTranslation = (role: string) => {
     switch (role) {
       case "supervisor":
-        return t("supervisor") || "Superviseur";
+        return t("supervisor") || "Éditeur";
       case "team_manager":
         return t("team_manager") || "Chef d'équipe";
       case "collector":
@@ -600,8 +594,8 @@ export default function SupervisorsListPage() {
   return (
     <div className="page-container">
       <PageMeta
-        title="Commerce Tracking | Superviseurs"
-        description="Liste des superviseurs"
+        title="Commerce Tracking | Éditeurs"
+        description="Liste des éditeurs"
       />
 
       <PageBreadcrumb pageTitle={t("supervisors_list")} />
@@ -623,12 +617,12 @@ export default function SupervisorsListPage() {
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                {t("add_supervisor") || "Ajouter un Superviseur"}
+                {t("add_supervisor") || "Ajouter un Éditeur"}
               </Button>
             </div>
           </div>
 
-          {/* Supervisors Table */}
+          {/* Éditeurs Table */}
           <ComponentCard title={t("supervisors_list")}>
             {loading ? (
               <div className="text-center py-8">
@@ -821,7 +815,7 @@ export default function SupervisorsListPage() {
       >
         <ModalHeader>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-20">
-            {t("supervisor_details") || "Détails du Superviseur"}
+            {t("supervisor_details") || "Détails de l'Éditeur"}
           </h3>
         </ModalHeader>
         <div className="px-6 py-4">
@@ -1334,7 +1328,7 @@ export default function SupervisorsListPage() {
 
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 {t("delete_supervisor_message") ||
-                  "Êtes-vous sûr de vouloir supprimer le superviseur"}{" "}
+                  "Êtes-vous sûr de vouloir supprimer l'éditeur"}{" "}
                 <strong>
                   {selectedActor.first_name} {selectedActor.last_name}
                 </strong>{" "}
