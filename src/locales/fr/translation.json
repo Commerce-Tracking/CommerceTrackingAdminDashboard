@@ -220,7 +220,7 @@
   "average_unit_price": "Prix unitaire moyen",
   "total_value": "Valeur totale",
   "loading_point": "Point de chargement",
-
+  
   "unloading_point": "Point de déchargement",
 
   "shipper": "Chargeur",
@@ -251,9 +251,9 @@
 
   "search_name": "Rechercher un nom",
 
-  "edit_entity": "Modifier l'entité",
+   "edit_entity": "Modifier l'entité",
   "entity_name": "Nom de l'entité",
-  "cancel": "Annuler",
+   "cancel": "Annuler",
   "save": "Enregistrer",
 
   "entity_form_title": "Formulaire d'ajout d'entité",
@@ -313,7 +313,7 @@
 
   "edit_locality": "Modifier la localité",
   "lacality_name": "Nom de la localité",
-  "enter_locality_name": "Entrez le nom de la localité",
+   "enter_locality_name": "Entrez le nom de la localité",
 
   "currency_list": "Liste des devises",
   "add_currency": "Ajouter une devise",

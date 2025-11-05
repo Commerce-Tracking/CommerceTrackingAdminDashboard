@@ -132,8 +132,13 @@ export default function TeamManagersListPage() {
     date_of_birth: "",
     place_of_birth: "",
     nationality: "",
+    country_id: "",
+    supervisor_id: "",
     status: "active",
   });
+  const [supervisors, setSupervisors] = useState<Actor[]>([]);
+  const [filteredSupervisors, setFilteredSupervisors] = useState<Actor[]>([]);
+  const [countries, setCountries] = useState<any[]>([]);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -211,10 +216,83 @@ export default function TeamManagersListPage() {
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
+  // Fonction pour charger les éditeurs (supervisors)
+  const fetchSupervisors = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const response = await axiosInstance.get(
+        "/admin/actors?actor_role=supervisor",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        const supervisorsData = response.data.result.data || [];
+        setSupervisors(supervisorsData);
+        setFilteredSupervisors(supervisorsData);
+      }
+    } catch (err: any) {
+      console.error("Erreur lors de la récupération des éditeurs:", err);
+    }
+  };
+
+  // Fonction pour charger les pays
+  const fetchCountries = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const response = await axiosInstance.get("/common-data/countries", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        setCountries(response.data.result || []);
+      }
+    } catch (err: any) {
+      console.error("Erreur lors de la récupération des pays:", err);
+    }
+  };
+
   // Chargement initial
   useEffect(() => {
     fetchActors();
+    fetchSupervisors();
+    fetchCountries();
   }, []);
+
+  // Fonction pour filtrer les éditeurs selon le pays sélectionné
+  useEffect(() => {
+    if (editFormData.country_id) {
+      const filtered = supervisors.filter(
+        (supervisor) =>
+          supervisor.country_id === parseInt(editFormData.country_id)
+      );
+      setFilteredSupervisors(filtered);
+
+      // Réinitialiser l'éditeur si le pays change
+      if (editFormData.supervisor_id) {
+        const currentSupervisor = supervisors.find(
+          (s) => s.id === parseInt(editFormData.supervisor_id)
+        );
+        if (
+          currentSupervisor &&
+          currentSupervisor.country_id !== parseInt(editFormData.country_id)
+        ) {
+          setEditFormData((prev) => ({ ...prev, supervisor_id: "" }));
+        }
+      }
+    } else {
+      setFilteredSupervisors(supervisors);
+    }
+  }, [editFormData.country_id, supervisors]);
 
   // Fonction pour ouvrir le modal de détails
   const openDetailModal = (actor: Actor) => {
@@ -242,6 +320,8 @@ export default function TeamManagersListPage() {
       date_of_birth: actor.date_of_birth,
       place_of_birth: actor.place_of_birth,
       nationality: actor.nationality,
+      country_id: actor.country_id?.toString() || "",
+      supervisor_id: actor.supervisor_id?.toString() || "",
       status: actor.status,
     });
     setIsEditModalOpen(true);
@@ -262,6 +342,8 @@ export default function TeamManagersListPage() {
       date_of_birth: "",
       place_of_birth: "",
       nationality: "",
+      country_id: "",
+      supervisor_id: "",
       status: "active",
     });
   };
@@ -297,6 +379,14 @@ export default function TeamManagersListPage() {
       setError("Le téléphone est requis");
       return false;
     }
+    if (!editFormData.country_id || !editFormData.country_id.trim()) {
+      setError("Le pays est requis");
+      return false;
+    }
+    if (!editFormData.supervisor_id || !editFormData.supervisor_id.trim()) {
+      setError("L'éditeur est requis");
+      return false;
+    }
     return true;
   };
 
@@ -318,7 +408,7 @@ export default function TeamManagersListPage() {
         return;
       }
 
-      const apiData = {
+      const apiData: any = {
         first_name: editFormData.first_name.trim(),
         last_name: editFormData.last_name.trim(),
         email: editFormData.email.trim(),
@@ -335,6 +425,18 @@ export default function TeamManagersListPage() {
           : "",
         status: editFormData.status,
       };
+
+      // Ajouter country_id si défini
+      if (editFormData.country_id) {
+        apiData.country_id = parseInt(editFormData.country_id);
+      }
+
+      // Ajouter supervisor_id si défini
+      if (editFormData.supervisor_id) {
+        apiData.supervisor_id = parseInt(editFormData.supervisor_id);
+      } else {
+        apiData.supervisor_id = null;
+      }
 
       console.log("🔄 Mise à jour du chef d'équipe:", apiData);
 
@@ -603,9 +705,6 @@ export default function TeamManagersListPage() {
                         {t("role")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
-                        {t("organization")}
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
                         {t("country")}
                       </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 dark:text-gray-300">
@@ -646,22 +745,6 @@ export default function TeamManagersListPage() {
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                             {getRoleTranslation(actor.actor_role)}
                           </span>
-                        </td>
-                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {actor.organization ? (
-                            <>
-                              <div className="text-sm">
-                                {actor.organization.name}
-                              </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
-                                {actor.organization.metadata?.city || "N/A"}
-                              </div>
-                            </>
-                          ) : (
-                            <div className="text-sm text-gray-400">
-                              {t("no_organization") || "Aucune organisation"}
-                            </div>
-                          )}
                         </td>
                         <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
                           <div className="flex items-center">
@@ -1233,6 +1316,57 @@ export default function TeamManagersListPage() {
                   disabled={editLoading}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("country") || "Pays"}{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="country_id"
+                    value={editFormData.country_id}
+                    onChange={handleEditInputChange}
+                    required
+                    disabled={editLoading}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  >
+                    <option value="">
+                      {t("select_country") || "Sélectionner un pays"}
+                    </option>
+                    {countries.map((country) => (
+                      <option key={country.id} value={country.id}>
+                        {country.flag} {country.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("supervisor") || "Éditeur"}{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="supervisor_id"
+                    value={editFormData.supervisor_id}
+                    onChange={handleEditInputChange}
+                    required
+                    disabled={editLoading || !editFormData.country_id}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  >
+                    <option value="">
+                      {t("select_supervisor") || "Sélectionner un éditeur"}
+                    </option>
+                    {filteredSupervisors.map((supervisor) => (
+                      <option key={supervisor.id} value={supervisor.id}>
+                        {supervisor.first_name} {supervisor.last_name} (
+                        {supervisor.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </form>
           )}

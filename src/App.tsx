@@ -79,10 +79,10 @@ import AddAnimalNature from "./pages/animals/AddAnimalNature";
 import AnimalNaturesListPage from "./pages/animals/AnimalNaturesListPage";
 
 export default function App() {
-  return (
-    <>
-      <PrimeReactProvider>
-        {/*<PrimeReactProvider value={{locale: 'en'}}>*/}
+    return (
+        <>
+            <PrimeReactProvider>
+                {/*<PrimeReactProvider value={{locale: 'en'}}>*/}
         <ComplaintProvider>
           <ValidationStatsProvider>
             <TotalCollectionsProvider>
@@ -90,16 +90,16 @@ export default function App() {
                 <PendingCollectionsProvider>
                   <RejectedByLevelProvider>
                     <MonthlyCollectionsProvider>
-                      <ModalProvider>
+                    <ModalProvider>
                         <ScrollToTop />
                         <Routes>
-                          {/* Dashboard Layout */}
+                            {/* Dashboard Layout */}
 
-                          <Route element={<PrivateRoute />}>
-                            <Route element={<AppLayout />}>
-                              <Route index path="/" element={<Home />} />
+                            <Route element={<PrivateRoute />}>
+                                <Route element={<AppLayout />}>
+                                    <Route index path="/" element={<Home />} />
 
-                              <Route path="/pays" element={<AddPays />} />
+                                    <Route path="/pays" element={<AddPays />} />
                               <Route
                                 path="/countries-list"
                                 element={<CountriesListPage />}
@@ -270,7 +270,7 @@ export default function App() {
                                 element={<AddOrganization />}
                               />
 
-                              {/* Complaints Page */}
+                                    {/* Complaints Page */}
                               <Route
                                 path="/complaints"
                                 element={<ComplaintsTables />}
@@ -279,10 +279,10 @@ export default function App() {
                                 path="/complaints-types"
                                 element={<ComplaintsTypesTables />}
                               />
-                              {/*<Route path="/complaints-types" element={<ReportsTables />} />*/}
+                                    {/*<Route path="/complaints-types" element={<ReportsTables />} />*/}
 
-                              {/* Users Page */}
-                              <Route path="/users" element={<UsersTables />} />
+                                    {/* Users Page */}
+                                    <Route path="/users" element={<UsersTables />} />
                               <Route
                                 path="/create-user"
                                 element={<AddUserFormElements />}
@@ -292,7 +292,7 @@ export default function App() {
                                 element={<UsersRolesTables />}
                               />
 
-                              {/* Reporting Page */}
+                                    {/* Reporting Page */}
                               <Route
                                 path="/reportings"
                                 element={<AddReportFormElements />}
@@ -303,7 +303,7 @@ export default function App() {
                                 element={<ReportsListPage />}
                               />
 
-                              <Route path="/statistics" element={<Home />} />
+                                    <Route path="/statistics" element={<Home />} />
                               <Route
                                 path="/view-data"
                                 element={<ReportsTables />}
@@ -313,55 +313,55 @@ export default function App() {
                                 path="/profile"
                                 element={<UserProfiles />}
                               />
-                              <Route path="/calendar" element={<Calendar />} />
-                              <Route path="/blank" element={<Blank />} />
+                                    <Route path="/calendar" element={<Calendar />} />
+                                    <Route path="/blank" element={<Blank />} />
 
-                              {/* Forms */}
+                                    {/* Forms */}
                               <Route
                                 path="/form-elements"
                                 element={<FormElements />}
                               />
 
-                              {/* Tables */}
+                                    {/* Tables */}
                               <Route
                                 path="/basic-tables"
                                 element={<BasicTables />}
                               />
 
-                              {/* Ui Elements */}
-                              <Route path="/alerts" element={<Alerts />} />
-                              <Route path="/avatars" element={<Avatars />} />
-                              <Route path="/badge" element={<Badges />} />
-                              <Route path="/buttons" element={<Buttons />} />
-                              <Route path="/images" element={<Images />} />
-                              <Route path="/videos" element={<Videos />} />
+                                    {/* Ui Elements */}
+                                    <Route path="/alerts" element={<Alerts />} />
+                                    <Route path="/avatars" element={<Avatars />} />
+                                    <Route path="/badge" element={<Badges />} />
+                                    <Route path="/buttons" element={<Buttons />} />
+                                    <Route path="/images" element={<Images />} />
+                                    <Route path="/videos" element={<Videos />} />
 
-                              {/* Charts */}
+                                    {/* Charts */}
                               <Route
                                 path="/line-chart"
                                 element={<LineChart />}
                               />
-                              <Route path="/bar-chart" element={<BarChart />} />
+                                    <Route path="/bar-chart" element={<BarChart />} />
+                                </Route>
                             </Route>
-                          </Route>
 
-                          {/* Auth Layout */}
-                          <Route path="/signin" element={<SignIn />} />
-                          <Route path="/signup" element={<SignUp />} />
+                            {/* Auth Layout */}
+                            <Route path="/signin" element={<SignIn />} />
+                            <Route path="/signup" element={<SignUp />} />
 
-                          {/* Fallback Route */}
-                          <Route path="*" element={<NotFound />} />
+                            {/* Fallback Route */}
+                            <Route path="*" element={<NotFound />} />
                         </Routes>
-                      </ModalProvider>
+                    </ModalProvider>
                     </MonthlyCollectionsProvider>
                   </RejectedByLevelProvider>
                 </PendingCollectionsProvider>
               </AcceptedBySupervisorProvider>
             </TotalCollectionsProvider>
           </ValidationStatsProvider>
-        </ComplaintProvider>
-      </PrimeReactProvider>
+                </ComplaintProvider>
+            </PrimeReactProvider>
       <Toaster position="bottom-right" richColors />
-    </>
-  );
+        </>
+    );
 }

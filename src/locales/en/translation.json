@@ -249,15 +249,15 @@
   "additional_passengers": "Additional Passengers",
   "attachments": "Attachments",
 
-  "search_name": "Search by name",
-  "edit_entity": "Edit Entity",
+    "search_name": "Search by name",
+    "edit_entity": "Edit Entity",
   "entity_name": "Entity Name",
-  "cancel": "Cancel",
+   "cancel": "Cancel",
 
-  "entity_form_title": "Entity creation form",
+ "entity_form_title": "Entity creation form",
 
-  "enter_entity_name": "Enter the entity name",
-  "edit_country": "Edit Country",
+"enter_entity_name": "Enter the entity name", 
+"edit_country": "Edit Country",
 
   "country_form_title": "Country creation form",
   "country_iso": "Country ISO Code",
@@ -307,9 +307,9 @@
   "enter_country_name": "Enter the country name",
 
   "search_locality": "Search for a locality",
-  "search_country": "Search for a country",
+   "search_country": "Search for a country",
   "lacality_name": "Name of locality",
-  "enter_locality_name": "Enter the locality name",
+   "enter_locality_name": "Enter the locality name",
 
   "currency_list": "Currency List",
   "add_currency": "Add Currency",
