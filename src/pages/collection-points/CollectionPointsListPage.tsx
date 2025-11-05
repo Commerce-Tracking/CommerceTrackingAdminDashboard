@@ -108,6 +108,7 @@ export default function CollectionPointsListPage() {
     customs_post_code: "",
     latitude: "",
     longitude: "",
+    collection_point_type_id: "",
     is_formal: true,
     is_border_crossing: false,
     is_market: false,
@@ -115,6 +116,7 @@ export default function CollectionPointsListPage() {
     is_checkpoint: false,
     status: "active",
   });
+  const [collectionPointTypes, setCollectionPointTypes] = useState<any[]>([]);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -192,9 +194,41 @@ export default function CollectionPointsListPage() {
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
+  // Fonction pour charger les types de points de collecte
+  const fetchCollectionPointTypes = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const response = await axiosInstance.get(
+        "/common-data/collection-point-types",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        const typesData =
+          response.data.result?.data ||
+          response.data.data ||
+          response.data.result ||
+          [];
+        setCollectionPointTypes(Array.isArray(typesData) ? typesData : []);
+      }
+    } catch (err: any) {
+      console.error(
+        "Erreur lors du chargement des types de points de collecte:",
+        err
+      );
+    }
+  };
+
   // Chargement initial
   useEffect(() => {
     fetchCollectionPoints();
+    fetchCollectionPointTypes();
   }, []);
 
   // Fonction pour ouvrir le modal de détails
@@ -220,6 +254,8 @@ export default function CollectionPointsListPage() {
       customs_post_code: collectionPoint.customs_post_code || "",
       latitude: collectionPoint.coordinates?.latitude?.toString() || "",
       longitude: collectionPoint.coordinates?.longitude?.toString() || "",
+      collection_point_type_id:
+        collectionPoint.collection_point_type_id?.toString() || "",
       is_formal: collectionPoint.is_formal,
       is_border_crossing: collectionPoint.is_border_crossing,
       is_market: collectionPoint.is_market,
@@ -242,6 +278,7 @@ export default function CollectionPointsListPage() {
       customs_post_code: "",
       latitude: "",
       longitude: "",
+      collection_point_type_id: "",
       is_formal: true,
       is_border_crossing: false,
       is_market: false,
@@ -281,6 +318,13 @@ export default function CollectionPointsListPage() {
     }
     if (!editFormData.locality || !editFormData.locality.trim()) {
       setError("La localité est requise");
+      return false;
+    }
+    if (
+      !editFormData.collection_point_type_id ||
+      !editFormData.collection_point_type_id.trim()
+    ) {
+      setError("Le type de point de collecte est requis");
       return false;
     }
     if (editFormData.latitude && isNaN(Number(editFormData.latitude))) {
@@ -324,6 +368,9 @@ export default function CollectionPointsListPage() {
         region: editFormData.region ? editFormData.region.trim() || null : null,
         customs_post_code: editFormData.customs_post_code
           ? editFormData.customs_post_code.trim() || null
+          : null,
+        collection_point_type_id: editFormData.collection_point_type_id
+          ? parseInt(editFormData.collection_point_type_id)
           : null,
         is_formal: editFormData.is_formal,
         is_border_crossing: editFormData.is_border_crossing,
@@ -1071,6 +1118,33 @@ export default function CollectionPointsListPage() {
                     </option>
                   </select>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t("collection_point_type") || "Type de point de collecte"}{" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="collection_point_type_id"
+                  value={editFormData.collection_point_type_id}
+                  onChange={handleEditInputChange}
+                  required
+                  disabled={editLoading}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                >
+                  <option value="">
+                    {t("select_collection_point_type") ||
+                      "Sélectionner un type"}
+                  </option>
+                  {collectionPointTypes &&
+                    Array.isArray(collectionPointTypes) &&
+                    collectionPointTypes.map((type) => (
+                      <option key={type.id} value={type.id}>
+                        {type.name}
+                      </option>
+                    ))}
+                </select>
               </div>
 
               <div>
