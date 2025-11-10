@@ -133,7 +133,18 @@ export default function CollectorsListPage() {
     place_of_birth: "",
     nationality: "",
     status: "active",
+    country_id: "",
+    team_manager_id: "",
+    collection_point_id: "",
+    organization_id: "",
   });
+  const [countries, setCountries] = useState<any[]>([]);
+  const [teamManagers, setTeamManagers] = useState<Actor[]>([]);
+  const [collectionPoints, setCollectionPoints] = useState<any[]>([]);
+  const [filteredCollectionPoints, setFilteredCollectionPoints] = useState<
+    any[]
+  >([]);
+  const [organizations, setOrganizations] = useState<any[]>([]);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -206,10 +217,147 @@ export default function CollectorsListPage() {
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
+  // Fonction pour récupérer les pays
+  const fetchCountries = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const response = await axiosInstance.get("/common-data/countries", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data) {
+        const countriesData =
+          response.data.result?.data ||
+          response.data.data ||
+          response.data.result ||
+          [];
+        setCountries(countriesData);
+      }
+    } catch (err: any) {
+      console.error("Erreur lors de la récupération des pays:", err);
+    }
+  };
+
+  // Fonction pour récupérer les chefs d'équipe
+  const fetchTeamManagers = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const response = await axiosInstance.get(
+        "/admin/actors?actor_role=team_manager",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setTeamManagers(response.data.result.data || []);
+      }
+    } catch (err: any) {
+      console.error("Erreur lors de la récupération des chefs d'équipe:", err);
+    }
+  };
+
+  // Fonction pour récupérer les points de collecte
+  const fetchCollectionPoints = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const response = await axiosInstance.get(
+        "/admin/reference-data/collection-points",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        const collectionPointsData =
+          response.data.result?.data ||
+          response.data.data ||
+          response.data.result ||
+          [];
+        setCollectionPoints(collectionPointsData);
+        setFilteredCollectionPoints(collectionPointsData);
+      }
+    } catch (err: any) {
+      console.error(
+        "Erreur lors de la récupération des points de collecte:",
+        err
+      );
+    }
+  };
+
+  // Fonction pour récupérer les organisations
+  const fetchOrganizations = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      const response = await axiosInstance.get(
+        "/admin/reference-data/organizations",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        const organizationsData =
+          response.data.result?.data ||
+          response.data.data ||
+          response.data.result ||
+          [];
+        setOrganizations(organizationsData);
+      }
+    } catch (err: any) {
+      console.error("Erreur lors de la récupération des organisations:", err);
+    }
+  };
+
   // Chargement initial
   useEffect(() => {
     fetchActors();
+    fetchCountries();
+    fetchTeamManagers();
+    fetchCollectionPoints();
+    fetchOrganizations();
   }, []);
+
+  // Filtrer les points de collecte selon le pays sélectionné
+  useEffect(() => {
+    if (editFormData.country_id) {
+      const filtered = collectionPoints.filter(
+        (point) => point.country_id === parseInt(editFormData.country_id)
+      );
+      setFilteredCollectionPoints(filtered);
+
+      // Réinitialiser le point de collecte si le pays change
+      if (editFormData.collection_point_id) {
+        const currentPoint = collectionPoints.find(
+          (p) => p.id === parseInt(editFormData.collection_point_id)
+        );
+        if (
+          currentPoint &&
+          currentPoint.country_id !== parseInt(editFormData.country_id)
+        ) {
+          setEditFormData((prev) => ({ ...prev, collection_point_id: "" }));
+        }
+      }
+    } else {
+      setFilteredCollectionPoints(collectionPoints);
+    }
+  }, [editFormData.country_id, collectionPoints]);
 
   // Fonction pour ouvrir le modal de détails
   const openDetailModal = (actor: Actor) => {
@@ -227,17 +375,21 @@ export default function CollectorsListPage() {
   const openEditModal = (actor: Actor) => {
     setSelectedActor(actor);
     setEditFormData({
-      first_name: actor.first_name,
-      last_name: actor.last_name,
-      email: actor.email,
-      phone: actor.phone,
-      address: actor.address,
-      gender: actor.gender,
-      marital_status: actor.marital_status,
-      date_of_birth: actor.date_of_birth,
-      place_of_birth: actor.place_of_birth,
-      nationality: actor.nationality,
-      status: actor.status,
+      first_name: actor.first_name || "",
+      last_name: actor.last_name || "",
+      email: actor.email || "",
+      phone: actor.phone || "",
+      address: actor.address || "",
+      gender: actor.gender || "M",
+      marital_status: actor.marital_status || "single",
+      date_of_birth: actor.date_of_birth || "",
+      place_of_birth: actor.place_of_birth || "",
+      nationality: actor.nationality || "",
+      status: actor.status || "active",
+      country_id: actor.country_id?.toString() || "",
+      team_manager_id: actor.team_manager_id?.toString() || "",
+      collection_point_id: actor.collection_point_id?.toString() || "",
+      organization_id: actor.organization_id?.toString() || "",
     });
     setIsEditModalOpen(true);
   };
@@ -258,6 +410,10 @@ export default function CollectorsListPage() {
       place_of_birth: "",
       nationality: "",
       status: "active",
+      country_id: "",
+      team_manager_id: "",
+      collection_point_id: "",
+      organization_id: "",
     });
   };
 
@@ -268,10 +424,20 @@ export default function CollectorsListPage() {
     >
   ) => {
     const { name, value } = e.target;
-    setEditFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    // Si le pays change, réinitialiser le point de collecte
+    if (name === "country_id") {
+      setEditFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        collection_point_id: "", // Réinitialiser le point de collecte
+      }));
+    } else {
+      setEditFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   // Fonction pour valider le formulaire d'édition
@@ -313,7 +479,7 @@ export default function CollectorsListPage() {
         return;
       }
 
-      const apiData = {
+      const apiData: any = {
         first_name: editFormData.first_name.trim(),
         last_name: editFormData.last_name.trim(),
         email: editFormData.email.trim(),
@@ -330,6 +496,22 @@ export default function CollectorsListPage() {
           : "",
         status: editFormData.status,
       };
+
+      // Ajouter les champs optionnels seulement s'ils ont une valeur
+      if (editFormData.country_id) {
+        apiData.country_id = parseInt(editFormData.country_id);
+      }
+      if (editFormData.team_manager_id) {
+        apiData.team_manager_id = parseInt(editFormData.team_manager_id);
+      }
+      if (editFormData.collection_point_id) {
+        apiData.collection_point_id = parseInt(
+          editFormData.collection_point_id
+        );
+      }
+      if (editFormData.organization_id) {
+        apiData.organization_id = parseInt(editFormData.organization_id);
+      }
 
       console.log("🔄 Mise à jour du collecteur:", apiData);
 
@@ -1006,7 +1188,7 @@ export default function CollectorsListPage() {
         className="max-w-2xl"
       >
         <ModalHeader>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100  mt-60">
             {t("edit")} {t("collector")}
           </h3>
         </ModalHeader>
@@ -1234,6 +1416,111 @@ export default function CollectorsListPage() {
                   disabled={editLoading}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
+              </div>
+
+              {/* Informations professionnelles */}
+              <div className="mt-6">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                  {t("professional_information") ||
+                    "Informations professionnelles"}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t("country") || "Pays"}{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="country_id"
+                      value={editFormData.country_id}
+                      onChange={handleEditInputChange}
+                      required
+                      disabled={editLoading}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                      <option value="">
+                        {t("select_country") || "Sélectionner un pays"}
+                      </option>
+                      {countries.map((country) => (
+                        <option key={country.id} value={country.id}>
+                          {country.flag} {country.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t("team_manager") || "Chef d'équipe"}
+                    </label>
+                    <select
+                      name="team_manager_id"
+                      value={editFormData.team_manager_id}
+                      onChange={handleEditInputChange}
+                      disabled={editLoading}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                      <option value="">
+                        {t("select_team_manager") ||
+                          "Sélectionner un chef d'équipe"}
+                      </option>
+                      {teamManagers.map((manager) => (
+                        <option key={manager.id} value={manager.id}>
+                          {manager.first_name} {manager.last_name} (
+                          {manager.email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t("collection_point") || "Point de collecte"}
+                    </label>
+                    <select
+                      name="collection_point_id"
+                      value={editFormData.collection_point_id}
+                      onChange={handleEditInputChange}
+                      disabled={editLoading || !editFormData.country_id}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                      <option value="">
+                        {t("select_collection_point") ||
+                          "Sélectionner un point de collecte"}
+                      </option>
+                      {filteredCollectionPoints.map((point) => (
+                        <option key={point.id} value={point.id}>
+                          {point.name} - {point.locality}
+                          {point.region && `, ${point.region}`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t("organization") || "Organisation"}
+                    </label>
+                    <select
+                      name="organization_id"
+                      value={editFormData.organization_id}
+                      onChange={handleEditInputChange}
+                      disabled={editLoading}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                      <option value="">
+                        {t("select_organization") ||
+                          "Sélectionner une organisation"}
+                      </option>
+                      {organizations.map((org) => (
+                        <option key={org.id} value={org.id}>
+                          {org.name}
+                          {org.metadata?.city ? ` - ${org.metadata.city}` : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
             </form>
           )}

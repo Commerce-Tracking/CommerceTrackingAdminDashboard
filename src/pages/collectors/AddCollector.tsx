@@ -7,6 +7,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Input from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
+import { EyeIcon, EyeCloseIcon } from "../../icons";
 import { toast } from "sonner";
 
 // Interface pour les données de formulaire
@@ -97,6 +98,8 @@ export default function AddCollector() {
   const [teamManagers, setTeamManagers] = useState<TeamManager[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     organization_id: "",
@@ -1163,19 +1166,31 @@ export default function AddCollector() {
                       {t("password") || "Mot de passe"}{" "}
                       <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      className={getFieldClassName(
-                        "password",
-                        "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      )}
-                      required
-                      disabled={loading}
-                      minLength={6}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        className={getFieldClassName(
+                          "password",
+                          "w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        )}
+                        required
+                        disabled={loading}
+                        minLength={6}
+                      />
+                      <span
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                      >
+                        {showPassword ? (
+                          <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                        ) : (
+                          <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                        )}
+                      </span>
+                    </div>
                     {renderFieldError("password")}
                   </div>
 
@@ -1184,19 +1199,33 @@ export default function AddCollector() {
                       {t("confirm_password") || "Confirmer le mot de passe"}{" "}
                       <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="password"
-                      name="confirm_password"
-                      value={formData.confirm_password}
-                      onChange={handleInputChange}
-                      className={getFieldClassName(
-                        "confirm_password",
-                        "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      )}
-                      required
-                      disabled={loading}
-                      minLength={6}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirm_password"
+                        value={formData.confirm_password}
+                        onChange={handleInputChange}
+                        className={getFieldClassName(
+                          "confirm_password",
+                          "w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        )}
+                        required
+                        disabled={loading}
+                        minLength={6}
+                      />
+                      <span
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                        ) : (
+                          <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                        )}
+                      </span>
+                    </div>
                     {renderFieldError("confirm_password")}
                   </div>
                 </div>
