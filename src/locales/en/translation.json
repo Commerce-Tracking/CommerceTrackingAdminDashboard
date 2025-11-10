@@ -182,7 +182,7 @@
 
   "last_name_placeholder": "User's last name",
 
-  "email_placeholder": "User's email",
+ 
   "select_role": "Select a role",
 
   "select_locality": "Select a locality",
@@ -414,7 +414,7 @@
   "name_english": "English Name",
   "abbreviation": "Abbreviation",
   "product_id": "Product ID",
-  "general_information": "General Information",
+
 
   "animals": "Animals",
   "animals_list": "Animals List",
@@ -466,8 +466,7 @@
   "edit_service": "Edit Service",
   "service_details": "Service Details",
   "service_type": "Service Type",
-  "public": "Public",
-  "private": "Private",
+
   "service_created_successfully": "Service created successfully",
   "service_updated_successfully": "Service updated successfully",
   "service_deleted_successfully": "Service deleted successfully",
@@ -630,9 +629,9 @@
   "geographic_information": "Geographic Information",
   "actors_count": "Actors Count",
   "city": "City",
-  "region": "Region",
+
   "website": "Website",
-  "postal_code": "Postal Code",
+
   "public": "Public",
   "private": "Private",
   "organizations_management": "Organizations Management",

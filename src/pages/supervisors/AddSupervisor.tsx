@@ -7,6 +7,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Input from "../../components/form/input/InputField";
 import Button from "../../components/ui/button/Button";
+import { EyeIcon, EyeCloseIcon } from "../../icons";
 import { toast } from "sonner";
 
 // Interface pour les données de référence
@@ -47,6 +48,8 @@ export default function AddSupervisor() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [countries, setCountries] = useState<Country[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -817,15 +820,27 @@ export default function AddSupervisor() {
                       {t("password") || "Mot de passe"}{" "}
                       <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      className={getFieldClassName("password")}
-                      required
-                      disabled={loading}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        className={`${getFieldClassName("password")} pr-10`}
+                        required
+                        disabled={loading}
+                      />
+                      <span
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                      >
+                        {showPassword ? (
+                          <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                        ) : (
+                          <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                        )}
+                      </span>
+                    </div>
                     {renderFieldError("password")}
                   </div>
 
@@ -834,15 +849,31 @@ export default function AddSupervisor() {
                       {t("confirm_password") || "Confirmer le mot de passe"}{" "}
                       <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="password"
-                      name="confirm_password"
-                      value={formData.confirm_password}
-                      onChange={handleInputChange}
-                      className={getFieldClassName("confirm_password")}
-                      required
-                      disabled={loading}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirm_password"
+                        value={formData.confirm_password}
+                        onChange={handleInputChange}
+                        className={`${getFieldClassName(
+                          "confirm_password"
+                        )} pr-10`}
+                        required
+                        disabled={loading}
+                      />
+                      <span
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                        ) : (
+                          <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                        )}
+                      </span>
+                    </div>
                     {renderFieldError("confirm_password")}
                   </div>
                 </div>
