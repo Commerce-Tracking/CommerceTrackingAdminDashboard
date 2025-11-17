@@ -365,7 +365,7 @@ const UnitiesListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des unités"
+        title="CT | Liste des unités"
         description="Consulter la liste des unités pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("unities_list")} />

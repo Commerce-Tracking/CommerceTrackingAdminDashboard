@@ -540,7 +540,7 @@ const AnimalsListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des animaux"
+        title="CT | Liste des animaux"
         description="Consulter la liste des animaux pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("animals_list")} />

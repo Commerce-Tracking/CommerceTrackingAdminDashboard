@@ -348,7 +348,7 @@ const ProductNaturesListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Natures de produits"
+        title="CT | Natures de produits"
         description="Liste des natures de produits pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("product_natures_list")} />

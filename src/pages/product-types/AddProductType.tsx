@@ -126,7 +126,7 @@ const AddProductType = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter un type de produit"
+        title="CT | Ajouter un type de produit"
         description="Ajouter un nouveau type de produit pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_product_type")} />

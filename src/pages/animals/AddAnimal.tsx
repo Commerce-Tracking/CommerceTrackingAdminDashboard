@@ -265,7 +265,7 @@ const AddAnimal = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter un animal"
+        title="CT | Ajouter un animal"
         description="Ajouter un nouvel animal pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_animal")} />

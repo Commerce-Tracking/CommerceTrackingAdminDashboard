@@ -261,7 +261,7 @@ const AddProduct = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter un produit"
+        title="CT | Ajouter un produit"
         description="Ajouter un nouveau produit pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_product")} />

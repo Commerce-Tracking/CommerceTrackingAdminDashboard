@@ -269,7 +269,7 @@ const AddCorridor = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter un corridor"
+        title="CT | Ajouter un corridor"
         description="Ajouter un nouveau corridor pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_corridors")} />

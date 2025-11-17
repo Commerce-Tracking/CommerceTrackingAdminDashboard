@@ -372,7 +372,7 @@ const AnimalNaturesListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des natures d'animaux"
+        title="CT | Liste des natures d'animaux"
         description="Consulter la liste des natures d'animaux pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb

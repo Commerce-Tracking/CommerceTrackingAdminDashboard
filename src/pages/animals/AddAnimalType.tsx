@@ -119,7 +119,7 @@ const AddAnimalType = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter un type d'animal"
+        title="CT | Ajouter un type d'animal"
         description="Ajouter un nouveau type d'animal pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_animal_type")} />

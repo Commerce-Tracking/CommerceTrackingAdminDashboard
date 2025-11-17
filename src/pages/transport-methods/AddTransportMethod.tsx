@@ -140,7 +140,7 @@ const AddTransportMethod = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter un mode de transport"
+        title="CT | Ajouter un mode de transport"
         description="Ajouter un nouveau mode de transport pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_transport_method")} />

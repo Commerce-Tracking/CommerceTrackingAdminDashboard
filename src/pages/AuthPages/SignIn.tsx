@@ -6,7 +6,7 @@ export default function SignIn() {
   return (
     <>
         <PageMeta
-            title="OFR | Admin"
+            title="CTttS | Admin"
             description="Opération Fluidité Routière Agro-bétail"
         />
       <AuthLayout>

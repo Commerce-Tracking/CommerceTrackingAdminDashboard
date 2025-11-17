@@ -152,7 +152,7 @@ const AddReportForm = () => {
   return (
     <div className="page-container">
       <PageMeta
-        title="OFR | Ajouter un reporting"
+        title="CT | Ajouter un reporting"
         description="Ajouter un nouveau reporting pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_reporting")} />

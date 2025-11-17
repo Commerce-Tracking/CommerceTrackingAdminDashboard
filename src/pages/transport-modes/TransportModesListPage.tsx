@@ -425,7 +425,7 @@ const TransportModesListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des moyens de transport"
+        title="CT | Liste des moyens de transport"
         description="Consulter la liste des moyens de transport pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("transport_modes_list")} />

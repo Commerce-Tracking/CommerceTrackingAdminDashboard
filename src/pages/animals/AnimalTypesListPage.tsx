@@ -368,7 +368,7 @@ const AnimalTypesListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des types d'animaux"
+        title="CT | Liste des types d'animaux"
         description="Consulter la liste des types d'animaux pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb

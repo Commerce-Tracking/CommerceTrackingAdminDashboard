@@ -13,7 +13,7 @@ export default function UsersTables() {
   return (
     <>
       <PageMeta
-        title="OFR | Admin"
+        title="Commerce Tracking Backoffice | Admin"
         description="Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t('collector')} />
