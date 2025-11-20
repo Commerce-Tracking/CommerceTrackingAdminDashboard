@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 interface NatureFormData {
   animal_nature_id: number;
   hs_code: string;
-  abbreviation: string;
+  // abbreviation: string;
 }
 
 interface AnimalFormData {
@@ -132,13 +132,13 @@ const AddAnimal = () => {
   const handleAddNature = () => {
     if (
       formData.animal_nature_id &&
-      formData.hs_code.trim() &&
-      formData.abbreviation.trim()
+      formData.hs_code.trim() 
+      // formData.abbreviation.trim()
     ) {
       const newNature: NatureFormData = {
         animal_nature_id: parseInt(formData.animal_nature_id),
         hs_code: formData.hs_code.trim(),
-        abbreviation: formData.abbreviation.trim(),
+        // abbreviation: formData.abbreviation.trim(),
       };
       setNaturesList([...naturesList, newNature]);
       // Réinitialiser les champs
@@ -146,7 +146,7 @@ const AddAnimal = () => {
         ...prev,
         animal_nature_id: "",
         hs_code: "",
-        abbreviation: "",
+        // abbreviation: "",
       }));
     }
   };
@@ -360,7 +360,7 @@ const AddAnimal = () => {
                         disabled={loading}
                       />
                     </div>
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {t("abbreviation") || "Abréviation"}
                       </label>
@@ -373,7 +373,7 @@ const AddAnimal = () => {
                         className="w-full"
                         disabled={loading}
                       />
-                    </div>
+                    </div> */}
                   </div>
 
                   <button
@@ -382,8 +382,8 @@ const AddAnimal = () => {
                     disabled={
                       loading ||
                       !formData.animal_nature_id ||
-                      !formData.hs_code.trim() ||
-                      !formData.abbreviation.trim()
+                      !formData.hs_code.trim()
+                      // !formData.abbreviation.trim()
                     }
                     className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md disabled:opacity-50"
                   >
@@ -419,9 +419,9 @@ const AddAnimal = () => {
                             <span className="text-gray-500 dark:text-gray-400">
                               {"•"}
                             </span>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {/* <span className="text-sm text-gray-600 dark:text-gray-400">
                               {nature.abbreviation}
-                            </span>
+                            </span> */}
                           </div>
                           <button
                             type="button"
