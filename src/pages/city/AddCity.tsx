@@ -163,7 +163,7 @@ const AddCity = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter une ville"
+        title="CT | Ajouter une ville"
         description="Ajouter une nouvelle ville pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_city")} />

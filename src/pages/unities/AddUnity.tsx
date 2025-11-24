@@ -114,7 +114,7 @@ const AddUnity = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter une unité"
+        title="CT | Ajouter une unité"
         description="Ajouter une nouvelle unité pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_unity")} />

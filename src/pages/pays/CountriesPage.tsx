@@ -22,7 +22,7 @@ const CountriesPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des pays"
+        title="CT | Liste des pays"
         description="Consulter la liste des pays pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t('country_list')} />

@@ -220,7 +220,7 @@ const AddCurrency = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter une devise"
+        title="CT | Ajouter une devise"
         description="Ajouter une nouvelle devise pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("currency_form_title")} />

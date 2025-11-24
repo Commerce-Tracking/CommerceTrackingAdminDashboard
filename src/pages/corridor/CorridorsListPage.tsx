@@ -452,7 +452,7 @@ const CorridorsListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des corridors"
+        title="CT | Liste des corridors"
         description="Consulter la liste des corridors pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("corridors_list")} />

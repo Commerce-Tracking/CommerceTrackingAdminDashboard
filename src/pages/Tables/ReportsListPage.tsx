@@ -17,7 +17,7 @@ const ReportsListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des reportings"
+        title="CT | Liste des reportings"
         description="Consulter la liste des reportings pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t('reporting_list')} />

@@ -29,7 +29,7 @@ interface Animal {
     animal_id: number;
     animal_nature_id: number;
     hs_code: string;
-    abbreviation: string;
+    // abbreviation: string;
     created_at: string | null;
     updated_at: string | null;
     animalNature?: {
@@ -79,12 +79,12 @@ const AnimalsListPage = () => {
     animal_type_id: "",
   });
   const [editNaturesList, setEditNaturesList] = useState<
-    { animal_nature_id: number; hs_code: string; abbreviation: string }[]
+    { animal_nature_id: number; hs_code: string; }[]
   >([]);
   const [editNatureFormData, setEditNatureFormData] = useState({
     animal_nature_id: "",
     hs_code: "",
-    abbreviation: "",
+    // abbreviation: "",
   });
   const [editLoading, setEditLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
@@ -291,7 +291,7 @@ const AnimalsListPage = () => {
       const natures = animal.animalCodes.map((code) => ({
         animal_nature_id: code.animal_nature_id,
         hs_code: code.hs_code,
-        abbreviation: code.abbreviation,
+        // abbreviation: code.abbreviation,
       }));
       setEditNaturesList(natures);
     } else {
@@ -312,7 +312,7 @@ const AnimalsListPage = () => {
     setEditNatureFormData({
       animal_nature_id: "",
       hs_code: "",
-      abbreviation: "",
+      // abbreviation: "",
     });
   };
 
@@ -341,19 +341,19 @@ const AnimalsListPage = () => {
   const handleAddEditNature = () => {
     if (
       editNatureFormData.animal_nature_id &&
-      editNatureFormData.hs_code.trim() &&
-      editNatureFormData.abbreviation.trim()
+      editNatureFormData.hs_code.trim() 
+      // editNatureFormData.abbreviation.trim()
     ) {
       const newNature = {
         animal_nature_id: parseInt(editNatureFormData.animal_nature_id),
         hs_code: editNatureFormData.hs_code.trim(),
-        abbreviation: editNatureFormData.abbreviation.trim(),
+        // abbreviation: editNatureFormData.abbreviation.trim(),
       };
       setEditNaturesList([...editNaturesList, newNature]);
       setEditNatureFormData({
         animal_nature_id: "",
         hs_code: "",
-        abbreviation: "",
+        // abbreviation: "",
       });
     }
   };
@@ -540,7 +540,7 @@ const AnimalsListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des animaux"
+        title="CT | Liste des animaux"
         description="Consulter la liste des animaux pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("animals_list")} />
@@ -773,9 +773,9 @@ const AnimalsListPage = () => {
                                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                                   {code.hs_code || "N/A"}
                                 </span>
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {/* <span className="text-xs text-gray-500 dark:text-gray-400">
                                   ({code.abbreviation})
-                                </span>
+                                </span> */}
                               </div>
                               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                                 {i18n.language === "fr"
@@ -903,7 +903,7 @@ const AnimalsListPage = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       disabled={editLoading}
                     />
-                    <input
+                    {/* <input
                       type="text"
                       name="abbreviation"
                       value={editNatureFormData.abbreviation}
@@ -913,7 +913,7 @@ const AnimalsListPage = () => {
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       disabled={editLoading}
-                    />
+                    /> */}
                   </div>
                   <div className="flex gap-2">
                     <select
@@ -944,8 +944,8 @@ const AnimalsListPage = () => {
                       disabled={
                         editLoading ||
                         !editNatureFormData.animal_nature_id ||
-                        !editNatureFormData.hs_code.trim() ||
-                        !editNatureFormData.abbreviation.trim()
+                        !editNatureFormData.hs_code.trim() 
+                        // !editNatureFormData.abbreviation.trim()
                       }
                       className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md disabled:opacity-50"
                     >
@@ -977,9 +977,9 @@ const AnimalsListPage = () => {
                               <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
                                 {nature.hs_code}
                               </span>
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                              {/* <span className="text-xs text-gray-500 dark:text-gray-400">
                                 ({nature.abbreviation})
-                              </span>
+                              </span> */}
                             </div>
                             <button
                               type="button"

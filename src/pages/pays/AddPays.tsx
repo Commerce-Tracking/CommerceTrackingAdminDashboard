@@ -178,7 +178,7 @@ const AddPays = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter un pays"
+        title="CT | Ajouter un pays"
         description="Ajouter un nouveau pays pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_country")} />

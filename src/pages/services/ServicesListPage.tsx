@@ -380,7 +380,7 @@ const ServicesListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des services"
+        title="CT | Liste des services"
         description="Consulter la liste des services pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("services_list")} />

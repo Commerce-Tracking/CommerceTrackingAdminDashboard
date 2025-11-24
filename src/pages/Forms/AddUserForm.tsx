@@ -15,7 +15,7 @@ export default function AddUserFormElements() {
   return (
     <div>
       <PageMeta
-        title="OFR | Admin"
+        title="Commerce Tracking Backoffice | Admin"
         description="Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t('add_collector')} />

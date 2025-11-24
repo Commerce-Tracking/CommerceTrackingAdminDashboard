@@ -7,7 +7,7 @@ export default function BasicTables() {
   return (
     <>
       <PageMeta
-        title="OFR | Admin"
+        title="Commerce Tracking Backoffice | Admin"
         description="Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle="Basic Tables" />

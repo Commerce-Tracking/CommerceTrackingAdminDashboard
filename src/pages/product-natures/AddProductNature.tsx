@@ -108,7 +108,7 @@ const AddProductNature = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter une nature de produit"
+        title="CT | Ajouter une nature de produit"
         description="Ajouter une nouvelle nature de produit"
       />
       <PageBreadcrumb

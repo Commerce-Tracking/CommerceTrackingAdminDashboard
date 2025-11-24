@@ -131,7 +131,7 @@ const AddService = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter un service"
+        title="CT | Ajouter un service"
         description="Ajouter un nouveau service pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("add_service")} />

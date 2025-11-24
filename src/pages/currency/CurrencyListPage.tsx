@@ -530,7 +530,7 @@ const CurrencyListPage = () => {
     return (
       <>
         <PageMeta
-          title="OFR | Liste des devises"
+          title="CT | Liste des devises"
           description="Consulter la liste des devises pour Opération Fluidité Routière Agro-bétail"
         />
         <PageBreadcrumb pageTitle={t("currency_list")} />
@@ -551,7 +551,7 @@ const CurrencyListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des devises"
+        title="CT | Liste des devises"
         description="Consulter la liste des devises pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("currency_list")} />

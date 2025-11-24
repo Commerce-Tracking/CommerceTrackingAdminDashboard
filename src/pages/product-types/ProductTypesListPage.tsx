@@ -365,7 +365,7 @@ const ProductTypesListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des types de produits"
+        title="CT | Liste des types de produits"
         description="Consulter la liste des types de produits pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("product_types_list")} />

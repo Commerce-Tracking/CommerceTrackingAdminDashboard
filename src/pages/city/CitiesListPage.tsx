@@ -384,7 +384,7 @@ const CitiesListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des villes"
+        title="CT | Liste des villes"
         description="Consulter la liste des villes pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("city_list")} />

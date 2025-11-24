@@ -69,7 +69,7 @@
   "select_corridor": "Sélectionner un corridor",
   "locality": "Localité",
   "locality_placeholder": "Nom de la localité",
-  "region": "Région",
+
   "region_placeholder": "Nom de la région",
   "latitude": "Latitude",
   "latitude_placeholder": "Ex: 7.3167",
@@ -180,7 +180,7 @@
   "last_name": "Nom",
   "last_name_placeholder": "Nom de l'utilisateur",
   "email": "Email",
-  "email_placeholder": "Email de l'utilisateur",
+
   "select_role": "Sélectionner un rôle",
 
   "select_locality": "Sélectionner une localité",
@@ -420,7 +420,7 @@
   "name_english": "Nom anglais",
   "abbreviation": "Abréviation",
   "product_id": "ID Produit",
-  "general_information": "Informations générales",
+
 
   "animals": "Animaux",
   "animals_list": "Liste des animaux",
@@ -472,8 +472,7 @@
   "edit_service": "Modifier le service",
   "service_details": "Détails du service",
   "service_type": "Type de service",
-  "public": "Public",
-  "private": "Privé",
+
   "service_created_successfully": "Service créé avec succès",
   "service_updated_successfully": "Service mis à jour avec succès",
   "service_deleted_successfully": "Service supprimé avec succès",
@@ -637,7 +636,7 @@
   "city": "Ville",
   "region": "Région",
   "website": "Site web",
-  "postal_code": "Code postal",
+
   "public": "Public",
   "private": "Privé",
   "organizations_management": "Gestion des Organisations",

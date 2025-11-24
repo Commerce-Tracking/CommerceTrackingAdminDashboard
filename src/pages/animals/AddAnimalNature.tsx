@@ -108,7 +108,7 @@ const AddAnimalNature = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Ajouter une nature d'animal"
+        title="CT | Ajouter une nature d'animal"
         description="Ajouter une nouvelle nature d'animal"
       />
       <PageBreadcrumb

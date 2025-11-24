@@ -587,7 +587,7 @@ const ProductsListPage = () => {
   return (
     <>
       <PageMeta
-        title="OFR | Liste des produits"
+        title="CT | Liste des produits"
         description="Consulter la liste des produits pour Opération Fluidité Routière Agro-bétail"
       />
       <PageBreadcrumb pageTitle={t("products_list")} />
