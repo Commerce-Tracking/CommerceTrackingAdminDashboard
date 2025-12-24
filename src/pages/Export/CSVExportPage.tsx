@@ -99,12 +99,20 @@ export default function CSVExportPage() {
     let worksheet: XLSX.WorkSheet;
 
     // Vérifier le type de données reçu
-    if (Array.isArray(data)) {
+    if (data === null || data === undefined) {
+      console.warn("⚠️ Données nulles ou undefined, création d'un fichier vide");
+      // Créer une feuille vide avec un message
+      worksheet = XLSX.utils.aoa_to_sheet([["Aucune donnée disponible"]]);
+    } else if (Array.isArray(data)) {
       // Si c'est un tableau d'objets JSON
-      if (
+      if (data.length === 0) {
+        console.warn("⚠️ Tableau vide, création d'un fichier vide");
+        worksheet = XLSX.utils.aoa_to_sheet([["Aucune donnée disponible"]]);
+      } else if (
         data.length > 0 &&
         typeof data[0] === "object" &&
-        !Array.isArray(data[0])
+        !Array.isArray(data[0]) &&
+        data[0] !== null
       ) {
         // Convertir les objets en tableau de tableaux
         const headers = Object.keys(data[0]);
@@ -116,50 +124,69 @@ export default function CSVExportPage() {
       }
     } else if (typeof data === "string") {
       // Si c'est une chaîne CSV
-      try {
-        // Essayer de parser comme CSV avec XLSX
-        const csvWorkbook = XLSX.read(data, { type: "string" });
-        worksheet = csvWorkbook.Sheets[csvWorkbook.SheetNames[0]];
-      } catch (e) {
-        // Fallback: parser manuellement le CSV
-        const lines = data
-          .split("\n")
-          .filter((line: string) => line.trim() !== "");
-        if (lines.length === 0) {
-          throw new Error("Aucune donnée à convertir");
-        }
+      if (data.trim() === "") {
+        console.warn("⚠️ Chaîne vide, création d'un fichier vide");
+        worksheet = XLSX.utils.aoa_to_sheet([["Aucune donnée disponible"]]);
+      } else {
+        try {
+          // Essayer de parser comme CSV avec XLSX
+          const csvWorkbook = XLSX.read(data, { type: "string" });
+          worksheet = csvWorkbook.Sheets[csvWorkbook.SheetNames[0]];
+        } catch (e) {
+          // Fallback: parser manuellement le CSV
+          const lines = data
+            .split("\n")
+            .filter((line: string) => line.trim() !== "");
+          if (lines.length === 0) {
+            console.warn("⚠️ Aucune ligne valide dans le CSV, création d'un fichier vide");
+            worksheet = XLSX.utils.aoa_to_sheet([["Aucune donnée disponible"]]);
+          } else {
+            // Parser la première ligne comme en-têtes
+            const headers = lines[0]
+              .split(",")
+              .map((h: string) => h.trim().replace(/^"|"$/g, ""));
 
-        // Parser la première ligne comme en-têtes
-        const headers = lines[0]
-          .split(",")
-          .map((h: string) => h.trim().replace(/^"|"$/g, ""));
+            // Parser les lignes de données
+            const rows = lines.slice(1).map((line: string) => {
+              // Gérer les virgules dans les valeurs entre guillemets
+              const values: string[] = [];
+              let currentValue = "";
+              let insideQuotes = false;
 
-        // Parser les lignes de données
-        const rows = lines.slice(1).map((line: string) => {
-          // Gérer les virgules dans les valeurs entre guillemets
-          const values: string[] = [];
-          let currentValue = "";
-          let insideQuotes = false;
-
-          for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            if (char === '"') {
-              insideQuotes = !insideQuotes;
-            } else if (char === "," && !insideQuotes) {
+              for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                  insideQuotes = !insideQuotes;
+                } else if (char === "," && !insideQuotes) {
+                  values.push(currentValue.trim().replace(/^"|"$/g, ""));
+                  currentValue = "";
+                } else {
+                  currentValue += char;
+                }
+              }
               values.push(currentValue.trim().replace(/^"|"$/g, ""));
-              currentValue = "";
-            } else {
-              currentValue += char;
-            }
-          }
-          values.push(currentValue.trim().replace(/^"|"$/g, ""));
-          return values;
-        });
+              return values;
+            });
 
-        worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+          }
+        }
+      }
+    } else if (typeof data === "object") {
+      // Si c'est un objet, essayer de le convertir en tableau
+      console.warn("⚠️ Données de type objet, tentative de conversion");
+      try {
+        // Essayer de convertir l'objet en tableau
+        const dataArray = Object.entries(data).map(([key, value]) => [key, value]);
+        worksheet = XLSX.utils.aoa_to_sheet([["Clé", "Valeur"], ...dataArray]);
+      } catch (e) {
+        console.error("❌ Erreur lors de la conversion de l'objet:", e);
+        worksheet = XLSX.utils.aoa_to_sheet([["Erreur", "Impossible de convertir les données"]]);
       }
     } else {
-      throw new Error("Format de données non supporté");
+      console.error("❌ Format de données non supporté:", typeof data, data);
+      // Créer une feuille avec un message d'erreur plutôt que de lancer une exception
+      worksheet = XLSX.utils.aoa_to_sheet([["Erreur", "Format de données non supporté"]]);
     }
 
     // Créer le workbook
@@ -217,39 +244,108 @@ export default function CSVExportPage() {
       const payload = {
         startDate,
         endDate,
+        format: "excel",
       };
 
-      // Endpoint pour export Excel
-      const response = await axiosInstance.post("/admin/export-csv", payload);
+      // Le backend envoie directement le fichier Excel binaire, pas du JSON
+      // On doit configurer axios pour recevoir un blob
+      const response = await axiosInstance.post("/admin/export-csv", payload, {
+        responseType: "blob", // Important : recevoir le fichier binaire directement
+      });
 
-      if (response.data.success) {
-        setExportResult(response.data);
+      // Log des headers pour déboguer
+      console.log("📥 Headers de la réponse:", {
+        "content-type": response.headers["content-type"],
+        "content-disposition": response.headers["content-disposition"],
+        "x-total-records": response.headers["x-total-records"],
+      });
 
-        let blob: Blob;
-        let filename: string;
+      // Vérifier le Content-Type pour savoir si c'est un fichier ou une erreur JSON
+      const contentType = response.headers["content-type"] || "";
+      const isJsonError = contentType.includes("application/json");
 
-        // Vérifier si les données sont en base64
-        if (
-          response.data.encoding === "base64" ||
-          response.data.mimeType?.includes("excel") ||
-          response.data.mimeType?.includes("spreadsheet")
-        ) {
-          // Décoder le base64 en Excel
-          blob = decodeBase64ToExcel(response.data.data);
-          filename = response.data.filename || "export.xlsx";
-        } else if (typeof response.data.data === "string") {
-          // Si c'est une chaîne CSV, la convertir en Excel
-          blob = convertDataToExcel(response.data.data);
-          filename =
-            (response.data.filename || "export.csv").replace(".csv", ".xlsx") ||
-            "export.xlsx";
-        } else {
-          // Si c'est un tableau, le convertir en Excel
-          blob = convertDataToExcel(response.data.data);
-          filename = response.data.filename || "export.xlsx";
+      if (isJsonError && response.data instanceof Blob) {
+        // C'est une erreur JSON, parser le blob
+        const text = await response.data.text();
+        const jsonData = JSON.parse(text);
+        console.error("❌ Erreur du serveur:", jsonData);
+        
+        // Extraire le message d'erreur de différentes sources possibles
+        let errorMessage = jsonData.message || jsonData.error;
+        
+        // Si le message est générique, essayer d'extraire plus de détails
+        if (!errorMessage || errorMessage === "Erreur lors de l'export CSV") {
+          // Essayer d'extraire depuis errors ou except
+          if (jsonData.errors) {
+            errorMessage = typeof jsonData.errors === "string" 
+              ? jsonData.errors 
+              : JSON.stringify(jsonData.errors);
+          } else if (jsonData.except) {
+            errorMessage = typeof jsonData.except === "string"
+              ? jsonData.except
+              : jsonData.except.message || JSON.stringify(jsonData.except);
+          }
+        }
+        
+        // Si le message contient des informations techniques, les rendre plus compréhensibles
+        if (errorMessage && errorMessage.includes("no subscribers listening")) {
+          errorMessage = "Le service d'export n'est pas disponible actuellement. Veuillez réessayer plus tard ou contacter l'administrateur.";
+        }
+        
+        setError(errorMessage || "Erreur lors de l'export. Veuillez réessayer ou contacter l'administrateur.");
+        return;
+      }
+
+      // Vérifier si c'est un blob (fichier Excel)
+      if (response.data instanceof Blob) {
+        // Récupérer les informations depuis les headers HTTP
+        const totalRecords = parseInt(
+          response.headers["x-total-records"] || "0",
+          10
+        );
+
+        // Extraire le nom du fichier depuis Content-Disposition header
+        let filename = "export.xlsx";
+        const contentDisposition = response.headers["content-disposition"];
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+          if (filenameMatch && filenameMatch[1]) {
+            filename = filenameMatch[1].replace(/['"]/g, "");
+            // Décoder si c'est encodé en URL
+            try {
+              filename = decodeURIComponent(filename);
+            } catch (e) {
+              // Si le décodage échoue, utiliser tel quel
+            }
+          }
         }
 
-        const url = window.URL.createObjectURL(blob);
+        const fileSize = response.data.size;
+        const mimeType = contentType || "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+        console.log("📦 Fichier Excel reçu:", {
+          filename,
+          fileSize,
+          mimeType,
+          totalRecords,
+        });
+
+        // Préparer les données pour l'affichage
+        const exportData = {
+          success: true,
+          message: "Export réussi",
+          data: "", // Pas besoin de stocker les données base64
+          filename: filename,
+          mimeType: mimeType,
+          fileSize: fileSize,
+          encoding: "binary",
+          totalRecords: totalRecords,
+        };
+
+        setExportResult(exportData);
+
+        // Créer et déclencher le téléchargement directement avec le blob
+        const url = window.URL.createObjectURL(response.data);
         const link = document.createElement("a");
         link.href = url;
         link.download = filename;
@@ -257,11 +353,21 @@ export default function CSVExportPage() {
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
+
+        console.log("✅ Fichier téléchargé avec succès:", filename);
       } else {
-        setError(response.data.message || "Erreur lors de l'export");
+        console.error("❌ Format de réponse inattendu:", typeof response.data);
+        setError("Erreur lors de l'export: format de réponse inattendu");
       }
     } catch (err: any) {
       console.error("❌ Erreur lors de l'export:", err);
+      console.error("❌ Détails de l'erreur:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        headers: err.response?.headers,
+        stack: err.stack,
+      });
 
       if (err.response?.status === 401) {
         setError("Session expirée. Veuillez vous reconnecter.");
@@ -275,11 +381,54 @@ export default function CSVExportPage() {
         setError(
           "Vous n'avez pas les permissions pour effectuer cette action."
         );
+      } else if (err.response?.data) {
+        // Si responseType est 'blob', err.response.data est un Blob même pour les erreurs JSON
+        if (err.response.data instanceof Blob) {
+          // Essayer de parser le blob comme JSON
+          try {
+            const text = await err.response.data.text();
+            const jsonData = JSON.parse(text);
+            
+            // Extraire le message d'erreur de différentes sources possibles
+            let errorMessage = jsonData.message || jsonData.error;
+            
+            if (!errorMessage || errorMessage === "Erreur lors de l'export CSV") {
+              if (jsonData.errors) {
+                errorMessage = typeof jsonData.errors === "string" 
+                  ? jsonData.errors 
+                  : JSON.stringify(jsonData.errors);
+              } else if (jsonData.except) {
+                errorMessage = typeof jsonData.except === "string"
+                  ? jsonData.except
+                  : jsonData.except.message || JSON.stringify(jsonData.except);
+              }
+            }
+            
+            // Rendre les messages techniques plus compréhensibles
+            if (errorMessage && errorMessage.includes("no subscribers listening")) {
+              errorMessage = "Le service d'export n'est pas disponible actuellement. Veuillez réessayer plus tard ou contacter l'administrateur.";
+            }
+            
+            setError(errorMessage || "Erreur lors de l'export des données. Veuillez réessayer ou contacter l'administrateur.");
+          } catch (parseError) {
+            // Si ce n'est pas du JSON, c'est peut-être une erreur HTML
+            setError("Erreur lors de l'export des données. Veuillez réessayer ou contacter l'administrateur.");
+          }
+        } else {
+          // Afficher le message d'erreur du serveur s'il existe
+          let errorMessage = err.response.data.message || err.response.data.error || err.message;
+          
+          // Rendre les messages techniques plus compréhensibles
+          if (errorMessage && errorMessage.includes("no subscribers listening")) {
+            errorMessage = "Le service d'export n'est pas disponible actuellement. Veuillez réessayer plus tard ou contacter l'administrateur.";
+          }
+          
+          setError(errorMessage || "Erreur lors de l'export des données. Veuillez réessayer ou contacter l'administrateur.");
+        }
       } else {
+        // Erreur réseau ou autre
         setError(
-          err.response?.data?.message ||
-            err.message ||
-            "Erreur lors de l'export des données"
+          err.message || "Erreur lors de l'export des données. Vérifiez votre connexion et réessayez."
         );
       }
     } finally {
@@ -494,18 +643,18 @@ export default function CSVExportPage() {
                           {t("total_records")}:
                         </span>
                         <span className="ml-1">
-                          {exportResult.totalRecords.toLocaleString()}
+                          {(exportResult.totalRecords ?? 0).toLocaleString()}
                         </span>
                       </div>
                       <div>
                         <span className="font-medium">{t("file_size")}:</span>
                         <span className="ml-1">
-                          {formatFileSize(exportResult.fileSize)}
+                          {formatFileSize(exportResult.fileSize ?? 0)}
                         </span>
                       </div>
                       <div>
                         <span className="font-medium">{t("file_type")}:</span>
-                        <span className="ml-1">{exportResult.mimeType}</span>
+                        <span className="ml-1">{exportResult.mimeType ?? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}</span>
                       </div>
                     </div>
                   </div>
@@ -565,3 +714,4 @@ export default function CSVExportPage() {
     </div>
   );
 }
+
