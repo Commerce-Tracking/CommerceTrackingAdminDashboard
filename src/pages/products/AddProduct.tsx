@@ -77,7 +77,6 @@ const AddProduct = () => {
         setProductTypes(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des types de produits:", err);
     }
   };
 
@@ -105,12 +104,8 @@ const AddProduct = () => {
       if (response.data.success) {
         const naturesData = response.data.result.data || [];
         setProductNatures(naturesData);
-        console.log(
-          ` ${naturesData.length} natures de produits chargées (limité à 50)`
-        );
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des natures de produits:", err);
     }
   };
 
@@ -148,10 +143,7 @@ const AddProduct = () => {
   };
 
   const handleRemoveNature = (index: number) => {
-    console.log("🗑️ Suppression de la nature à l'index:", index);
-    console.log("📋 Liste actuelle:", naturesList);
     const newList = naturesList.filter((_, i) => i !== index);
-    console.log("✨ Nouvelle liste:", newList);
     setNaturesList(newList);
   };
 
@@ -208,7 +200,6 @@ const AddProduct = () => {
         }
       );
 
-      console.log("Réponse API création produit :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -223,7 +214,6 @@ const AddProduct = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API création produit :", err);
       let errorMessage = "Erreur lors de la création du produit.";
 
       if (err.response?.status === 401 || err.response?.status === 403) {

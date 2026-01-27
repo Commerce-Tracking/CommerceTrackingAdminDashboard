@@ -59,7 +59,6 @@ const CountriesTable = () => {
         params: { page, limit },
       });
 
-      console.log('Réponse API:', response.data);
 
       const countriesData = Array.isArray(response.data.data?.data)
         ? response.data.data.data
@@ -69,10 +68,8 @@ const CountriesTable = () => {
       setTotalRecords(response.data.data?.total || 0);
 
       if (countriesData.length === 0) {
-        console.warn('Aucun pays trouvé dans la réponse.');
       }
     } catch (err: any) {
-      console.error('Erreur API :', err);
       toast.current?.show({
         severity: 'error',
         summary: 'Erreur',
@@ -149,7 +146,6 @@ const CountriesTable = () => {
       setEditCountry(null);
       fetchCountries(currentPage, rowsPerPage);
     } catch (err: any) {
-      console.error('Erreur API :', err);
       setEditError(err.response?.data?.message || 'Erreur lors de la modification.');
       toast.current?.show({
         severity: 'error',

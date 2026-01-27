@@ -76,7 +76,6 @@ export default function UserInfoCard() {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API profil :", err);
       let errorMessage = "Erreur lors du chargement du profil.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -145,7 +144,6 @@ export default function UserInfoCard() {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour profil :", err);
       let errorMessage = "Erreur lors de la mise à jour du profil.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

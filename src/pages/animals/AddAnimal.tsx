@@ -79,7 +79,6 @@ const AddAnimal = () => {
         setAnimalTypes(Array.isArray(data) ? data : []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des types d'animaux:", err);
     }
   };
 
@@ -105,10 +104,8 @@ const AddAnimal = () => {
       if (response.data.success) {
         const naturesData = response.data.result.data || [];
         setAnimalNatures(naturesData);
-        console.log(`${naturesData.length} natures d'animaux chargées`);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des natures d'animaux:", err);
     }
   };
 
@@ -210,7 +207,6 @@ const AddAnimal = () => {
         }
       );
 
-      console.log("Réponse API création animal :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -228,7 +224,6 @@ const AddAnimal = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API création animal :", err);
       let errorMessage = "Erreur lors de la création de l'animal.";
 
       if (err.response?.status === 401 || err.response?.status === 403) {

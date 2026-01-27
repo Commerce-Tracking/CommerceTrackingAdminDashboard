@@ -81,12 +81,9 @@ export default function AddTeamManager() {
 
       if (response.data.success) {
         setCountries(response.data.result || []);
-        console.log(" Pays récupérés:", response.data.result?.length);
       } else {
-        console.error(" Erreur API countries:", response.data);
       }
     } catch (err: any) {
-      console.error(" Erreur lors de la récupération des pays:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
@@ -116,15 +113,9 @@ export default function AddTeamManager() {
       if (response.data.success) {
         setSupervisors(response.data.result.data || []);
         setFilteredSupervisors(response.data.result.data || []);
-        console.log(
-          "✅ Superviseurs récupérés:",
-          response.data.result.data?.length
-        );
       } else {
-        console.error("❌ Erreur API supervisors:", response.data);
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la récupération des superviseurs:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
@@ -352,7 +343,6 @@ export default function AddTeamManager() {
         organization_id: null,
       };
 
-      console.log("🔄 Création du chef d'équipe:", apiData);
 
       const response = await axiosInstance.post("/admin/actors", apiData, {
         headers: {
@@ -361,22 +351,18 @@ export default function AddTeamManager() {
         },
       });
 
-      console.log("📡 Réponse API:", response);
 
       if (response.data.success) {
-        console.log("✅ Chef d'équipe créé avec succès:", response.data.result);
         toast.success(
           t("team_manager_created_successfully") ||
             "Chef d'équipe créé avec succès"
         );
         handleReset();
       } else {
-        console.log("❌ Réponse indique un échec:", response.data);
 
         const errorMessage =
           response.data.message ||
           "Erreur lors de la création du chef d'équipe";
-        console.log("🚨 Message d'erreur de la réponse:", errorMessage);
 
         if (
           errorMessage.includes("téléphone") ||
@@ -387,10 +373,6 @@ export default function AddTeamManager() {
           errorMessage.toLowerCase().includes("existe déjà") ||
           errorMessage.toLowerCase().includes("phone already exists")
         ) {
-          console.log(
-            "🎯 Erreur de réponse détectée comme téléphone:",
-            errorMessage
-          );
           setFieldError("phone", errorMessage);
           toast.error(errorMessage);
         } else if (
@@ -398,25 +380,18 @@ export default function AddTeamManager() {
           errorMessage.toLowerCase().includes("utilisateur avec l'email") ||
           errorMessage.toLowerCase().includes("email already exists")
         ) {
-          console.log(
-            "🎯 Erreur de réponse détectée comme email:",
-            errorMessage
-          );
           setFieldError("email", errorMessage);
           toast.error(errorMessage);
         } else {
-          console.log("❌ Erreur de réponse non mappée:", errorMessage);
           setError(errorMessage);
           toast.error(errorMessage);
         }
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la création:", err);
 
       if (err.response?.status === 422 || err.response?.status === 400) {
         const validationErrors =
           err.response?.data?.errors || err.response?.data?.message;
-        console.log("🔍 Erreurs de validation:", validationErrors);
 
         if (typeof validationErrors === "object") {
           // Gestion des erreurs par champ

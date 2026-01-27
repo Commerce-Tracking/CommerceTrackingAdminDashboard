@@ -31,7 +31,6 @@ const ComplaintProvider = ({ children }) => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log("COMPLAINTS", res.data);
             setComplaints(res.data.data || {
                 data: [],
                 page: 1,
@@ -42,7 +41,6 @@ const ComplaintProvider = ({ children }) => {
             //setTotalPages(res.data.data.totalPages || 1);
             setCurrentPage(page);
         } catch (err: any) {
-            console.log(err)
             setError(err.response?.data?.message || 'Erreur lors du chargement des réclamations');
 
         } finally {
@@ -63,10 +61,8 @@ const ComplaintProvider = ({ children }) => {
                 },
             });
 
-            console.log("COMPLAINTS TYPES", res.data);
             setComplaintTypes(Array.isArray(res.data?.data?.data) ? res.data.data.data : []);
         } catch (err: any) {
-            console.error(err.response?.data?.message || 'Erreur lors du chargement des types de plaintes');
         }
     }, []);
 

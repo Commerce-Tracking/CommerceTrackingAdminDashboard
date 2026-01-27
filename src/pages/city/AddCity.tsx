@@ -53,7 +53,6 @@ const AddCity = () => {
         setCountries(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des pays:", err);
       toast.error(t("error"), {
         description: "Erreur lors du chargement des pays",
       });
@@ -90,7 +89,6 @@ const AddCity = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Soumission du formulaire avec données :", formData);
 
     if (!validateForm()) {
       toast.error(t("error"), {
@@ -127,7 +125,6 @@ const AddCity = () => {
         }
       );
 
-      console.log("Réponse API :", response.data);
       toast.success(t("success"), {
         description: response.data.message || t("city_created_successfully"),
       });
@@ -138,7 +135,6 @@ const AddCity = () => {
         country_id: "",
       });
     } catch (err: any) {
-      console.error("Erreur API :", err);
       let errorMessage = "Erreur lors de l'ajout de la ville.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage =

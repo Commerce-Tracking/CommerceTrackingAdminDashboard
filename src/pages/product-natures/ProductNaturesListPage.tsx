@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import axiosInstance from "../../api/axios";
@@ -82,7 +82,6 @@ const ProductNaturesListPage = () => {
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) {
-        console.error("Token d'authentification manquant");
         setLoading(false);
         return;
       }
@@ -98,17 +97,14 @@ const ProductNaturesListPage = () => {
         },
       });
 
-      console.log("Réponse API natures de produits :", response.data);
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
         setProductNatures(apiResponse.result.data || []);
         setPagination(apiResponse.result.pagination);
       } else {
-        console.error("Erreur API natures de produits :", response.data);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des natures de produits:", err);
       if (err.response?.status === 401 || err.response?.status === 403) {
         // Redirection vers la page de connexion
         setTimeout(() => {
@@ -124,11 +120,11 @@ const ProductNaturesListPage = () => {
     fetchProductNatures();
   }, []);
 
-  // Debounce pour la recherche en temps réel
+  // Debounce pour la recherche en temps rÃ©el
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchProductNatures(1, searchTerm);
-    }, 500); // Attendre 500ms après la dernière frappe
+    }, 500); // Attendre 500ms aprÃ¨s la derniÃ¨re frappe
 
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
@@ -151,7 +147,7 @@ const ProductNaturesListPage = () => {
     setSelectedProductNature(null);
   };
 
-  // Fonctions pour l'édition
+  // Fonctions pour l'Ã©dition
   const openEditModal = (productNature: ProductNature) => {
     setEditingProductNature(productNature);
     setEditFormData({
@@ -203,7 +199,7 @@ const ProductNaturesListPage = () => {
       const token = localStorage.getItem("accessToken");
       if (!token) {
         toast.error(t("auth_error"), {
-          description: "Aucun token d'authentification trouvé.",
+          description: "Aucun token d'authentification trouvÃ©.",
         });
         return;
       }
@@ -225,22 +221,21 @@ const ProductNaturesListPage = () => {
         toast.success(t("success"), {
           description:
             response.data.message ||
-            "Nature de produit mise à jour avec succès",
+            "Nature de produit mise Ã  jour avec succÃ¨s",
         });
 
         closeEditModal();
         fetchProductNatures(pagination.page, searchTerm);
       } else {
         toast.error(t("error"), {
-          description: response.data.message || "Erreur lors de la mise à jour",
+          description: response.data.message || "Erreur lors de la mise Ã  jour",
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage =
-        "Erreur lors de la mise à jour de la nature de produit.";
+        "Erreur lors de la mise Ã  jour de la nature de produit.";
       if (err.response?.status === 401 || err.response?.status === 403) {
-        errorMessage = "Token invalide ou non autorisé.";
+        errorMessage = "Token invalide ou non autorisÃ©.";
         toast.error(t("auth_error"), {
           description: errorMessage,
         });
@@ -277,7 +272,7 @@ const ProductNaturesListPage = () => {
       const token = localStorage.getItem("accessToken");
       if (!token) {
         toast.error(t("auth_error"), {
-          description: "Aucun token d'authentification trouvé.",
+          description: "Aucun token d'authentification trouvÃ©.",
         });
         return;
       }
@@ -294,7 +289,7 @@ const ProductNaturesListPage = () => {
       if (response.data.success) {
         toast.success(t("success"), {
           description:
-            response.data.message || "Nature de produit supprimée avec succès",
+            response.data.message || "Nature de produit supprimÃ©e avec succÃ¨s",
         });
 
         closeDeleteConfirmation();
@@ -305,11 +300,10 @@ const ProductNaturesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
       let errorMessage =
         "Erreur lors de la suppression de la nature de produit.";
       if (err.response?.status === 401 || err.response?.status === 403) {
-        errorMessage = "Token invalide ou non autorisé.";
+        errorMessage = "Token invalide ou non autorisÃ©.";
         toast.error(t("auth_error"), {
           description: errorMessage,
         });
@@ -349,7 +343,7 @@ const ProductNaturesListPage = () => {
     <>
       <PageMeta
         title="CT | Natures de produits"
-        description="Liste des natures de produits pour Opération Fluidité Routière Agro-bétail"
+        description="Liste des natures de produits pour OpÃ©ration FluiditÃ© RoutiÃ¨re Agro-bÃ©tail"
       />
       <PageBreadcrumb pageTitle={t("product_natures_list")} />
       <div className="page-container">
@@ -528,7 +522,7 @@ const ProductNaturesListPage = () => {
         </div>
       </div>
 
-      {/* Modal de détails */}
+      {/* Modal de dÃ©tails */}
       {isDetailModalOpen && selectedProductNature && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
@@ -563,7 +557,7 @@ const ProductNaturesListPage = () => {
               </div>
 
               <div className="space-y-6">
-                {/* Informations générales */}
+                {/* Informations gÃ©nÃ©rales */}
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">
                     {t("general_information")}
@@ -604,7 +598,7 @@ const ProductNaturesListPage = () => {
                   </div>
                 </div>
 
-                {/* Codes produits associés */}
+                {/* Codes produits associÃ©s */}
                 <div>
                   <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">
                     {t("associated_product_codes")} (
@@ -756,7 +750,7 @@ const ProductNaturesListPage = () => {
 
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 {t("delete_confirmation_message") ||
-                  "Êtes-vous sûr de vouloir supprimer"}{" "}
+                  "ÃŠtes-vous sÃ»r de vouloir supprimer"}{" "}
                 <strong>{getProductNatureName(productNatureToDelete)}</strong> ?
               </p>
 

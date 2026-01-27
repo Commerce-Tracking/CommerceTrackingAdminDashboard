@@ -100,13 +100,11 @@ export default function CSVExportPage() {
 
     // Vérifier le type de données reçu
     if (data === null || data === undefined) {
-      console.warn("⚠️ Données nulles ou undefined, création d'un fichier vide");
       // Créer une feuille vide avec un message
       worksheet = XLSX.utils.aoa_to_sheet([["Aucune donnée disponible"]]);
     } else if (Array.isArray(data)) {
       // Si c'est un tableau d'objets JSON
       if (data.length === 0) {
-        console.warn("⚠️ Tableau vide, création d'un fichier vide");
         worksheet = XLSX.utils.aoa_to_sheet([["Aucune donnée disponible"]]);
       } else if (
         data.length > 0 &&
@@ -125,7 +123,6 @@ export default function CSVExportPage() {
     } else if (typeof data === "string") {
       // Si c'est une chaîne CSV
       if (data.trim() === "") {
-        console.warn("⚠️ Chaîne vide, création d'un fichier vide");
         worksheet = XLSX.utils.aoa_to_sheet([["Aucune donnée disponible"]]);
       } else {
         try {
@@ -138,7 +135,6 @@ export default function CSVExportPage() {
             .split("\n")
             .filter((line: string) => line.trim() !== "");
           if (lines.length === 0) {
-            console.warn("⚠️ Aucune ligne valide dans le CSV, création d'un fichier vide");
             worksheet = XLSX.utils.aoa_to_sheet([["Aucune donnée disponible"]]);
           } else {
             // Parser la première ligne comme en-têtes
@@ -174,17 +170,14 @@ export default function CSVExportPage() {
       }
     } else if (typeof data === "object") {
       // Si c'est un objet, essayer de le convertir en tableau
-      console.warn("⚠️ Données de type objet, tentative de conversion");
       try {
         // Essayer de convertir l'objet en tableau
         const dataArray = Object.entries(data).map(([key, value]) => [key, value]);
         worksheet = XLSX.utils.aoa_to_sheet([["Clé", "Valeur"], ...dataArray]);
       } catch (e) {
-        console.error("❌ Erreur lors de la conversion de l'objet:", e);
         worksheet = XLSX.utils.aoa_to_sheet([["Erreur", "Impossible de convertir les données"]]);
       }
     } else {
-      console.error("❌ Format de données non supporté:", typeof data, data);
       // Créer une feuille avec un message d'erreur plutôt que de lancer une exception
       worksheet = XLSX.utils.aoa_to_sheet([["Erreur", "Format de données non supporté"]]);
     }
@@ -254,11 +247,6 @@ export default function CSVExportPage() {
       });
 
       // Log des headers pour déboguer
-      console.log("📥 Headers de la réponse:", {
-        "content-type": response.headers["content-type"],
-        "content-disposition": response.headers["content-disposition"],
-        "x-total-records": response.headers["x-total-records"],
-      });
 
       // Vérifier le Content-Type pour savoir si c'est un fichier ou une erreur JSON
       const contentType = response.headers["content-type"] || "";
@@ -268,7 +256,6 @@ export default function CSVExportPage() {
         // C'est une erreur JSON, parser le blob
         const text = await response.data.text();
         const jsonData = JSON.parse(text);
-        console.error("❌ Erreur du serveur:", jsonData);
         
         // Extraire le message d'erreur de différentes sources possibles
         let errorMessage = jsonData.message || jsonData.error;
@@ -323,12 +310,6 @@ export default function CSVExportPage() {
         const fileSize = response.data.size;
         const mimeType = contentType || "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-        console.log("📦 Fichier Excel reçu:", {
-          filename,
-          fileSize,
-          mimeType,
-          totalRecords,
-        });
 
         // Préparer les données pour l'affichage
         const exportData = {
@@ -354,20 +335,10 @@ export default function CSVExportPage() {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
 
-        console.log("✅ Fichier téléchargé avec succès:", filename);
       } else {
-        console.error("❌ Format de réponse inattendu:", typeof response.data);
         setError("Erreur lors de l'export: format de réponse inattendu");
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de l'export:", err);
-      console.error("❌ Détails de l'erreur:", {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status,
-        headers: err.response?.headers,
-        stack: err.stack,
-      });
 
       if (err.response?.status === 401) {
         setError("Session expirée. Veuillez vous reconnecter.");

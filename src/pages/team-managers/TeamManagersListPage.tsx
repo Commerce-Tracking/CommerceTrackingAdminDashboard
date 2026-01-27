@@ -163,7 +163,6 @@ export default function TeamManagersListPage() {
         url += `&search=${encodeURIComponent(search.trim())}`;
       }
 
-      console.log("🔄 Appel API team managers:", url);
       const response = await axiosInstance.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -174,23 +173,11 @@ export default function TeamManagersListPage() {
         const apiResponse: ActorsResponse = response.data;
         setActors(apiResponse.result.data);
         setPagination(apiResponse.result.pagination);
-        console.log(
-          "✅ Chefs d'équipe récupérés avec succès:",
-          apiResponse.result.data.length
-        );
       } else {
         setError("Erreur lors de la récupération des chefs d'équipe");
-        console.error("❌ Erreur API team managers:", response.data);
       }
     } catch (err: any) {
-      console.error(
-        "❌ Erreur lors de la récupération des chefs d'équipe:",
-        err
-      );
       if (err.response?.status === 401) {
-        console.log(
-          "🔒 Session expirée, redirection vers la page de connexion..."
-        );
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
         window.location.href = "/signin";
@@ -237,7 +224,6 @@ export default function TeamManagersListPage() {
         setFilteredSupervisors(supervisorsData);
       }
     } catch (err: any) {
-      console.error("Erreur lors de la récupération des éditeurs:", err);
     }
   };
 
@@ -257,7 +243,6 @@ export default function TeamManagersListPage() {
         setCountries(response.data.result || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors de la récupération des pays:", err);
     }
   };
 
@@ -438,7 +423,6 @@ export default function TeamManagersListPage() {
         apiData.supervisor_id = null;
       }
 
-      console.log("🔄 Mise à jour du chef d'équipe:", apiData);
 
       const response = await axiosInstance.put(
         `/admin/actors/${selectedActor.id}`,
@@ -452,10 +436,6 @@ export default function TeamManagersListPage() {
       );
 
       if (response.data.success) {
-        console.log(
-          "✅ Chef d'équipe mis à jour avec succès:",
-          response.data.result
-        );
         // Rafraîchir la liste
         fetchActors(pagination.page, searchTerm);
         closeEditModal();
@@ -466,7 +446,6 @@ export default function TeamManagersListPage() {
         );
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la mise à jour:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
@@ -521,12 +500,10 @@ export default function TeamManagersListPage() {
         // Rafraîchir la liste
         fetchActors(pagination.page, searchTerm);
         closeDeleteModal();
-        console.log("✅ Chef d'équipe supprimé avec succès");
       } else {
         setError(response.data.message || "Erreur lors de la suppression");
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la suppression:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");

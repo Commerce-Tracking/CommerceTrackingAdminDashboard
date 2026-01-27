@@ -93,7 +93,6 @@ const ServicesListPage = () => {
         }
       );
 
-      console.log("Réponse API services :", response.data);
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
@@ -107,7 +106,6 @@ const ServicesListPage = () => {
         setServices([]);
       }
     } catch (err: any) {
-      console.error("Erreur API services :", err);
       let errorMessage = "Erreur lors du chargement des services.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -264,7 +262,6 @@ const ServicesListPage = () => {
         }
       );
 
-      console.log("Réponse API mise à jour :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -283,7 +280,6 @@ const ServicesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage = "Erreur lors de la mise à jour du service.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -337,7 +333,6 @@ const ServicesListPage = () => {
         }
       );
 
-      console.log("Réponse API suppression :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -355,7 +350,6 @@ const ServicesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
       let errorMessage = "Erreur lors de la suppression du service.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

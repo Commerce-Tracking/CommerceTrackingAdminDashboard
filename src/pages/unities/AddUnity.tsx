@@ -81,7 +81,6 @@ const AddUnity = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API:", err);
       let errorMessage = "Erreur lors de la création de l'unité.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

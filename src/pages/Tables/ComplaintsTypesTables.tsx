@@ -20,7 +20,6 @@ export default function ComplaintsTypesTables() {
 
     useEffect(() => {
         fetchComplaintTypes().then(() => {
-            console.log("Types de plaintes chargés");
         });
     }, [fetchComplaintTypes]);
 

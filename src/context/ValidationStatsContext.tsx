@@ -61,7 +61,6 @@ export const ValidationStatsProvider: React.FC<
   const fetchStats = async (forceRefresh = false) => {
     // Éviter les appels multiples simultanés
     if (isFetching) {
-      console.log("Appel API déjà en cours, attente...");
       return;
     }
 
@@ -72,7 +71,6 @@ export const ValidationStatsProvider: React.FC<
       lastFetch &&
       now.getTime() - lastFetch.getTime() < 30000
     ) {
-      console.log("Données récentes disponibles, pas de nouvel appel API");
       setLoading(false);
       return;
     }
@@ -89,7 +87,6 @@ export const ValidationStatsProvider: React.FC<
         return;
       }
 
-      console.log("🔄 Appel API validation-stats pour les graphiques...");
 
       const res = await axiosInstance.get("/admin/validation-stats", {
         headers: {
@@ -109,23 +106,11 @@ export const ValidationStatsProvider: React.FC<
         };
         setStats(chartData);
         setLastFetch(new Date());
-        console.log(
-          "✅ Données validation-stats pour graphiques récupérées avec succès:",
-          chartData
-        );
       } else {
         setError("Erreur lors de la récupération des données");
-        console.error("❌ Erreur API validation-stats:", res.data);
       }
     } catch (err: any) {
-      console.error(
-        "❌ Erreur lors de la récupération des statistiques de validation :",
-        err
-      );
       if (err.response?.status === 401) {
-        console.log(
-          "🔒 Session expirée, redirection vers la page de connexion..."
-        );
         setIsSessionExpired(true);
         // Nettoyer le token expiré
         localStorage.removeItem("accessToken");
@@ -156,12 +141,8 @@ export const ValidationStatsProvider: React.FC<
     const checkTokenAndFetch = () => {
       const token = localStorage.getItem("accessToken");
       if (token) {
-        console.log(
-          "🔑 Token disponible, chargement des statistiques de validation..."
-        );
         fetchStats();
       } else {
-        console.log("⏳ Token non disponible, attente...");
         // Réessayer après 1 seconde (plus long pour être sûr)
         setTimeout(checkTokenAndFetch, 1000);
       }
@@ -175,9 +156,6 @@ export const ValidationStatsProvider: React.FC<
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "accessToken" && e.newValue) {
-        console.log(
-          "🔄 Nouveau token détecté, rechargement des statistiques..."
-        );
         // Réinitialiser l'état d'erreur et recharger
         setError(null);
         setIsSessionExpired(false);
@@ -196,7 +174,6 @@ export const ValidationStatsProvider: React.FC<
       if (token && isSessionExpired) {
         // Vérifier si c'est un nouveau token
         if (token !== lastTokenCheck) {
-          console.log("🔄 Nouveau token détecté, rechargement...");
           setLastTokenCheck(token);
           setError(null);
           setIsSessionExpired(false);

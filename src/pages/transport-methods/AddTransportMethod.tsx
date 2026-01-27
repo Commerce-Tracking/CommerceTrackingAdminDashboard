@@ -83,7 +83,6 @@ const AddTransportMethod = () => {
         }
       );
 
-      console.log("Réponse API création mode de transport :", response.data);
 
       if (response.data.success) {
         // Remplacer "transport method" par "mode de transport" dans le message de l'API
@@ -106,7 +105,6 @@ const AddTransportMethod = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API création mode de transport :", err);
       let errorMessage = "Erreur lors de la création du mode de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

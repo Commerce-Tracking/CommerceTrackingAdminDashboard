@@ -1,12 +1,12 @@
 // src/pages/ComplaintsPage.tsx
 import React, { useEffect } from 'react';
 import ComplaintsTableOne from "../../components/tables/DataTables/ComplaintsTableOne.tsx";
-import {useComplaint} from "../../providers/complaints/useComplaint.ts";
+import { useComplaint } from "../../providers/complaints/useComplaint.ts";
 import PageMeta from "../../components/common/PageMeta.tsx";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb.tsx";
 import ComponentCard from "../../components/common/ComponentCard.tsx";
 import BasicTableOne from "../../components/tables/BasicTables/BasicTableOne.tsx";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 
 export default function ComplaintsTables() {
@@ -20,13 +20,11 @@ export default function ComplaintsTables() {
     } = useComplaint();
 
     useEffect(() => {
-        fetchComplaints().then(r => {
-            console.log("Complaints Loaded")});
-    }, []);
+        fetchComplaints();
+    }, [fetchComplaints]);
 
     const handlePageChange = (event: any) => {
         fetchComplaints(event.page + 1, event.rows).then(r => {
-            console.log("Complaints Loaded" + (event.page + 1));
         });
     };
 
@@ -35,11 +33,11 @@ export default function ComplaintsTables() {
     }
 
 
-       const { t, i18n } = useTranslation();
-    
-        const changeLanguage = (lng: string) => {
-            i18n.changeLanguage(lng);
-        };
+    const { t, i18n } = useTranslation();
+
+    const changeLanguage = (lng: string) => {
+        i18n.changeLanguage(lng);
+    };
 
 
     return (

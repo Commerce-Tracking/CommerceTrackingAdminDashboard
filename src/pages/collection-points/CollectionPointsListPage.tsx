@@ -141,7 +141,6 @@ export default function CollectionPointsListPage() {
         url += `&search=${encodeURIComponent(search.trim())}`;
       }
 
-      console.log("🔄 Appel API collection-points:", url);
       const response = await axiosInstance.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -152,23 +151,11 @@ export default function CollectionPointsListPage() {
         const apiResponse: CollectionPointsResponse = response.data;
         setCollectionPoints(apiResponse.result.data);
         setPagination(apiResponse.result.pagination);
-        console.log(
-          "✅ Points de collecte récupérés avec succès:",
-          apiResponse.result.data.length
-        );
       } else {
         setError("Erreur lors de la récupération des points de collecte");
-        console.error("❌ Erreur API collection-points:", response.data);
       }
     } catch (err: any) {
-      console.error(
-        "❌ Erreur lors de la récupération des points de collecte:",
-        err
-      );
       if (err.response?.status === 401) {
-        console.log(
-          "🔒 Session expirée, redirection vers la page de connexion..."
-        );
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
         window.location.href = "/signin";
@@ -218,10 +205,6 @@ export default function CollectionPointsListPage() {
         setCollectionPointTypes(Array.isArray(typesData) ? typesData : []);
       }
     } catch (err: any) {
-      console.error(
-        "Erreur lors du chargement des types de points de collecte:",
-        err
-      );
     }
   };
 
@@ -390,7 +373,6 @@ export default function CollectionPointsListPage() {
         apiData.coordinates = null;
       }
 
-      console.log("🔄 Mise à jour du point de collecte:", apiData);
 
       const response = await axiosInstance.put(
         `/admin/reference-data/collection-points/${selectedCollectionPoint.id}`,
@@ -404,10 +386,6 @@ export default function CollectionPointsListPage() {
       );
 
       if (response.data.success) {
-        console.log(
-          "✅ Point de collecte mis à jour avec succès:",
-          response.data.result
-        );
         // Rafraîchir la liste
         fetchCollectionPoints(pagination.page, searchTerm);
         closeEditModal();
@@ -418,8 +396,6 @@ export default function CollectionPointsListPage() {
         );
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la mise à jour:", err);
-      console.error("📋 Détails de l'erreur:", err.response?.data);
 
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
@@ -434,7 +410,6 @@ export default function CollectionPointsListPage() {
           err.message ||
           "Erreur lors de la mise à jour du point de collecte";
 
-        console.error("🚨 Message d'erreur détaillé:", errorMessage);
         setError(
           Array.isArray(errorMessage) ? errorMessage.join(", ") : errorMessage
         );
@@ -481,12 +456,10 @@ export default function CollectionPointsListPage() {
         // Rafraîchir la liste
         fetchCollectionPoints(pagination.page, searchTerm);
         closeDeleteModal();
-        console.log("✅ Point de collecte supprimé avec succès");
       } else {
         setError(response.data.message || "Erreur lors de la suppression");
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la suppression:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");

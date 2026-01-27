@@ -114,7 +114,6 @@ const AnimalsListPage = () => {
         setAnimalTypes(Array.isArray(data) ? data : []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des types d'animaux:", err);
     }
   };
 
@@ -141,7 +140,6 @@ const AnimalsListPage = () => {
         setAnimalNatures(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des natures d'animaux:", err);
     }
   };
 
@@ -191,10 +189,6 @@ const AnimalsListPage = () => {
         setAnimals([]);
       }
     } catch (err: any) {
-      console.error("Erreur API animaux:", err);
-      console.error("URL:", err.config?.url);
-      console.error("Status:", err.response?.status);
-      console.error("Response:", err.response?.data);
 
       let errorMessage = "Erreur lors du chargement des animaux.";
       if (err.response?.status === 401 || err.response?.status === 403) {
@@ -206,9 +200,7 @@ const AnimalsListPage = () => {
           window.location.href = "/signin";
         }, 2000);
       } else if (err.response?.status === 400) {
-        console.error("Détails de l'erreur 400:", err.response?.data);
         if (err.response?.data?.except) {
-          console.error("Paramètres invalides:", err.response.data.except);
         }
         errorMessage =
           err.response?.data?.message ||
@@ -430,7 +422,6 @@ const AnimalsListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage = "Erreur lors de la mise à jour de l'animal.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -463,7 +454,6 @@ const AnimalsListPage = () => {
 
   const handleDeleteAnimal = async () => {
     if (!animalToDelete) {
-      console.error("❌ Aucun animal à supprimer");
       return;
     }
 
@@ -514,7 +504,6 @@ const AnimalsListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("❌ Erreur API suppression:", err);
 
       let errorMessage = "Erreur lors de la suppression de l'animal.";
       if (err.response?.status === 401 || err.response?.status === 403) {

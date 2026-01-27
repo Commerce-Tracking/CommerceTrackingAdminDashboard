@@ -127,7 +127,6 @@ export default function OrganizationsListPage() {
         url += `&search=${encodeURIComponent(search.trim())}`;
       }
 
-      console.log("🔄 Appel API organizations:", url);
       const response = await axiosInstance.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -138,23 +137,11 @@ export default function OrganizationsListPage() {
         const apiResponse: OrganizationsResponse = response.data;
         setOrganizations(apiResponse.result.data);
         setPagination(apiResponse.result.pagination);
-        console.log(
-          "✅ Organisations récupérées avec succès:",
-          apiResponse.result.data.length
-        );
       } else {
         setError("Erreur lors de la récupération des organisations");
-        console.error("❌ Erreur API organizations:", response.data);
       }
     } catch (err: any) {
-      console.error(
-        "❌ Erreur lors de la récupération des organisations:",
-        err
-      );
       if (err.response?.status === 401) {
-        console.log(
-          "🔒 Session expirée, redirection vers la page de connexion..."
-        );
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
         window.location.href = "/signin";
@@ -199,11 +186,6 @@ export default function OrganizationsListPage() {
 
   // Fonction pour ouvrir le modal d'édition
   const openEditModal = (organization: Organization) => {
-    console.log("📋 Organisation sélectionnée:", organization);
-    console.log("📋 Metadata:", organization.metadata);
-    console.log("📋 Phone:", organization.metadata?.phone);
-    console.log("📋 Email:", organization.metadata?.email);
-    console.log("📋 Website:", organization.metadata?.website);
 
     setSelectedOrganization(organization);
     setEditFormData({
@@ -339,9 +321,6 @@ export default function OrganizationsListPage() {
         apiData.website = editFormData.website.trim();
       }
 
-      console.log("🔄 Mise à jour de l'organisation:", apiData);
-      console.log("🔄 ID de l'organisation:", selectedOrganization.id);
-      console.log("🔄 Token:", token ? "Présent" : "Manquant");
 
       const response = await axiosInstance.put(
         `/admin/reference-data/organizations/${selectedOrganization.id}`,
@@ -354,34 +333,18 @@ export default function OrganizationsListPage() {
         }
       );
 
-      console.log("🔄 Réponse API:", response);
-      console.log("🔄 Status:", response.status);
-      console.log("🔄 Data:", response.data);
 
       if (response.data.success) {
-        console.log(
-          "✅ Organisation mise à jour avec succès:",
-          response.data.result
-        );
         // Rafraîchir la liste
         fetchOrganizations(pagination.page, searchTerm);
         closeEditModal();
       } else {
-        console.log("❌ Erreur dans la réponse:", response.data);
         setError(
           response.data.message ||
             "Erreur lors de la mise à jour de l'organisation"
         );
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la mise à jour:", err);
-      console.error("❌ Status:", err.response?.status);
-      console.error("❌ Data:", err.response?.data);
-      console.error("❌ Message:", err.message);
-      console.error(
-        "❌ Erreur complète:",
-        JSON.stringify(err.response?.data, null, 2)
-      );
 
       // Afficher un toast avec l'erreur
       const errorMessage =
@@ -427,12 +390,10 @@ export default function OrganizationsListPage() {
         // Rafraîchir la liste
         fetchOrganizations(pagination.page, searchTerm);
         closeDeleteModal();
-        console.log("✅ Organisation supprimée avec succès");
       } else {
         setError(response.data.message || "Erreur lors de la suppression");
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la suppression:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");

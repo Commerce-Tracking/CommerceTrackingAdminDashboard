@@ -110,7 +110,6 @@ const CorridorsListPage = () => {
         setCountries(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des pays:", err);
     }
   };
 
@@ -132,7 +131,6 @@ const CorridorsListPage = () => {
         setCities(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des villes:", err);
     }
   };
 
@@ -168,7 +166,6 @@ const CorridorsListPage = () => {
         }
       );
 
-      console.log("Réponse API corridors :", response.data);
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
@@ -182,7 +179,6 @@ const CorridorsListPage = () => {
         setCorridors([]);
       }
     } catch (err: any) {
-      console.error("Erreur API corridors :", err);
       let errorMessage = "Erreur lors du chargement des corridors.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -330,7 +326,6 @@ const CorridorsListPage = () => {
         }
       );
 
-      console.log("Réponse API mise à jour :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -349,7 +344,6 @@ const CorridorsListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage = "Erreur lors de la mise à jour du corridor.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -403,7 +397,6 @@ const CorridorsListPage = () => {
         }
       );
 
-      console.log("Réponse API suppression :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -421,7 +414,6 @@ const CorridorsListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
       let errorMessage = "Erreur lors de la suppression du corridor.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

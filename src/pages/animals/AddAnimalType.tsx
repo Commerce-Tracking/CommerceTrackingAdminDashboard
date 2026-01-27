@@ -70,7 +70,6 @@ const AddAnimalType = () => {
         }
       );
 
-      console.log("Réponse API création type d'animal :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -86,7 +85,6 @@ const AddAnimalType = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API création type d'animal :", err);
       let errorMessage = "Erreur lors de la création du type d'animal.";
 
       if (err.response?.status === 401 || err.response?.status === 403) {

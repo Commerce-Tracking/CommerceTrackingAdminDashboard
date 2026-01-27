@@ -57,7 +57,6 @@ export const TotalCollectionsProvider: React.FC<
   const fetchTotalCollections = async (forceRefresh = false) => {
     // Éviter les appels multiples simultanés
     if (isFetching) {
-      console.log("Appel API total-collections déjà en cours, attente...");
       return;
     }
 
@@ -68,9 +67,6 @@ export const TotalCollectionsProvider: React.FC<
       lastFetch &&
       now.getTime() - lastFetch.getTime() < 30000
     ) {
-      console.log(
-        "Données total-collections récentes disponibles, pas de nouvel appel API"
-      );
       setLoading(false);
       return;
     }
@@ -87,7 +83,6 @@ export const TotalCollectionsProvider: React.FC<
         return;
       }
 
-      console.log("🔄 Appel API total-collections...");
 
       const res = await axiosInstance.get("/admin/stats/total-collections", {
         headers: {
@@ -99,23 +94,11 @@ export const TotalCollectionsProvider: React.FC<
         const apiResponse: TotalCollectionsResponse = res.data;
         setTotalCollections(apiResponse.result.data.total_collections);
         setLastFetch(new Date());
-        console.log(
-          "✅ Données total-collections récupérées avec succès:",
-          apiResponse.result.data
-        );
       } else {
         setError("Erreur lors de la récupération des données");
-        console.error("❌ Erreur API total-collections:", res.data);
       }
     } catch (err: any) {
-      console.error(
-        "❌ Erreur lors de la récupération des collectes totales :",
-        err
-      );
       if (err.response?.status === 401) {
-        console.log(
-          "🔒 Session expirée, redirection vers la page de connexion..."
-        );
         setIsSessionExpired(true);
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
@@ -144,10 +127,8 @@ export const TotalCollectionsProvider: React.FC<
     const checkTokenAndFetch = () => {
       const token = localStorage.getItem("accessToken");
       if (token) {
-        console.log("🔑 Token disponible, chargement des collectes totales...");
         fetchTotalCollections();
       } else {
-        console.log("⏳ Token non disponible, attente...");
         // Réessayer après 1 seconde (plus long pour être sûr)
         setTimeout(checkTokenAndFetch, 1000);
       }
@@ -161,9 +142,6 @@ export const TotalCollectionsProvider: React.FC<
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "accessToken" && e.newValue) {
-        console.log(
-          "🔄 Nouveau token détecté, rechargement des collectes totales..."
-        );
         setError(null);
         setIsSessionExpired(false);
         fetchTotalCollections(true);
@@ -176,9 +154,6 @@ export const TotalCollectionsProvider: React.FC<
       const token = localStorage.getItem("accessToken");
       if (token && isSessionExpired) {
         if (token !== lastTokenCheck) {
-          console.log(
-            "🔄 Token disponible après expiration, rechargement total-collections..."
-          );
           setLastTokenCheck(token);
           setError(null);
           setIsSessionExpired(false);

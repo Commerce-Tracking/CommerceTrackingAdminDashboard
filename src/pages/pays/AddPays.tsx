@@ -57,7 +57,6 @@ const AddPays = () => {
         setCurrencies(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des devises:", err);
       toast.error(t("error"), {
         description: "Erreur lors du chargement des devises",
       });
@@ -102,7 +101,6 @@ const AddPays = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Soumission du formulaire avec données :", formData);
 
     if (!validateForm()) {
       toast.error(t("error"), {
@@ -139,7 +137,6 @@ const AddPays = () => {
         }
       );
 
-      console.log("Réponse API :", response.data);
       toast.success(t("success"), {
         description: response.data.message || t("country_created_successfully"),
       });
@@ -153,7 +150,6 @@ const AddPays = () => {
         status: "active",
       });
     } catch (err: any) {
-      console.error("Erreur API :", err);
       let errorMessage = "Erreur lors de l'ajout du pays.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage =

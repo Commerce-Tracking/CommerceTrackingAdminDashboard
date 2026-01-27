@@ -77,7 +77,6 @@ const AddProductType = () => {
         }
       );
 
-      console.log("Réponse API création type de produit :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -93,7 +92,6 @@ const AddProductType = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API création type de produit :", err);
       let errorMessage = "Erreur lors de la création du type de produit.";
 
       if (err.response?.status === 401 || err.response?.status === 403) {

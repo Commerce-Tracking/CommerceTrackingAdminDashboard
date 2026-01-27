@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axios";
@@ -10,7 +10,7 @@ import Button from "../../components/ui/button/Button";
 import { EyeIcon, EyeCloseIcon } from "../../icons";
 import { toast } from "sonner";
 
-// Interface pour les données de formulaire
+// Interface pour les donnÃ©es de formulaire
 interface FormData {
   organization_id: string;
   team_manager_id: string;
@@ -122,7 +122,7 @@ export default function AddCollector() {
     confirm_password: "",
   });
 
-  // Charger les données de référence
+  // Charger les donnÃ©es de rÃ©fÃ©rence
   useEffect(() => {
     const fetchReferenceData = async () => {
       try {
@@ -189,24 +189,14 @@ export default function AddCollector() {
           [];
         setOrganizations(organizationsData);
 
-        console.log("✅ Données de référence chargées:", {
-          countries: countriesData.length,
-          collectionPoints: collectionPointsData.length,
-          teamManagers: teamManagersData.length,
-          organizations: organizationsData.length,
-        });
       } catch (err: any) {
-        console.error(
-          "❌ Erreur lors du chargement des données de référence:",
-          err
-        );
         if (err.response?.status === 401) {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("userData");
           window.location.href = "/signin";
           return;
         }
-        setError("Erreur lors du chargement des données de référence");
+        setError("Erreur lors du chargement des donnÃ©es de rÃ©fÃ©rence");
       } finally {
         setLoadingData(false);
       }
@@ -215,7 +205,7 @@ export default function AddCollector() {
     fetchReferenceData();
   }, []);
 
-  // Gérer les changements dans le formulaire
+  // GÃ©rer les changements dans le formulaire
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -232,12 +222,12 @@ export default function AddCollector() {
       });
     }
 
-    // Si le pays change, réinitialiser le point de collecte
+    // Si le pays change, rÃ©initialiser le point de collecte
     if (name === "country_id") {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
-        collection_point_id: "", // Réinitialiser le point de collecte
+        collection_point_id: "", // RÃ©initialiser le point de collecte
       }));
     } else {
       setFormData((prev) => ({
@@ -247,7 +237,7 @@ export default function AddCollector() {
     }
   };
 
-  // Fonction pour définir une erreur de champ spécifique
+  // Fonction pour dÃ©finir une erreur de champ spÃ©cifique
   const setFieldError = (fieldName: string, errorMessage: string) => {
     setFieldErrors((prev) => ({
       ...prev,
@@ -281,60 +271,50 @@ export default function AddCollector() {
 
   // Valider le formulaire
   const validateForm = () => {
-    console.log("🔍 Début de la validation du formulaire");
-    console.log("📋 Données à valider:", formData);
 
-    // Effacer toutes les erreurs précédentes
+    // Effacer toutes les erreurs prÃ©cÃ©dentes
     clearAllErrors();
     let isValid = true;
 
     // Validation des champs obligatoires
     if (!formData.first_name.trim()) {
-      setFieldError("first_name", "Le prénom est requis");
-      console.log("❌ Validation échouée: Prénom manquant");
+      setFieldError("first_name", "Le prÃ©nom est requis");
       isValid = false;
     }
     if (!formData.last_name.trim()) {
       setFieldError("last_name", "Le nom est requis");
-      console.log("❌ Validation échouée: Nom manquant");
       isValid = false;
     }
     if (!formData.email.trim()) {
       setFieldError("email", "L'email est requis");
-      console.log("❌ Validation échouée: Email manquant");
       isValid = false;
     } else {
       // Validation email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formData.email.trim())) {
         setFieldError("email", "L'email n'est pas valide");
-        console.log("❌ Validation échouée: Email invalide");
         isValid = false;
       }
     }
     if (!formData.phone.trim()) {
-      setFieldError("phone", "Le téléphone est requis");
-      console.log("❌ Validation échouée: Téléphone manquant");
+      setFieldError("phone", "Le tÃ©lÃ©phone est requis");
       isValid = false;
     }
     if (!formData.country_id) {
       setFieldError("country_id", "Le pays est requis");
-      console.log("❌ Validation échouée: Pays manquant");
       isValid = false;
     }
 
-    // Vérifier que le pays sélectionné existe
+    // VÃ©rifier que le pays sÃ©lectionnÃ© existe
     const selectedCountry = countries.find(
       (c) => c.id === parseInt(formData.country_id)
     );
     if (formData.country_id && !selectedCountry) {
-      setFieldError("country_id", "Le pays sélectionné n'est pas valide");
-      console.log("❌ Validation échouée: Pays invalide");
+      setFieldError("country_id", "Le pays sÃ©lectionnÃ© n'est pas valide");
       isValid = false;
     }
     if (!formData.password.trim()) {
       setFieldError("password", "Le mot de passe est requis");
-      console.log("❌ Validation échouée: Mot de passe manquant");
       isValid = false;
     }
     if (formData.password && formData.password !== formData.confirm_password) {
@@ -342,25 +322,22 @@ export default function AddCollector() {
         "confirm_password",
         "Les mots de passe ne correspondent pas"
       );
-      console.log("❌ Validation échouée: Mots de passe différents");
       isValid = false;
     }
     if (formData.password && formData.password.length < 6) {
       setFieldError(
         "password",
-        "Le mot de passe doit contenir au moins 6 caractères"
+        "Le mot de passe doit contenir au moins 6 caractÃ¨res"
       );
-      console.log("❌ Validation échouée: Mot de passe trop court");
       isValid = false;
     }
 
-    // Validation des IDs numériques
+    // Validation des IDs numÃ©riques
     if (formData.team_manager_id && isNaN(parseInt(formData.team_manager_id))) {
       setFieldError(
         "team_manager_id",
-        "L'ID du chef d'équipe n'est pas valide"
+        "L'ID du chef d'Ã©quipe n'est pas valide"
       );
-      console.log("❌ Validation échouée: ID team manager invalide");
       isValid = false;
     }
     if (
@@ -371,7 +348,6 @@ export default function AddCollector() {
         "collection_point_id",
         "L'ID du point de collecte n'est pas valide"
       );
-      console.log("❌ Validation échouée: ID point de collecte invalide");
       isValid = false;
     }
     if (formData.organization_id && isNaN(parseInt(formData.organization_id))) {
@@ -379,11 +355,10 @@ export default function AddCollector() {
         "organization_id",
         "L'ID de l'organisation n'est pas valide"
       );
-      console.log("❌ Validation échouée: ID organisation invalide");
       isValid = false;
     }
 
-    // Validation de compatibilité pays/point de collecte
+    // Validation de compatibilitÃ© pays/point de collecte
     if (formData.collection_point_id) {
       const selectedCollectionPoint = collectionPoints.find(
         (cp) => cp.id === parseInt(formData.collection_point_id)
@@ -394,50 +369,34 @@ export default function AddCollector() {
       ) {
         setFieldError(
           "collection_point_id",
-          "Le point de collecte doit appartenir au même pays que l'acteur"
-        );
-        console.log(
-          "❌ Validation échouée: Point de collecte et pays incompatibles"
-        );
-        console.log("📋 Pays de l'acteur:", formData.country_id);
-        console.log(
-          "📋 Pays du point de collecte:",
-          selectedCollectionPoint.country_id
+          "Le point de collecte doit appartenir au mÃªme pays que l'acteur"
         );
         isValid = false;
       }
     }
 
-    console.log(isValid ? "✅ Validation réussie" : "❌ Validation échouée");
     return isValid;
   };
 
   // Soumettre le formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("🚀 Début de la soumission du formulaire");
 
     if (!validateForm()) {
-      console.log("❌ Validation du formulaire échouée");
       return;
     }
-    console.log("✅ Validation du formulaire réussie");
 
     try {
       setLoading(true);
       setError(null);
-      console.log("🔄 Chargement activé");
 
       const token = localStorage.getItem("accessToken");
-      console.log("🔑 Token récupéré:", token ? "Présent" : "Manquant");
       if (!token) {
         setError("Token d'authentification manquant");
-        console.log("❌ Token manquant, arrêt du processus");
         return;
       }
 
-      // Préparer les données pour l'API
-      console.log("📝 Construction des données API...");
+      // PrÃ©parer les donnÃ©es pour l'API
       const apiData: any = {
         first_name: formData.first_name.trim(),
         last_name: formData.last_name.trim(),
@@ -450,73 +409,31 @@ export default function AddCollector() {
         password: formData.password,
         country_id: parseInt(formData.country_id),
       };
-      console.log("📋 Données de base construites:", apiData);
 
       // Ajouter les champs optionnels seulement s'ils ont une valeur
-      console.log("🔍 Ajout des champs optionnels...");
       if (formData.address.trim()) {
         apiData.address = formData.address.trim();
-        console.log("✅ Adresse ajoutée:", apiData.address);
       }
       if (formData.date_of_birth) {
         apiData.date_of_birth = formData.date_of_birth;
-        console.log("✅ Date de naissance ajoutée:", apiData.date_of_birth);
       }
       if (formData.place_of_birth.trim()) {
         apiData.place_of_birth = formData.place_of_birth.trim();
-        console.log("✅ Lieu de naissance ajouté:", apiData.place_of_birth);
       }
       if (formData.nationality.trim()) {
         apiData.nationality = formData.nationality.trim();
-        console.log("✅ Nationalité ajoutée:", apiData.nationality);
       }
       if (formData.organization_id) {
         apiData.organization_id = parseInt(formData.organization_id);
-        console.log("✅ Organisation ajoutée:", apiData.organization_id);
       }
       if (formData.team_manager_id) {
         apiData.team_manager_id = parseInt(formData.team_manager_id);
-        console.log("✅ Team manager ajouté:", apiData.team_manager_id);
       }
       if (formData.collection_point_id) {
         apiData.collection_point_id = parseInt(formData.collection_point_id);
-        console.log(
-          "✅ Point de collecte ajouté:",
-          apiData.collection_point_id
-        );
       }
 
-      console.log("🔄 Création du collecteur:", apiData);
-      console.log("📋 Token utilisé:", token ? "Présent" : "Manquant");
-      console.log("📋 Headers:", {
-        Authorization: `Bearer ${token ? "***" : "MANQUANT"}`,
-        "Content-Type": "application/json",
-      });
-      console.log("📋 Données du formulaire original:", formData);
-      console.log(
-        "📋 Pays sélectionné:",
-        countries.find((c) => c.id === parseInt(formData.country_id))
-      );
-      console.log(
-        "📋 Team manager sélectionné:",
-        teamManagers.find((tm) => tm.id === parseInt(formData.team_manager_id))
-      );
-      console.log(
-        "📋 Point de collecte sélectionné:",
-        collectionPoints.find(
-          (cp) => cp.id === parseInt(formData.collection_point_id)
-        )
-      );
-      console.log(
-        "📋 Organisation sélectionnée:",
-        organizations.find(
-          (org) => org.id === parseInt(formData.organization_id)
-        )
-      );
 
-      console.log("🌐 Envoi de la requête API...");
-      console.log("📡 URL:", "/admin/actors");
-      console.log("📡 Méthode:", "POST");
 
       const response = await axiosInstance.post("/admin/actors", apiData, {
         headers: {
@@ -525,39 +442,28 @@ export default function AddCollector() {
         },
       });
 
-      console.log("📨 Réponse reçue:", response);
-      console.log("📨 Status:", response.status);
-      console.log("📨 Headers de réponse:", response.headers);
-      console.log("📨 Données de réponse:", response.data);
 
       if (response.data.success) {
-        console.log("✅ Collecteur créé avec succès:", response.data.result);
         toast.success(
-          t("collector_created_successfully") || "Collecteur créé avec succès"
+          t("collector_created_successfully") || "Collecteur crÃ©Ã© avec succÃ¨s"
         );
         handleReset();
       } else {
-        console.log("❌ Réponse indique un échec:", response.data);
 
         // Traiter l'erreur comme une erreur de validation
         const errorMessage =
-          response.data.message || "Erreur lors de la création du collecteur";
-        console.log("🚨 Message d'erreur de la réponse:", errorMessage);
+          response.data.message || "Erreur lors de la crÃ©ation du collecteur";
 
-        // Mapper l'erreur au champ approprié
+        // Mapper l'erreur au champ appropriÃ©
         if (
-          errorMessage.includes("téléphone") ||
+          errorMessage.includes("tÃ©lÃ©phone") ||
           errorMessage.includes("phone") ||
           errorMessage
             .toLowerCase()
-            .includes("utilisateur avec le téléphone") ||
-          errorMessage.toLowerCase().includes("existe déjà") ||
+            .includes("utilisateur avec le tÃ©lÃ©phone") ||
+          errorMessage.toLowerCase().includes("existe dÃ©jÃ ") ||
           errorMessage.toLowerCase().includes("phone already exists")
         ) {
-          console.log(
-            "🎯 Erreur de réponse détectée comme téléphone:",
-            errorMessage
-          );
           setFieldError("phone", errorMessage);
           toast.error(errorMessage);
         } else if (
@@ -565,29 +471,14 @@ export default function AddCollector() {
           errorMessage.toLowerCase().includes("utilisateur avec l'email") ||
           errorMessage.toLowerCase().includes("email already exists")
         ) {
-          console.log(
-            "🎯 Erreur de réponse détectée comme email:",
-            errorMessage
-          );
           setFieldError("email", errorMessage);
           toast.error(errorMessage);
         } else {
-          console.log("❌ Erreur de réponse non mappée:", errorMessage);
           setError(errorMessage);
           toast.error(errorMessage);
         }
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la création:", err);
-      console.error("📋 Status de l'erreur:", err.response?.status);
-      console.error("📋 Détails de l'erreur:", err.response?.data);
-      console.error("📋 Headers de réponse:", err.response?.headers);
-      console.error("📋 URL de la requête:", err.config?.url);
-      console.error("📋 Méthode de la requête:", err.config?.method);
-      console.error(
-        "📋 Message d'erreur complet:",
-        err.response?.data?.message
-      );
 
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
@@ -595,15 +486,9 @@ export default function AddCollector() {
         window.location.href = "/signin";
         return;
       } else if (err.response?.status === 422 || err.response?.status === 400) {
-        // Erreurs de validation - mapper aux champs spécifiques
+        // Erreurs de validation - mapper aux champs spÃ©cifiques
         const validationErrors =
           err.response?.data?.errors || err.response?.data?.message;
-        console.error("🚨 Erreurs de validation:", validationErrors);
-        console.error("🚨 Type de validationErrors:", typeof validationErrors);
-        console.error(
-          "🚨 Contenu exact:",
-          JSON.stringify(validationErrors, null, 2)
-        );
 
         if (typeof validationErrors === "object" && validationErrors !== null) {
           // Mapper les erreurs aux champs
@@ -614,30 +499,26 @@ export default function AddCollector() {
             setFieldError(field, errorMessage);
           });
         } else if (typeof validationErrors === "string") {
-          // Si c'est une erreur générale, essayer de l'analyser
+          // Si c'est une erreur gÃ©nÃ©rale, essayer de l'analyser
           if (
             validationErrors.includes("email") ||
             validationErrors
               .toLowerCase()
               .includes("utilisateur avec l'email") ||
-            validationErrors.toLowerCase().includes("email existe déjà")
+            validationErrors.toLowerCase().includes("email existe dÃ©jÃ ")
           ) {
             setFieldError("email", validationErrors);
             toast.error(validationErrors);
           } else if (
-            validationErrors.includes("téléphone") ||
+            validationErrors.includes("tÃ©lÃ©phone") ||
             validationErrors.includes("phone") ||
-            validationErrors.includes("97333302") || // Numéro spécifique détecté
+            validationErrors.includes("97333302") || // NumÃ©ro spÃ©cifique dÃ©tectÃ©
             validationErrors
               .toLowerCase()
-              .includes("utilisateur avec le téléphone") ||
-            validationErrors.toLowerCase().includes("existe déjà") ||
-            validationErrors.toLowerCase().includes("déjà existant")
+              .includes("utilisateur avec le tÃ©lÃ©phone") ||
+            validationErrors.toLowerCase().includes("existe dÃ©jÃ ") ||
+            validationErrors.toLowerCase().includes("dÃ©jÃ  existant")
           ) {
-            console.log(
-              "🎯 Erreur détectée comme téléphone:",
-              validationErrors
-            );
             setFieldError("phone", validationErrors);
             toast.error(validationErrors);
           } else if (
@@ -653,38 +534,31 @@ export default function AddCollector() {
             setFieldError("collection_point_id", validationErrors);
             toast.error(validationErrors);
           } else {
-            console.log(
-              "❌ Erreur non mappée, affichage comme erreur générale:",
-              validationErrors
-            );
             setError(validationErrors);
             toast.error(validationErrors);
           }
         } else {
-          setError("Erreur de validation des données");
+          setError("Erreur de validation des donnÃ©es");
         }
       } else if (err.response?.status === 409) {
         // Erreur de conflit (duplication) - traiter comme erreur de validation
         const conflictMessage =
-          err.response?.data?.message || "Conflit détecté";
-        console.log("🚨 Erreur de conflit (409):", conflictMessage);
+          err.response?.data?.message || "Conflit dÃ©tectÃ©";
 
         if (
-          conflictMessage.includes("téléphone") ||
+          conflictMessage.includes("tÃ©lÃ©phone") ||
           conflictMessage.includes("phone") ||
           conflictMessage
             .toLowerCase()
-            .includes("utilisateur avec le téléphone") ||
-          conflictMessage.toLowerCase().includes("existe déjà")
+            .includes("utilisateur avec le tÃ©lÃ©phone") ||
+          conflictMessage.toLowerCase().includes("existe dÃ©jÃ ")
         ) {
-          console.log("🎯 Conflit détecté comme téléphone:", conflictMessage);
           setFieldError("phone", conflictMessage);
           toast.error(conflictMessage);
         } else if (
           conflictMessage.includes("email") ||
           conflictMessage.toLowerCase().includes("utilisateur avec l'email")
         ) {
-          console.log("🎯 Conflit détecté comme email:", conflictMessage);
           setFieldError("email", conflictMessage);
           toast.error(conflictMessage);
         } else {
@@ -695,8 +569,7 @@ export default function AddCollector() {
         const errorMessage =
           err.response?.data?.message ||
           err.response?.data?.error ||
-          "Erreur interne du serveur (500). Veuillez vérifier les données envoyées.";
-        console.error("🚨 Erreur 500 détaillée:", errorMessage);
+          "Erreur interne du serveur (500). Veuillez vÃ©rifier les donnÃ©es envoyÃ©es.";
         setError(`Erreur serveur: ${errorMessage}`);
         toast.error(`Erreur serveur: ${errorMessage}`);
       } else {
@@ -704,9 +577,8 @@ export default function AddCollector() {
           err.response?.data?.message ||
           err.response?.data?.errors ||
           err.message ||
-          "Erreur lors de la création du collecteur";
+          "Erreur lors de la crÃ©ation du collecteur";
 
-        console.error("🚨 Message d'erreur détaillé:", errorMessage);
         const finalErrorMessage = Array.isArray(errorMessage)
           ? errorMessage.join(", ")
           : errorMessage;
@@ -718,7 +590,7 @@ export default function AddCollector() {
     }
   };
 
-  // Réinitialiser le formulaire
+  // RÃ©initialiser le formulaire
   const handleReset = () => {
     setFormData({
       organization_id: "",
@@ -752,7 +624,7 @@ export default function AddCollector() {
         />
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          <span className="ml-2 text-gray-600">Chargement des données...</span>
+          <span className="ml-2 text-gray-600">Chargement des donnÃ©es...</span>
         </div>
       </div>
     );
@@ -785,7 +657,7 @@ export default function AddCollector() {
               onClick={() => window.location.reload()}
               className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
-              Réessayer
+              RÃ©essayer
             </Button>
           </div>
         </div>
@@ -844,7 +716,7 @@ export default function AddCollector() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t("first_name") || "Prénom"}{" "}
+                      {t("first_name") || "PrÃ©nom"}{" "}
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -904,7 +776,7 @@ export default function AddCollector() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t("phone") || "Téléphone"}{" "}
+                      {t("phone") || "TÃ©lÃ©phone"}{" "}
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -950,13 +822,13 @@ export default function AddCollector() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
                       <option value="single">
-                        {t("single") || "Célibataire"}
+                        {t("single") || "CÃ©libataire"}
                       </option>
                       <option value="married">
-                        {t("married") || "Marié(e)"}
+                        {t("married") || "MariÃ©(e)"}
                       </option>
                       <option value="divorced">
-                        {t("divorced") || "Divorcé(e)"}
+                        {t("divorced") || "DivorcÃ©(e)"}
                       </option>
                       <option value="widowed">
                         {t("widowed") || "Veuf/Veuve"}
@@ -994,7 +866,7 @@ export default function AddCollector() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t("nationality") || "Nationalité"}
+                      {t("nationality") || "NationalitÃ©"}
                     </label>
                     <input
                       type="text"
@@ -1064,7 +936,7 @@ export default function AddCollector() {
                       )}
                     >
                       <option value="">
-                        {t("select_country") || "Sélectionner un pays"}
+                        {t("select_country") || "SÃ©lectionner un pays"}
                       </option>
                       {countries.map((country) => (
                         <option key={country.id} value={country.id}>
@@ -1077,7 +949,7 @@ export default function AddCollector() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t("team_manager") || "Chef d'équipe"}
+                      {t("team_manager") || "Chef d'Ã©quipe"}
                     </label>
                     <select
                       name="team_manager_id"
@@ -1088,7 +960,7 @@ export default function AddCollector() {
                     >
                       <option value="">
                         {t("select_team_manager") ||
-                          "Sélectionner un chef d'équipe"}
+                          "SÃ©lectionner un chef d'Ã©quipe"}
                       </option>
                       {teamManagers.map((manager) => (
                         <option key={manager.id} value={manager.id}>
@@ -1112,7 +984,7 @@ export default function AddCollector() {
                     >
                       <option value="">
                         {t("select_collection_point") ||
-                          "Sélectionner un point de collecte"}
+                          "SÃ©lectionner un point de collecte"}
                       </option>
                       {collectionPoints
                         .filter(
@@ -1142,7 +1014,7 @@ export default function AddCollector() {
                     >
                       <option value="">
                         {t("select_organization") ||
-                          "Sélectionner une organisation"}
+                          "SÃ©lectionner une organisation"}
                       </option>
                       {organizations.map((org) => (
                         <option key={org.id} value={org.id}>
@@ -1239,7 +1111,7 @@ export default function AddCollector() {
                   disabled={loading}
                   className="px-6 py-2"
                 >
-                  {t("reset") || "Réinitialiser"}
+                  {t("reset") || "RÃ©initialiser"}
                 </Button>
                 <button
                   type="submit"
@@ -1247,8 +1119,8 @@ export default function AddCollector() {
                   className="px-6 py-2 bg-green-700 hover:bg-green-700 text-white rounded-md disabled:opacity-50"
                 >
                   {loading
-                    ? t("creating") || "Création..."
-                    : t("create") || "Créer"}
+                    ? t("creating") || "CrÃ©ation..."
+                    : t("create") || "CrÃ©er"}
                 </button>
               </div>
             </form>

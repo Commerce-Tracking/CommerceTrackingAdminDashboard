@@ -97,7 +97,6 @@ const AnimalTypesListPage = () => {
         }
       );
 
-      console.log("Réponse API types d'animaux :", response.data);
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
@@ -112,7 +111,6 @@ const AnimalTypesListPage = () => {
         setAnimalTypes([]);
       }
     } catch (err: any) {
-      console.error("Erreur API types d'animaux :", err);
       let errorMessage = "Erreur lors du chargement des types d'animaux.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -240,7 +238,6 @@ const AnimalTypesListPage = () => {
         }
       );
 
-      console.log("Réponse API mise à jour :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -259,7 +256,6 @@ const AnimalTypesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage = "Erreur lors de la mise à jour du type d'animal.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -324,7 +320,6 @@ const AnimalTypesListPage = () => {
         }
       );
 
-      console.log("Réponse API suppression :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -343,7 +338,6 @@ const AnimalTypesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
       let errorMessage = "Erreur lors de la suppression du type d'animal.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

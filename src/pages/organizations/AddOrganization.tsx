@@ -67,20 +67,13 @@ export default function AddOrganization() {
         }
       );
 
-      console.log("📡 Réponse API countries:", response.data);
-      console.log("📡 Structure result:", response.data.result);
-      console.log("📡 Données countries:", response.data.result?.data);
 
       if (response.data.success) {
         const countriesData = response.data.result?.data || [];
         setCountries(countriesData);
-        console.log("✅ Pays récupérés:", countriesData.length);
-        console.log("📋 Liste des pays:", countriesData);
       } else {
-        console.error("❌ Erreur API countries:", response.data);
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la récupération des pays:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
@@ -261,7 +254,6 @@ export default function AddOrganization() {
         apiData.website = formData.website.trim();
       }
 
-      console.log("🔄 Création de l'organisation:", apiData);
 
       const response = await axiosInstance.post(
         "/admin/reference-data/organizations",
@@ -274,19 +266,9 @@ export default function AddOrganization() {
         }
       );
 
-      console.log(
-        "🔄 Réponse API complète:",
-        JSON.stringify(response.data, null, 2)
-      );
-      console.log("🔄 Organisation créée:", response.data.result);
-      console.log("🔄 Metadata:", response.data.result?.metadata);
-      console.log("🔄 Phone:", response.data.result?.phone);
-      console.log("🔄 Email:", response.data.result?.email);
-      console.log("🔄 Website:", response.data.result?.website);
 
       // Gérer les cas où l'API retourne success: false
       if (!response.data.success) {
-        console.log("❌ Erreur dans la réponse:", response.data);
 
         // Afficher un toast en rouge
         toast.error(response.data.message || t("error_creating_organization"));
@@ -310,7 +292,6 @@ export default function AddOrganization() {
       // Réinitialiser le formulaire
       handleReset();
     } catch (err: any) {
-      console.error("❌ Erreur lors de la création:", err);
 
       // Afficher un toast en rouge
       const errorMessage =
