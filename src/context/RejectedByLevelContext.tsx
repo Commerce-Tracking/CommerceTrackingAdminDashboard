@@ -67,7 +67,6 @@ export const RejectedByLevelProvider: React.FC<
   const fetchRejectedByLevel = async (forceRefresh = false) => {
     // Éviter les appels multiples simultanés
     if (isFetching) {
-      console.log("Appel API rejected-by-level déjà en cours, attente...");
       return;
     }
 
@@ -78,9 +77,6 @@ export const RejectedByLevelProvider: React.FC<
       lastFetch &&
       now.getTime() - lastFetch.getTime() < 30000
     ) {
-      console.log(
-        "Données rejected-by-level récentes disponibles, pas de nouvel appel API"
-      );
       setLoading(false);
       return;
     }
@@ -97,7 +93,6 @@ export const RejectedByLevelProvider: React.FC<
         return;
       }
 
-      console.log("🔄 Appel API rejected-by-level...");
       const res = await axiosInstance.get("/admin/stats/rejected-by-level", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -114,23 +109,11 @@ export const RejectedByLevelProvider: React.FC<
           apiResponse.result.data.total_rejected_by_team_lead
         );
         setLastFetch(new Date());
-        console.log(
-          "✅ Données rejected-by-level récupérées avec succès:",
-          apiResponse.result.data
-        );
       } else {
         setError("Erreur lors de la récupération des données");
-        console.error("❌ Erreur API rejected-by-level:", res.data);
       }
     } catch (err: any) {
-      console.error(
-        "❌ Erreur lors de la récupération des collectes rejetées par niveau :",
-        err
-      );
       if (err.response?.status === 401) {
-        console.log(
-          "🔒 Session expirée, redirection vers la page de connexion..."
-        );
         setIsSessionExpired(true);
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
@@ -159,10 +142,8 @@ export const RejectedByLevelProvider: React.FC<
     const checkTokenAndFetch = () => {
       const token = localStorage.getItem("accessToken");
       if (token) {
-        console.log("🔑 Token disponible, chargement des rejets par niveau...");
         fetchRejectedByLevel();
       } else {
-        console.log("⏳ Token non disponible, attente...");
         // Réessayer après 1 seconde (plus long pour être sûr)
         setTimeout(checkTokenAndFetch, 1000);
       }
@@ -176,9 +157,6 @@ export const RejectedByLevelProvider: React.FC<
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "accessToken" && e.newValue) {
-        console.log(
-          "🔄 Nouveau token détecté, rechargement des collectes rejetées par niveau..."
-        );
         setError(null);
         setIsSessionExpired(false);
         fetchRejectedByLevel(true);
@@ -191,9 +169,6 @@ export const RejectedByLevelProvider: React.FC<
       const token = localStorage.getItem("accessToken");
       if (token && isSessionExpired) {
         if (token !== lastTokenCheck) {
-          console.log(
-            "🔄 Token disponible après expiration, rechargement rejected-by-level..."
-          );
           setLastTokenCheck(token);
           setError(null);
           setIsSessionExpired(false);

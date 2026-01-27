@@ -60,13 +60,11 @@ const AddReportForm = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log("Réponse API GET /auth/me :", response.data);
         setAdmin({
           id: response.data?.data?.id || "",
           name: response.data?.data?.name || "Admin",
         });
       } catch (err: any) {
-        console.error("Erreur API GET /auth/me :", err);
         toast.current?.show({
           severity: "error",
           summary: "Erreur",
@@ -118,7 +116,6 @@ const AddReportForm = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("Réponse API POST /reportings :", response.data);
       toast.current?.show({
         severity: "success",
         summary: "Succès",
@@ -131,7 +128,6 @@ const AddReportForm = () => {
       setAttachmentUrl("");
       setAttachmentFormat("pdf");
     } catch (err: any) {
-      console.error("Erreur API :", err);
       const errorMessage =
         err.response?.data?.message || "Erreur lors de l’ajout du reporting.";
       setError(errorMessage);

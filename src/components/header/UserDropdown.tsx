@@ -43,7 +43,6 @@ export default function UserDropdown() {
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) {
-        console.warn("Aucun token d'authentification trouvé");
         return;
       }
 
@@ -58,10 +57,8 @@ export default function UserDropdown() {
         setProfileData(apiResponse.result);
       }
     } catch (err: any) {
-      console.error("Erreur API profil :", err);
       // Si erreur 401, le token est invalide
       if (err.response?.status === 401) {
-        console.warn("Token d'authentification invalide ou expiré");
         // Optionnel : rediriger vers la page de connexion
         // localStorage.removeItem("accessToken");
         // window.location.href = "/auth/signin";
@@ -97,9 +94,8 @@ export default function UserDropdown() {
           {loading ? "..." : profileData?.username || "..."}
         </span>
         <svg
-          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+            }`}
           width="18"
           height="20"
           viewBox="0 0 18 20"

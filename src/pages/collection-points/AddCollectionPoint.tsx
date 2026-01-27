@@ -117,10 +117,6 @@ export default function AddCollectionPoint() {
           "/common-data/collection-point-types",
           { headers }
         );
-        console.log(
-          "🔍 Réponse types de points de collecte:",
-          typesResponse.data
-        );
         if (typesResponse.data.success) {
           // Vérifier la structure de la réponse
           const typesData =
@@ -128,14 +124,9 @@ export default function AddCollectionPoint() {
             typesResponse.data.data ||
             typesResponse.data.result ||
             [];
-          console.log("📋 Types de points de collecte chargés:", typesData);
           setCollectionPointTypes(Array.isArray(typesData) ? typesData : []);
         }
       } catch (err: any) {
-        console.error(
-          "Erreur lors du chargement des données de référence:",
-          err
-        );
         if (err.response?.status === 401) {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("userData");
@@ -246,8 +237,6 @@ export default function AddCollectionPoint() {
         apiData.coordinates = null;
       }
 
-      console.log("🔄 Création du point de collecte:", apiData);
-      console.log("📋 Données du formulaire:", formData);
 
       const response = await axiosInstance.post(
         "/admin/reference-data/collection-points",
@@ -275,8 +264,6 @@ export default function AddCollectionPoint() {
         );
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la création:", err);
-      console.error("📋 Détails de l'erreur:", err.response?.data);
 
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
@@ -291,7 +278,6 @@ export default function AddCollectionPoint() {
           err.message ||
           "Erreur lors de la création du point de collecte";
 
-        console.error("🚨 Message d'erreur détaillé:", errorMessage);
         setError(
           Array.isArray(errorMessage) ? errorMessage.join(", ") : errorMessage
         );

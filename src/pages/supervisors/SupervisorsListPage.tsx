@@ -158,7 +158,6 @@ export default function SupervisorsListPage() {
         }
       );
 
-      console.log("📡 Réponse API organizations:", response.data);
 
       if (response.data.success) {
         const organizationsData =
@@ -166,20 +165,11 @@ export default function SupervisorsListPage() {
           response.data.result ||
           response.data.data ||
           [];
-        console.log("📊 Données organisations:", organizationsData);
-        console.log("🔍 Type de données:", typeof organizationsData);
-        console.log("🔍 Est un tableau:", Array.isArray(organizationsData));
 
         setOrganizations(organizationsData);
-        console.log("✅ Organisations récupérées:", organizationsData.length);
       } else {
-        console.error("❌ Erreur API organizations:", response.data);
       }
     } catch (err: any) {
-      console.error(
-        "❌ Erreur lors de la récupération des organisations:",
-        err
-      );
     }
   };
 
@@ -200,7 +190,6 @@ export default function SupervisorsListPage() {
         url += `&search=${encodeURIComponent(search.trim())}`;
       }
 
-      console.log("🔄 Appel API supervisors:", url);
       const response = await axiosInstance.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -211,20 +200,11 @@ export default function SupervisorsListPage() {
         const apiResponse: ActorsResponse = response.data;
         setActors(apiResponse.result.data);
         setPagination(apiResponse.result.pagination);
-        console.log(
-          "✅ Éditeurs récupérés avec succès:",
-          apiResponse.result.data.length
-        );
       } else {
         setError("Erreur lors de la récupération des éditeurs");
-        console.error("❌ Erreur API supervisors:", response.data);
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la récupération des éditeurs:", err);
       if (err.response?.status === 401) {
-        console.log(
-          "🔒 Session expirée, redirection vers la page de connexion..."
-        );
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
         window.location.href = "/signin";
@@ -268,13 +248,6 @@ export default function SupervisorsListPage() {
 
   // Fonction pour ouvrir le modal d'édition
   const openEditModal = (actor: Actor) => {
-    console.log(
-      "🔍 Ouverture modal édition pour:",
-      actor.first_name,
-      actor.last_name
-    );
-    console.log("📊 Organisations disponibles:", organizations.length);
-    console.log("📊 Organisations:", organizations);
 
     setSelectedActor(actor);
     setEditFormData({
@@ -389,7 +362,6 @@ export default function SupervisorsListPage() {
           : null,
       };
 
-      console.log("🔄 Mise à jour de l'éditeur:", apiData);
 
       const response = await axiosInstance.put(
         `/admin/actors/${selectedActor.id}`,
@@ -403,7 +375,6 @@ export default function SupervisorsListPage() {
       );
 
       if (response.data.success) {
-        console.log("✅ Éditeur mis à jour avec succès:", response.data.result);
         // Rafraîchir la liste
         fetchActors(pagination.page, searchTerm);
         closeEditModal();
@@ -413,7 +384,6 @@ export default function SupervisorsListPage() {
         );
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la mise à jour:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
@@ -468,12 +438,10 @@ export default function SupervisorsListPage() {
         // Rafraîchir la liste
         fetchActors(pagination.page, searchTerm);
         closeDeleteModal();
-        console.log("✅ Éditeur supprimé avec succès");
       } else {
         setError(response.data.message || "Erreur lors de la suppression");
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la suppression:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");

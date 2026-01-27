@@ -93,7 +93,6 @@ const TransportModesListPage = () => {
         setTransportMethods(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des modes de transport:", err);
     }
   };
 
@@ -129,7 +128,6 @@ const TransportModesListPage = () => {
         }
       );
 
-      console.log("Réponse API modes de transport :", response.data);
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
@@ -144,7 +142,6 @@ const TransportModesListPage = () => {
         setTransportModes([]);
       }
     } catch (err: any) {
-      console.error("Erreur API modes de transport :", err);
       let errorMessage = "Erreur lors du chargement des modes de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -283,7 +280,6 @@ const TransportModesListPage = () => {
         }
       );
 
-      console.log("Réponse API mise à jour :", response.data);
 
       if (response.data.success) {
         // Remplacer "transport mode" par "moyen de transport" dans le message de l'API
@@ -309,7 +305,6 @@ const TransportModesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage = "Erreur lors de la mise à jour du moyen de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -363,7 +358,6 @@ const TransportModesListPage = () => {
         }
       );
 
-      console.log("Réponse API suppression :", response.data);
 
       if (response.data.success) {
         // Remplacer "transport mode" par "moyen de transport" dans le message de l'API
@@ -389,7 +383,6 @@ const TransportModesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
       let errorMessage = "Erreur lors de la suppression du moyen de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

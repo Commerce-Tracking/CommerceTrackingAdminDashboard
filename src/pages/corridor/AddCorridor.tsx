@@ -65,10 +65,8 @@ const AddCorridor = () => {
 
       if (response.data.success) {
         setCountries(response.data.result.data || []);
-        console.log("Pays chargés:", response.data.result.data);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des pays:", err);
       toast.error(t("error"), {
         description: "Erreur lors du chargement des pays",
       });
@@ -94,10 +92,8 @@ const AddCorridor = () => {
 
       if (response.data.success) {
         setCities(response.data.result.data || []);
-        console.log("Villes chargées:", response.data.result.data);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des villes:", err);
       toast.error(t("error"), {
         description: "Erreur lors du chargement des villes",
       });
@@ -172,7 +168,6 @@ const AddCorridor = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Soumission du formulaire avec données :", formData);
 
     if (!validateForm()) {
       toast.error(t("error"), {
@@ -216,7 +211,6 @@ const AddCorridor = () => {
         }
       );
 
-      console.log("Réponse API :", response.data);
       toast.success(t("success"), {
         description:
           response.data.message || t("corridor_created_successfully"),
@@ -234,7 +228,6 @@ const AddCorridor = () => {
         nbre_checkpoints: "",
       });
     } catch (err: any) {
-      console.error("Erreur API :", err);
       let errorMessage = "Erreur lors de l'ajout du corridor.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage =
@@ -262,7 +255,6 @@ const AddCorridor = () => {
     const filteredCities = cities.filter(
       (city) => city.country_id === parseInt(countryId)
     );
-    console.log(`Villes pour le pays ${countryId}:`, filteredCities);
     return filteredCities;
   };
 

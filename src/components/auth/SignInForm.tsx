@@ -22,7 +22,6 @@ export default function SignInForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(username, password);
     try {
       const req = await login(username, password);
 
@@ -37,7 +36,6 @@ export default function SignInForm() {
           ),
         });
       } else {
-        console.log("Connexion réussie !");
         // Redirection immédiate sans modal de succès
         navigate("/");
       }

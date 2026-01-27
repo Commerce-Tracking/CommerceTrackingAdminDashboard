@@ -82,7 +82,6 @@ const AddService = () => {
         }
       );
 
-      console.log("Réponse API création service :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -97,7 +96,6 @@ const AddService = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API création service :", err);
       let errorMessage = "Erreur lors de la création du service.";
 
       if (err.response?.status === 401 || err.response?.status === 403) {

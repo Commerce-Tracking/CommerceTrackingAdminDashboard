@@ -169,7 +169,6 @@ export default function CollectorsListPage() {
         url += `&search=${encodeURIComponent(search.trim())}`;
       }
 
-      console.log("🔄 Appel API actors:", url);
       const response = await axiosInstance.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -180,20 +179,11 @@ export default function CollectorsListPage() {
         const apiResponse: ActorsResponse = response.data;
         setActors(apiResponse.result.data);
         setPagination(apiResponse.result.pagination);
-        console.log(
-          "✅ Acteurs récupérés avec succès:",
-          apiResponse.result.data.length
-        );
       } else {
         setError("Erreur lors de la récupération des acteurs");
-        console.error("❌ Erreur API actors:", response.data);
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la récupération des acteurs:", err);
       if (err.response?.status === 401) {
-        console.log(
-          "🔒 Session expirée, redirection vers la page de connexion..."
-        );
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
         window.location.href = "/signin";
@@ -238,7 +228,6 @@ export default function CollectorsListPage() {
         setCountries(countriesData);
       }
     } catch (err: any) {
-      console.error("Erreur lors de la récupération des pays:", err);
     }
   };
 
@@ -261,7 +250,6 @@ export default function CollectorsListPage() {
         setTeamManagers(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors de la récupération des chefs d'équipe:", err);
     }
   };
 
@@ -290,10 +278,6 @@ export default function CollectorsListPage() {
         setFilteredCollectionPoints(collectionPointsData);
       }
     } catch (err: any) {
-      console.error(
-        "Erreur lors de la récupération des points de collecte:",
-        err
-      );
     }
   };
 
@@ -321,7 +305,6 @@ export default function CollectorsListPage() {
         setOrganizations(organizationsData);
       }
     } catch (err: any) {
-      console.error("Erreur lors de la récupération des organisations:", err);
     }
   };
 
@@ -513,7 +496,6 @@ export default function CollectorsListPage() {
         apiData.organization_id = parseInt(editFormData.organization_id);
       }
 
-      console.log("🔄 Mise à jour du collecteur:", apiData);
 
       const response = await axiosInstance.put(
         `/admin/actors/${selectedActor.id}`,
@@ -527,10 +509,6 @@ export default function CollectorsListPage() {
       );
 
       if (response.data.success) {
-        console.log(
-          "✅ Collecteur mis à jour avec succès:",
-          response.data.result
-        );
         // Rafraîchir la liste
         fetchActors(pagination.page, searchTerm);
         closeEditModal();
@@ -540,7 +518,6 @@ export default function CollectorsListPage() {
         );
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la mise à jour:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
@@ -595,12 +572,10 @@ export default function CollectorsListPage() {
         // Rafraîchir la liste
         fetchActors(pagination.page, searchTerm);
         closeDeleteModal();
-        console.log("✅ Acteur supprimé avec succès");
       } else {
         setError(response.data.message || "Erreur lors de la suppression");
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la suppression:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");

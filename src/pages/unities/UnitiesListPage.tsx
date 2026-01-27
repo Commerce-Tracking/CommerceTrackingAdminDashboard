@@ -93,7 +93,6 @@ const UnitiesListPage = () => {
         }
       );
 
-      console.log("Réponse API unités :", response.data);
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
@@ -107,7 +106,6 @@ const UnitiesListPage = () => {
         setUnities([]);
       }
     } catch (err: any) {
-      console.error("Erreur API unités :", err);
       let errorMessage = "Erreur lors du chargement des unités.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -239,7 +237,6 @@ const UnitiesListPage = () => {
         }
       );
 
-      console.log("Réponse API mise à jour :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -257,7 +254,6 @@ const UnitiesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage = "Erreur lors de la mise à jour de l'unité.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -311,7 +307,6 @@ const UnitiesListPage = () => {
         }
       );
 
-      console.log("Réponse API suppression :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -329,7 +324,6 @@ const UnitiesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
       let errorMessage = "Erreur lors de la suppression de l'unité.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

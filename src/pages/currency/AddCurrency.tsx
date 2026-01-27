@@ -147,7 +147,6 @@ const AddCurrency = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Soumission du formulaire avec données :", formData);
 
     if (!validateForm()) {
       toast.error(t("error"), {
@@ -181,7 +180,6 @@ const AddCurrency = () => {
         }
       );
 
-      console.log("Réponse API :", response.data);
       toast.success(t("success"), {
         description:
           response.data.message || t("currency_created_successfully"),
@@ -195,7 +193,6 @@ const AddCurrency = () => {
         status: "active",
       });
     } catch (err: any) {
-      console.error("Erreur API :", err);
       let errorMessage = "Erreur lors de l'ajout de la devise.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage =

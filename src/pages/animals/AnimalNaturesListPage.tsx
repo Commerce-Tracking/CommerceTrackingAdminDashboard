@@ -124,7 +124,6 @@ const AnimalNaturesListPage = () => {
         setAnimalNatures([]);
       }
     } catch (err: any) {
-      console.error("Erreur API natures d'animaux :", err);
       let errorMessage = "Erreur lors du chargement des natures d'animaux.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -263,7 +262,6 @@ const AnimalNaturesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage = "Erreur lors de la mise à jour de la nature d'animal.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -331,7 +329,6 @@ const AnimalNaturesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
       let errorMessage = "Erreur lors de la suppression de la nature d'animal.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

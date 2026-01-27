@@ -95,7 +95,6 @@ const ProductTypesListPage = () => {
         }
       );
 
-      console.log("Réponse API types de produits :", response.data);
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
@@ -110,7 +109,6 @@ const ProductTypesListPage = () => {
         setProductTypes([]);
       }
     } catch (err: any) {
-      console.error("Erreur API types de produits :", err);
       let errorMessage = "Erreur lors du chargement des types de produits.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -237,7 +235,6 @@ const ProductTypesListPage = () => {
         }
       );
 
-      console.log("Réponse API mise à jour :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -256,7 +253,6 @@ const ProductTypesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage = "Erreur lors de la mise à jour du type de produit.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -321,7 +317,6 @@ const ProductTypesListPage = () => {
         }
       );
 
-      console.log("Réponse API suppression :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -340,7 +335,6 @@ const ProductTypesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
       let errorMessage = "Erreur lors de la suppression du type de produit.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

@@ -49,7 +49,6 @@ export const ReportsProvider: React.FC<{ children: React.ReactNode }> = ({ child
             setTotalPages(data.totalPages || 1);
             setCurrentPage(page);
         } catch (err: any) {
-            console.error("Erreur lors du chargement des rapports :", err);
             setError(err.response?.data?.message || "Erreur lors du chargement des rapports");
             if (err.response?.status === 401) {
                 navigate("/login"); // Redirection si non connecté

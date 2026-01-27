@@ -49,7 +49,6 @@ const AddTransportMode = () => {
         setTransportMethods(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des modes de transport:", err);
     }
   };
 
@@ -135,7 +134,6 @@ const AddTransportMode = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API:", err);
       let errorMessage = "Erreur lors de la création du moyen de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

@@ -45,7 +45,6 @@ const UsersTableOne = () => {
         const response = await axiosInstance.get<ApiResponse>('/users', {
           params: { page: currentPage, limit: rowsPerPage },
         });
-        console.log('Réponse API GET /users :', response.data);
 
         const transformedData: User[] = response.data.data.map((item: any) => ({
           id: item.id,

@@ -32,7 +32,6 @@ export default function AuthProvider({ children }) {
           // @ts-ignore
           setRefreshToken(storedRefreshToken);
         } catch (e) {
-          console.error("Impossible de parser userInfo");
           localStorage.removeItem("userInfo");
           localStorage.removeItem("userData");
         }
@@ -46,17 +45,10 @@ export default function AuthProvider({ children }) {
 
   const login = async (username, password, navigate) => {
     try {
-      console.log("Tentative de connexion avec:", {
-        username,
-        password: "***",
-      });
       const res = await axiosInstance.post("/auth/login", {
         username,
         password,
       });
-      console.log("LOGIN DATA: ");
-      console.log(res.data);
-      console.log("Status HTTP:", res.status);
 
       if (res.data.success === true) {
         const result = res.data.result;
@@ -72,17 +64,14 @@ export default function AuthProvider({ children }) {
         localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("userInfo", JSON.stringify(user));
 
-        console.log("Connexion réussie !");
         return { success: true, message: res.data.message, result };
       } else {
-        console.log("Connexion échouée !");
         return {
           success: false,
           message: res.data.message || res.data.errors || "Connexion échouée",
         };
       }
     } catch (err: any) {
-      console.error("Login error", err.response?.data || err.message);
       return {
         success: false,
         message: err.response?.data?.message || "Erreur de connexion",
@@ -92,7 +81,6 @@ export default function AuthProvider({ children }) {
 
   const authMe = async (id: any) => {
     try {
-      console.log("Access Token", accessToken);
       const user = await axiosInstance.get(`/auth/profile`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -102,11 +90,7 @@ export default function AuthProvider({ children }) {
       const u = user.data.result; // Utiliser 'result' au lieu de 'data'
       setUserData(u);
       localStorage.setItem("userData", JSON.stringify(u));
-
-      console.log("Connecté !");
     } catch (error) {
-      // @ts-ignore
-      console.error("Error", error.response?.data || error.message);
       // @ts-ignore
       if (error.response?.status === 401) {
         navigate("/signin");
@@ -122,11 +106,8 @@ export default function AuthProvider({ children }) {
       const userInfo = user.data.data;
       setUserInfo(userInfo);
       localStorage.setItem("userInfo", JSON.stringify(userInfo));
-
-      console.log("Récupérée !");
     } catch (err) {
-      // @ts-ignore
-      console.error("Error", err.response?.data || err.message);
+      // Erreur silencieuse
     }
   };
 

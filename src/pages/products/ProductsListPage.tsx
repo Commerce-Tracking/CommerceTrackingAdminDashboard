@@ -119,7 +119,6 @@ const ProductsListPage = () => {
         setProductTypes(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des types de produits:", err);
     }
   };
 
@@ -146,7 +145,6 @@ const ProductsListPage = () => {
         setProductNatures(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des natures de produits:", err);
     }
   };
 
@@ -388,9 +386,6 @@ const ProductsListPage = () => {
         requestData.natures = editNaturesList;
       }
 
-      console.log("🔄 Payload de modification:", requestData);
-      console.log("📋 Natures à envoyer:", editNaturesList);
-      console.log("📊 Nombre de natures:", editNaturesList.length);
 
       const response = await axiosInstance.put(
         `/admin/reference-data/products/${editingProduct.id}`,
@@ -403,8 +398,6 @@ const ProductsListPage = () => {
         }
       );
 
-      console.log("Réponse API mise à jour :", response.data);
-      console.log("📦 Produit mis à jour:", response.data.result);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -425,7 +418,6 @@ const ProductsListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage = "Erreur lors de la mise à jour du produit.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -458,12 +450,9 @@ const ProductsListPage = () => {
 
   const handleDeleteProduct = async () => {
     if (!productToDelete) {
-      console.error("❌ Aucun produit à supprimer");
       return;
     }
 
-    console.log("📦 Produit à supprimer:", productToDelete);
-    console.log("🆔 ID du produit:", productToDelete.id);
 
     setDeleteLoading(true);
 
@@ -476,11 +465,6 @@ const ProductsListPage = () => {
         return;
       }
 
-      console.log("🔄 Suppression du produit ID:", productToDelete.id);
-      console.log(
-        "🔗 URL:",
-        `/admin/reference-data/products/${productToDelete.id}`
-      );
 
       const response = await axiosInstance.delete(
         `/admin/reference-data/products/${productToDelete.id}`,
@@ -492,16 +476,8 @@ const ProductsListPage = () => {
         }
       );
 
-      console.log(
-        "📨 Réponse API suppression complète:",
-        JSON.stringify(response.data, null, 2)
-      );
-      console.log("📊 Status HTTP:", response.status);
 
       if (response.data.success) {
-        console.log("✅ Produit supprimé avec succès");
-        console.log("🆔 ID du produit supprimé:", productToDelete.id);
-        console.log("📋 Produits avant suppression:", products.length);
 
         // Fermer la confirmation
         closeDeleteConfirmation();
@@ -510,7 +486,6 @@ const ProductsListPage = () => {
         const filteredProducts = products.filter(
           (p) => p.id !== productToDelete.id
         );
-        console.log("📋 Produits après filtrage:", filteredProducts.length);
 
         // Mettre à jour la liste locale
         setProducts(filteredProducts);
@@ -527,7 +502,6 @@ const ProductsListPage = () => {
 
         // Vérifier après un court délai si le produit est toujours présent côté serveur
         setTimeout(async () => {
-          console.log("🔍 Vérification côté serveur après 2 secondes...");
           try {
             const verifyResponse = await axiosInstance.get(
               `/admin/reference-data/products/${productToDelete.id}`,
@@ -537,18 +511,9 @@ const ProductsListPage = () => {
                 },
               }
             );
-            console.log(
-              "📊 Produit toujours présent côté serveur:",
-              verifyResponse.data
-            );
           } catch (verifyErr: any) {
             if (verifyErr.response?.status === 404) {
-              console.log("✅ Produit bien supprimé côté serveur (404)");
             } else {
-              console.log(
-                "⚠️ Erreur lors de la vérification:",
-                verifyErr.message
-              );
             }
           }
         }, 2000);
@@ -558,10 +523,6 @@ const ProductsListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("❌ Erreur API suppression:", err);
-      console.error("📊 Status:", err.response?.status);
-      console.error("📋 Détails:", err.response?.data);
-      console.error("📋 Message:", err.message);
 
       let errorMessage = "Erreur lors de la suppression du produit.";
       if (err.response?.status === 401 || err.response?.status === 403) {

@@ -66,7 +66,6 @@ export default function UserMetaCard() {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API profil :", err);
       let errorMessage = "Erreur lors du chargement du profil.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -94,7 +93,6 @@ export default function UserMetaCard() {
 
   const handleSave = () => {
     // Handle save logic here
-    console.log("Saving changes...");
     closeModal();
   };
   if (loading) {
@@ -128,11 +126,10 @@ export default function UserMetaCard() {
                 <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 content-center">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      profileData?.status === "active"
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${profileData?.status === "active"
                         ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                         : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                    }`}
+                      }`}
                   >
                     {profileData?.status === "active"
                       ? t("active")

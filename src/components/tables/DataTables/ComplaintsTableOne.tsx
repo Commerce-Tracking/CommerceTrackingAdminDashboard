@@ -80,7 +80,6 @@ export default function ComplaintsTableOne({
 
     useEffect(() => {
         // @ts-ignore
-        console.log('Locale courante dans PrimeReact :', locale());
         FilterService.register('custom_date', (value, filters) => {
             const [from, to] = filters ?? [null, null];
             if (!from && !to) return true;

@@ -91,7 +91,6 @@ const CitiesListPage = () => {
         setCountries(response.data.result.data || []);
       }
     } catch (err: any) {
-      console.error("Erreur lors du chargement des pays:", err);
     }
   };
 
@@ -127,7 +126,6 @@ const CitiesListPage = () => {
         }
       );
 
-      console.log("Réponse API villes :", response.data);
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
@@ -141,7 +139,6 @@ const CitiesListPage = () => {
         setCities([]);
       }
     } catch (err: any) {
-      console.error("Erreur API villes :", err);
       let errorMessage = "Erreur lors du chargement des villes.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -269,7 +266,6 @@ const CitiesListPage = () => {
         }
       );
 
-      console.log("Réponse API mise à jour :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -287,7 +283,6 @@ const CitiesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage = "Erreur lors de la mise à jour de la ville.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -341,7 +336,6 @@ const CitiesListPage = () => {
         }
       );
 
-      console.log("Réponse API suppression :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
@@ -359,7 +353,6 @@ const CitiesListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
       let errorMessage = "Erreur lors de la suppression de la ville.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

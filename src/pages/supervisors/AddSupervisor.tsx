@@ -86,12 +86,9 @@ export default function AddSupervisor() {
 
       if (response.data.success) {
         setCountries(response.data.result || []);
-        console.log("✅ Pays récupérés:", response.data.result?.length);
       } else {
-        console.error("❌ Erreur API countries:", response.data);
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la récupération des pays:", err);
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
@@ -118,7 +115,6 @@ export default function AddSupervisor() {
         }
       );
 
-      console.log("📡 Réponse API organizations:", response.data);
 
       if (response.data.success) {
         const organizationsData =
@@ -126,20 +122,11 @@ export default function AddSupervisor() {
           response.data.result ||
           response.data.data ||
           [];
-        console.log("📊 Données organisations:", organizationsData);
-        console.log("🔍 Type de données:", typeof organizationsData);
-        console.log("🔍 Est un tableau:", Array.isArray(organizationsData));
 
         setOrganizations(organizationsData);
-        console.log("✅ Organisations récupérées:", organizationsData.length);
       } else {
-        console.error("❌ Erreur API organizations:", response.data);
       }
     } catch (err: any) {
-      console.error(
-        "❌ Erreur lors de la récupération des organisations:",
-        err
-      );
       if (err.response?.status === 401) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
@@ -322,7 +309,6 @@ export default function AddSupervisor() {
         supervisor_id: null, // Un éditeur n'a pas d'éditeur parent
       };
 
-      console.log("🔄 Création de l'éditeur:", apiData);
 
       const response = await axiosInstance.post("/admin/actors", apiData, {
         headers: {
@@ -331,23 +317,19 @@ export default function AddSupervisor() {
         },
       });
 
-      console.log("📡 Réponse API:", response);
 
       if (response.data.success) {
-        console.log("✅ Éditeur créé avec succès:", response.data.result);
         toast.success(
           t("supervisor_created_successfully") || "Éditeur créé avec succès"
         );
         handleReset();
       } else {
-        console.log("❌ Réponse indique un échec:", response.data);
 
         // Utiliser le champ 'errors' en priorité, puis 'message'
         const errorMessage =
           response.data.errors ||
           response.data.message ||
           "Erreur lors de la création de l'éditeur";
-        console.log("🚨 Message d'erreur de la réponse:", errorMessage);
 
         if (
           errorMessage.includes("téléphone") ||
@@ -358,10 +340,6 @@ export default function AddSupervisor() {
           errorMessage.toLowerCase().includes("existe déjà") ||
           errorMessage.toLowerCase().includes("phone already exists")
         ) {
-          console.log(
-            "🎯 Erreur de réponse détectée comme téléphone:",
-            errorMessage
-          );
           setFieldError("phone", errorMessage);
           toast.error(errorMessage);
         } else if (
@@ -369,10 +347,6 @@ export default function AddSupervisor() {
           errorMessage.toLowerCase().includes("utilisateur avec l'email") ||
           errorMessage.toLowerCase().includes("email already exists")
         ) {
-          console.log(
-            "🎯 Erreur de réponse détectée comme email:",
-            errorMessage
-          );
           setFieldError("email", errorMessage);
           toast.error(errorMessage);
         } else if (
@@ -380,22 +354,18 @@ export default function AddSupervisor() {
           errorMessage.includes("même pays") ||
           errorMessage.includes("supervisor must belong")
         ) {
-          console.log("🎯 Erreur de validation pays/éditeur:", errorMessage);
           setFieldError("country_id", errorMessage);
           toast.error(errorMessage);
         } else {
-          console.log("❌ Erreur de réponse non mappée:", errorMessage);
           setError(errorMessage);
           toast.error(errorMessage);
         }
       }
     } catch (err: any) {
-      console.error("❌ Erreur lors de la création:", err);
 
       if (err.response?.status === 422 || err.response?.status === 400) {
         const validationErrors =
           err.response?.data?.errors || err.response?.data?.message;
-        console.log("🔍 Erreurs de validation:", validationErrors);
 
         if (typeof validationErrors === "object") {
           // Gestion des erreurs par champ

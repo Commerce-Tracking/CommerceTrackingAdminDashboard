@@ -98,7 +98,6 @@ const TransportMethodsListPage = () => {
         }
       );
 
-      console.log("Réponse API méthodes de transport :", response.data);
 
       if (response.data.success) {
         const apiResponse: ApiResponse = response.data;
@@ -113,7 +112,6 @@ const TransportMethodsListPage = () => {
         setTransportMethods([]);
       }
     } catch (err: any) {
-      console.error("Erreur API méthodes de transport :", err);
       let errorMessage = "Erreur lors du chargement des méthodes de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -241,7 +239,6 @@ const TransportMethodsListPage = () => {
         }
       );
 
-      console.log("Réponse API mise à jour :", response.data);
 
       if (response.data.success) {
         // Remplacer "transport method" par "mode de transport" dans le message de l'API
@@ -267,7 +264,6 @@ const TransportMethodsListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
       let errorMessage = "Erreur lors de la mise à jour du mode de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";
@@ -321,7 +317,6 @@ const TransportMethodsListPage = () => {
         }
       );
 
-      console.log("Réponse API suppression :", response.data);
 
       if (response.data.success) {
         // Remplacer "transport method" par "mode de transport" dans le message de l'API
@@ -347,7 +342,6 @@ const TransportMethodsListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
       let errorMessage = "Erreur lors de la suppression du mode de transport.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage = "Token invalide ou non autorisé.";

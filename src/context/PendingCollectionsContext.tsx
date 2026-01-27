@@ -65,7 +65,6 @@ export const PendingCollectionsProvider: React.FC<
   const fetchPendingCollections = async (forceRefresh = false) => {
     // Éviter les appels multiples simultanés
     if (isFetching) {
-      console.log("Appel API pending déjà en cours, attente...");
       return;
     }
 
@@ -76,9 +75,6 @@ export const PendingCollectionsProvider: React.FC<
       lastFetch &&
       now.getTime() - lastFetch.getTime() < 30000
     ) {
-      console.log(
-        "Données pending récentes disponibles, pas de nouvel appel API"
-      );
       setLoading(false);
       return;
     }
@@ -95,7 +91,6 @@ export const PendingCollectionsProvider: React.FC<
         return;
       }
 
-      console.log("🔄 Appel API pending...");
       const res = await axiosInstance.get("/admin/stats/pending", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -108,23 +103,11 @@ export const PendingCollectionsProvider: React.FC<
         setPendingSupervisor(apiResponse.result.data.pending_supervisor);
         setTotalPending(apiResponse.result.data.total_pending);
         setLastFetch(new Date());
-        console.log(
-          "✅ Données pending récupérées avec succès:",
-          apiResponse.result.data
-        );
       } else {
         setError("Erreur lors de la récupération des données");
-        console.error("❌ Erreur API pending:", res.data);
       }
     } catch (err: any) {
-      console.error(
-        "❌ Erreur lors de la récupération des collectes en attente :",
-        err
-      );
       if (err.response?.status === 401) {
-        console.log(
-          "🔒 Session expirée, redirection vers la page de connexion..."
-        );
         setIsSessionExpired(true);
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userData");
@@ -153,12 +136,8 @@ export const PendingCollectionsProvider: React.FC<
     const checkTokenAndFetch = () => {
       const token = localStorage.getItem("accessToken");
       if (token) {
-        console.log(
-          "🔑 Token disponible, chargement des collectes en attente..."
-        );
         fetchPendingCollections();
       } else {
-        console.log("⏳ Token non disponible, attente...");
         // Réessayer après 1 seconde (plus long pour être sûr)
         setTimeout(checkTokenAndFetch, 1000);
       }
@@ -172,9 +151,6 @@ export const PendingCollectionsProvider: React.FC<
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "accessToken" && e.newValue) {
-        console.log(
-          "🔄 Nouveau token détecté, rechargement des collectes en attente..."
-        );
         setError(null);
         setIsSessionExpired(false);
         fetchPendingCollections(true);
@@ -187,9 +163,6 @@ export const PendingCollectionsProvider: React.FC<
       const token = localStorage.getItem("accessToken");
       if (token && isSessionExpired) {
         if (token !== lastTokenCheck) {
-          console.log(
-            "🔄 Token disponible après expiration, rechargement pending..."
-          );
           setLastTokenCheck(token);
           setError(null);
           setIsSessionExpired(false);

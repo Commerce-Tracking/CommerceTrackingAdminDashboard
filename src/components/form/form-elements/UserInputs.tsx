@@ -61,11 +61,6 @@ export default function UserInputs() {
         const response = await axiosInstance.get("/admin/locality");
         setLocalities(response.data.data.data);
       } catch (err: any) {
-        console.error("Erreur lors du chargement des localités:", {
-          message: err.message,
-          response: err.response?.data,
-          status: err.response?.status,
-        });
         setError(`Impossible de charger les localités: ${err.message}`);
       }
     };
@@ -143,11 +138,6 @@ export default function UserInputs() {
         email: "",
       });
     } catch (err: any) {
-      console.error("Erreur création utilisateur:", {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status,
-      });
       setError(
         err.response?.data?.message ||
           "Une erreur s'est produite lors de la création de l'utilisateur"

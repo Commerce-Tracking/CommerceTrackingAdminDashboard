@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+﻿import React, { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import axiosInstance from "../../api/axios";
 import PageMeta from "../../components/common/PageMeta";
@@ -64,33 +64,33 @@ const CurrencyListPage = () => {
   const { t } = useTranslation();
 
   const currencySymbols = [
-    { value: "₿", label: "₿ - Bitcoin" },
-    { value: "₵", label: "₵ - Cedi ghanéen" },
+    { value: "â‚¿", label: "â‚¿ - Bitcoin" },
+    { value: "â‚µ", label: "â‚µ - Cedi ghanÃ©en" },
     { value: "FC", label: "FC - Franc congolais" },
     { value: "FCFA", label: "FCFA - Franc CFA" },
-    { value: "$", label: "$ - Dollar américain" },
-    { value: "€", label: "€ - Euro" },
-    { value: "₾", label: "₾ - Lari géorgien" },
-    { value: "₺", label: "₺ - Lire turque" },
-    { value: "£", label: "£ - Livre sterling" },
+    { value: "$", label: "$ - Dollar amÃ©ricain" },
+    { value: "â‚¬", label: "â‚¬ - Euro" },
+    { value: "â‚¾", label: "â‚¾ - Lari gÃ©orgien" },
+    { value: "â‚º", label: "â‚º - Lire turque" },
+    { value: "Â£", label: "Â£ - Livre sterling" },
     { value: "L", label: "L - Loti lesothan" },
-    { value: "₼", label: "₼ - Manat azerbaïdjanais" },
+    { value: "â‚¼", label: "â‚¼ - Manat azerbaÃ¯djanais" },
     { value: "M", label: "M - Metical mozambicain" },
-    { value: "₦", label: "₦ - Naira nigérian" },
-    { value: "N", label: "N - Naira nigérian" },
+    { value: "â‚¦", label: "â‚¦ - Naira nigÃ©rian" },
+    { value: "N", label: "N - Naira nigÃ©rian" },
     { value: "P", label: "P - Pula botswanais" },
-    { value: "₹", label: "₹ - Roupie indienne" },
-    { value: "₨", label: "₨ - Roupie mauricienne" },
-    { value: "₽", label: "₽ - Rouble russe" },
+    { value: "â‚¹", label: "â‚¹ - Roupie indienne" },
+    { value: "â‚¨", label: "â‚¨ - Roupie mauricienne" },
+    { value: "â‚½", label: "â‚½ - Rouble russe" },
     { value: "R", label: "R - Rand sud-africain" },
-    { value: "₪", label: "₪ - Shekel israélien" },
+    { value: "â‚ª", label: "â‚ª - Shekel israÃ©lien" },
     { value: "S", label: "S - Shilling somalien" },
-    { value: "₸", label: "₸ - Tenge kazakh" },
+    { value: "â‚¸", label: "â‚¸ - Tenge kazakh" },
     { value: "T", label: "T - Tugrik mongol" },
-    { value: "₴", label: "₴ - Hryvnia ukrainienne" },
-    { value: "W", label: "W - Won nord-coréen" },
-    { value: "₩", label: "₩ - Won sud-coréen" },
-    { value: "¥", label: "¥ - Yen japonais" },
+    { value: "â‚´", label: "â‚´ - Hryvnia ukrainienne" },
+    { value: "W", label: "W - Won nord-corÃ©en" },
+    { value: "â‚©", label: "â‚© - Won sud-corÃ©en" },
+    { value: "Â¥", label: "Â¥ - Yen japonais" },
     { value: "Z", label: "Z - Zloty polonais" },
     { value: "K", label: "K - Kwacha zambien" },
     { value: "Kz", label: "Kz - Kwanza angolais" },
@@ -100,10 +100,10 @@ const CurrencyListPage = () => {
     { value: "AOA", label: "AOA - Kwanza angolais" },
     { value: "ARS", label: "ARS - Peso argentin" },
     { value: "AUD", label: "AUD - Dollar australien" },
-    { value: "AZN", label: "AZN - Manat azerbaïdjanais" },
+    { value: "AZN", label: "AZN - Manat azerbaÃ¯djanais" },
     { value: "BIF", label: "BIF - Franc burundais" },
-    { value: "BND", label: "BND - Dollar brunéien" },
-    { value: "BRL", label: "BRL - Real brésilien" },
+    { value: "BND", label: "BND - Dollar brunÃ©ien" },
+    { value: "BRL", label: "BRL - Real brÃ©silien" },
     { value: "BWP", label: "BWP - Pula botswanais" },
     { value: "BTC", label: "BTC - Bitcoin" },
     { value: "CAD", label: "CAD - Dollar canadien" },
@@ -113,20 +113,20 @@ const CurrencyListPage = () => {
     { value: "CNY", label: "CNY - Yuan chinois" },
     { value: "COP", label: "COP - Peso colombien" },
     { value: "DKK", label: "DKK - Couronne danoise" },
-    { value: "DZD", label: "DZD - Dinar algérien" },
-    { value: "EGP", label: "EGP - Livre égyptienne" },
-    { value: "ETB", label: "ETB - Birr éthiopien" },
+    { value: "DZD", label: "DZD - Dinar algÃ©rien" },
+    { value: "EGP", label: "EGP - Livre Ã©gyptienne" },
+    { value: "ETB", label: "ETB - Birr Ã©thiopien" },
     { value: "EUR", label: "EUR - Euro" },
     { value: "GBP", label: "GBP - Livre sterling" },
-    { value: "GEL", label: "GEL - Lari géorgien" },
-    { value: "GHS", label: "GHS - Cedi ghanéen" },
+    { value: "GEL", label: "GEL - Lari gÃ©orgien" },
+    { value: "GHS", label: "GHS - Cedi ghanÃ©en" },
     { value: "HKD", label: "HKD - Dollar de Hong Kong" },
-    { value: "ILS", label: "ILS - Shekel israélien" },
+    { value: "ILS", label: "ILS - Shekel israÃ©lien" },
     { value: "INR", label: "INR - Roupie indienne" },
     { value: "JPY", label: "JPY - Yen japonais" },
-    { value: "KES", label: "KES - Shilling kényan" },
-    { value: "KPW", label: "KPW - Won nord-coréen" },
-    { value: "KRW", label: "KRW - Won sud-coréen" },
+    { value: "KES", label: "KES - Shilling kÃ©nyan" },
+    { value: "KPW", label: "KPW - Won nord-corÃ©en" },
+    { value: "KRW", label: "KRW - Won sud-corÃ©en" },
     { value: "KZT", label: "KZT - Tenge kazakh" },
     { value: "LSL", label: "LSL - Loti lesothan" },
     { value: "LYD", label: "LYD - Dinar libyen" },
@@ -136,14 +136,14 @@ const CurrencyListPage = () => {
     { value: "MXN", label: "MXN - Peso mexicain" },
     { value: "MZN", label: "MZN - Metical mozambicain" },
     { value: "MWK", label: "MWK - Kwacha malawien" },
-    { value: "NGN", label: "NGN - Naira nigérian" },
-    { value: "NOK", label: "NOK - Couronne norvégienne" },
-    { value: "NZD", label: "NZD - Dollar néo-zélandais" },
-    { value: "PEN", label: "PEN - Sol péruvien" },
+    { value: "NGN", label: "NGN - Naira nigÃ©rian" },
+    { value: "NOK", label: "NOK - Couronne norvÃ©gienne" },
+    { value: "NZD", label: "NZD - Dollar nÃ©o-zÃ©landais" },
+    { value: "PEN", label: "PEN - Sol pÃ©ruvien" },
     { value: "PLN", label: "PLN - Zloty polonais" },
     { value: "RUB", label: "RUB - Rouble russe" },
     { value: "RWF", label: "RWF - Franc rwandais" },
-    { value: "SEK", label: "SEK - Couronne suédoise" },
+    { value: "SEK", label: "SEK - Couronne suÃ©doise" },
     { value: "SGD", label: "SGD - Dollar singapourien" },
     { value: "SOS", label: "SOS - Shilling somalien" },
     { value: "TND", label: "TND - Dinar tunisien" },
@@ -151,13 +151,13 @@ const CurrencyListPage = () => {
     { value: "TZS", label: "TZS - Shilling tanzanien" },
     { value: "UAH", label: "UAH - Hryvnia ukrainienne" },
     { value: "UGX", label: "UGX - Shilling ougandais" },
-    { value: "USD", label: "USD - Dollar américain" },
-    { value: "VEF", label: "VEF - Bolivar vénézuélien" },
+    { value: "USD", label: "USD - Dollar amÃ©ricain" },
+    { value: "VEF", label: "VEF - Bolivar vÃ©nÃ©zuÃ©lien" },
     { value: "XAF", label: "XAF - Franc CFA (Afrique centrale)" },
     { value: "XOF", label: "XOF - Franc CFA (Afrique de l'Ouest)" },
     { value: "ZAR", label: "ZAR - Rand sud-africain" },
     { value: "ZMW", label: "ZMW - Kwacha zambien" },
-    { value: "ZWL", label: "ZWL - Dollar zimbabwéen" },
+    { value: "ZWL", label: "ZWL - Dollar zimbabwÃ©en" },
   ];
 
   const fetchCurrencies = async (page: number = 1) => {
@@ -167,7 +167,7 @@ const CurrencyListPage = () => {
       if (!token) {
         toast.error(t("auth_error"), {
           description:
-            "Aucun token d'authentification trouvé. Redirection vers la connexion...",
+            "Aucun token d'authentification trouvÃ©. Redirection vers la connexion...",
         });
         setTimeout(() => {
           window.location.href = "/signin";
@@ -175,14 +175,13 @@ const CurrencyListPage = () => {
         return;
       }
 
-      // Vérifier si le token est expiré (optionnel)
+      // VÃ©rifier si le token est expirÃ© (optionnel)
       try {
         const tokenPayload = JSON.parse(atob(token.split(".")[1]));
         const currentTime = Date.now() / 1000;
         if (tokenPayload.exp && tokenPayload.exp < currentTime) {
-          console.log("Token expiré, redirection vers la connexion");
           toast.error(t("auth_error"), {
-            description: "Session expirée. Redirection vers la connexion...",
+            description: "Session expirÃ©e. Redirection vers la connexion...",
           });
           setTimeout(() => {
             window.location.href = "/signin";
@@ -190,11 +189,10 @@ const CurrencyListPage = () => {
           return;
         }
       } catch (tokenError) {
-        console.log("Erreur lors de la vérification du token:", tokenError);
-        // Continue même si on ne peut pas vérifier le token
+        // Continue mÃªme si on ne peut pas vÃ©rifier le token
       }
 
-      // Construire les paramètres de requête
+      // Construire les paramÃ¨tres de requÃªte
       const params = new URLSearchParams({
         page: page.toString(),
         limit: "10",
@@ -207,11 +205,6 @@ const CurrencyListPage = () => {
         params.append("status", statusFilter);
       }
 
-      console.log("Paramètres de requête :", params.toString());
-      console.log(
-        "URL complète :",
-        `/admin/reference-data/currencies?${params.toString()}`
-      );
 
       const response = await axiosInstance.get(
         `/admin/reference-data/currencies?${params.toString()}`,
@@ -222,11 +215,9 @@ const CurrencyListPage = () => {
         }
       );
 
-      console.log("Réponse API complète :", response);
-      console.log("Données de réponse :", response.data);
 
       if (response.data.success) {
-        // Structure de réponse de l'API
+        // Structure de rÃ©ponse de l'API
         const result = response.data.result;
         const currenciesData = result.data || [];
         const paginationData = result.pagination || {
@@ -236,38 +227,26 @@ const CurrencyListPage = () => {
           totalPages: 1,
         };
 
-        console.log("Données des devises extraites :", currenciesData);
-        console.log("Pagination extraite :", paginationData);
-        console.log("Nombre de devises trouvées :", currenciesData.length);
 
         setCurrencies(currenciesData);
         setPagination(paginationData);
         setCurrentPage(paginationData.page || 1);
 
-        console.log(
-          "État mis à jour - currencies:",
-          currenciesData.length,
-          "pagination:",
-          paginationData
-        );
       } else {
-        console.log("L'API a retourné success: false");
-        console.log("Message d'erreur :", response.data.message);
         toast.error(t("error"), {
           description:
             response.data.message || "Erreur lors du chargement des devises",
         });
       }
     } catch (err: any) {
-      console.error("Erreur API :", err);
       let errorMessage = "Erreur lors du chargement des devises.";
       if (err.response?.status === 401 || err.response?.status === 403) {
         errorMessage =
-          "Token invalide ou non autorisé. Redirection vers la connexion...";
+          "Token invalide ou non autorisÃ©. Redirection vers la connexion...";
         toast.error(t("auth_error"), {
           description: errorMessage,
         });
-        // Redirection vers la connexion après 2 secondes
+        // Redirection vers la connexion aprÃ¨s 2 secondes
         setTimeout(() => {
           window.location.href = "/signin";
         }, 2000);
@@ -283,7 +262,7 @@ const CurrencyListPage = () => {
     }
   };
 
-  // Fonctions pour l'édition
+  // Fonctions pour l'Ã©dition
   const openEditModal = (currency: Currency) => {
     setEditingCurrency(currency);
     setEditFormData({
@@ -345,7 +324,7 @@ const CurrencyListPage = () => {
       const token = localStorage.getItem("accessToken");
       if (!token) {
         toast.error(t("auth_error"), {
-          description: "Aucun token d'authentification trouvé.",
+          description: "Aucun token d'authentification trouvÃ©.",
         });
         return;
       }
@@ -360,29 +339,27 @@ const CurrencyListPage = () => {
         }
       );
 
-      console.log("Réponse API mise à jour :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
           description:
-            response.data.message || "Devise mise à jour avec succès",
+            response.data.message || "Devise mise Ã  jour avec succÃ¨s",
         });
 
         // Fermer le modal
         closeEditModal();
 
-        // Rafraîchir la liste
+        // RafraÃ®chir la liste
         fetchCurrencies(currentPage);
       } else {
         toast.error(t("error"), {
-          description: response.data.message || "Erreur lors de la mise à jour",
+          description: response.data.message || "Erreur lors de la mise Ã  jour",
         });
       }
     } catch (err: any) {
-      console.error("Erreur API mise à jour :", err);
-      let errorMessage = "Erreur lors de la mise à jour de la devise.";
+      let errorMessage = "Erreur lors de la mise Ã  jour de la devise.";
       if (err.response?.status === 401 || err.response?.status === 403) {
-        errorMessage = "Token invalide ou non autorisé.";
+        errorMessage = "Token invalide ou non autorisÃ©.";
         toast.error(t("auth_error"), {
           description: errorMessage,
         });
@@ -419,7 +396,7 @@ const CurrencyListPage = () => {
       const token = localStorage.getItem("accessToken");
       if (!token) {
         toast.error(t("auth_error"), {
-          description: "Aucun token d'authentification trouvé.",
+          description: "Aucun token d'authentification trouvÃ©.",
         });
         return;
       }
@@ -433,17 +410,16 @@ const CurrencyListPage = () => {
         }
       );
 
-      console.log("Réponse API suppression :", response.data);
 
       if (response.data.success) {
         toast.success(t("success"), {
-          description: response.data.message || "Devise supprimée avec succès",
+          description: response.data.message || "Devise supprimÃ©e avec succÃ¨s",
         });
 
         // Fermer la confirmation
         closeDeleteConfirmation();
 
-        // Rafraîchir la liste
+        // RafraÃ®chir la liste
         fetchCurrencies(currentPage);
       } else {
         toast.error(t("error"), {
@@ -451,10 +427,9 @@ const CurrencyListPage = () => {
         });
       }
     } catch (err: any) {
-      console.error("Erreur API suppression :", err);
       let errorMessage = "Erreur lors de la suppression de la devise.";
       if (err.response?.status === 401 || err.response?.status === 403) {
-        errorMessage = "Token invalide ou non autorisé.";
+        errorMessage = "Token invalide ou non autorisÃ©.";
         toast.error(t("auth_error"), {
           description: errorMessage,
         });
@@ -477,15 +452,11 @@ const CurrencyListPage = () => {
     fetchCurrencies();
   }, []);
 
-  // Fonction pour déclencher la recherche avec un délai
+  // Fonction pour dÃ©clencher la recherche avec un dÃ©lai
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      console.log("Déclenchement automatique de la recherche avec:", {
-        searchTerm,
-        statusFilter,
-      });
       fetchCurrencies(1);
-    }, 300); // Délai réduit à 300ms
+    }, 300); // DÃ©lai rÃ©duit Ã  300ms
 
     return () => clearTimeout(timeoutId);
   }, [searchTerm, statusFilter]);
@@ -531,7 +502,7 @@ const CurrencyListPage = () => {
       <>
         <PageMeta
           title="CT | Liste des devises"
-          description="Consulter la liste des devises pour Opération Fluidité Routière Agro-bétail"
+          description="Consulter la liste des devises pour OpÃ©ration FluiditÃ© RoutiÃ¨re Agro-bÃ©tail"
         />
         <PageBreadcrumb pageTitle={t("currency_list")} />
         <div className="page-container">
@@ -552,7 +523,7 @@ const CurrencyListPage = () => {
     <>
       <PageMeta
         title="CT | Liste des devises"
-        description="Consulter la liste des devises pour Opération Fluidité Routière Agro-bétail"
+        description="Consulter la liste des devises pour OpÃ©ration FluiditÃ© RoutiÃ¨re Agro-bÃ©tail"
       />
       <PageBreadcrumb pageTitle={t("currency_list")} />
       <div className="page-container">
@@ -745,7 +716,7 @@ const CurrencyListPage = () => {
         </div>
       </div>
 
-      {/* Modal d'édition */}
+      {/* Modal d'Ã©dition */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-40">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4 shadow-xl border">
